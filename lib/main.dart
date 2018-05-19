@@ -91,7 +91,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  var _events, _venues;
+
+  _MyHomePageState() {
+
+  }
+
   void _incrementCounter() {
+    getEvents().then((events) => _events = events);
+    getVenues().then((venues) => _venues = venues);
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -104,8 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    fetchVenues();
-    fetchEvents();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -153,5 +159,21 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  List<Widget> _buildEvents(BuildContext context) {
+    var items = List<Widget>();
+    for (var prop in _events) {
+      items.add(prop);
+    }
+    return items;
+  }
+
+  List<Widget> _buildVenues(BuildContext context) {
+    var items = List<Widget>();
+    for (var prop in _venues) {
+      items.add(prop);
+    }
+    return items;
   }
 }

@@ -394,15 +394,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.7"
-  webfeed:
-    dependency: "direct main"
-    description:
-      name: webfeed
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.1"
   xml:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: xml
       url: "https://pub.dartlang.org"

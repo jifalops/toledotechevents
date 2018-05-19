@@ -9,7 +9,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.0
 
-  webfeed: "^0.2.1"
+  xml: "^3.0.0"
   http: "^0.11.3+16"
   html: "^0.13.3"
   path_provider: "^0.4.0"

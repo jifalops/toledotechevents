@@ -1,39 +1,50 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'storage.dart';
-import 'package:webfeed/webfeed.dart';
 
-const _kVenuesFile = 'venues.json';
-const _kEventsFile = 'events.atom';
+import 'package:xml/xml.dart' as xml;
 
-Future<String> _fetchData(filename) async {
-  final response = await http.get('http://toledotechevents.org/$filename');
-  var contents;
-  if (response.statusCode == 200) {
-    contents = response.body;
-    print('Caching $filename...');
-    await writeFile(filename, contents);
-  } else {
-    print('Failed to fetch $filename, using cached copy...');
-    contents = await readFile(filename);
+import 'model/event.dart';
+import 'model/venue.dart';
+import 'util/network_resource.dart';
+
+final _eventsResource = NetworkResource(
+  url: 'http://toledotechevents.org/events.atom',
+  filename: 'events.atom',
+  maxAge: Duration(minutes: 60),
+);
+
+final _venuesResource = NetworkResource(
+  url: 'http://toledotechevents.org/venues.json',
+  filename: 'venues.json',
+  maxAge: Duration(minutes: 60),
+);
+
+Future<List<Event>> getEvents() async {
+  final events = List<Event>();
+  final data = await _eventsResource.get();
+  if (data != null) {
+    xml
+        .parse(data)
+        .findAllElements('entry')
+        .forEach((entry) => events.add(Event(entry)));
   }
-  return contents; // @Nullable
-}
-
-Future<Object> fetchVenues() async {
-  final contents = await _fetchData(_kVenuesFile);
-  if (contents == null) return null;
-
-  final venues = json.decode(contents);
-  print(venues);
-  return venues;
-}
-
-Future<Object> fetchEvents() async {
-  final contents = await _fetchData(_kEventsFile);
-  if (contents == null) return null;
-  final events = new AtomFeed.parse(contents);
-  print(events);
   return events;
+}
+
+Future<List<Venue>> getVenues() async {
+  final venues = List<Venue>();
+  final data = await _venuesResource.get();
+  if (data != null) {
+    json.decode(data).forEach((item) => venues.add(Venue(item)));
+
+    // list.sort((a, b) {
+    //   return (b['events_count'] ?? 0) - (a['events_count'] ?? 0);
+    // });
+
+    // print('~~~ Top 10 Venues ~~~');
+    // list.take(10).forEach((venue) {
+    //   print('${venue['events_count']}: ${venue['title']}');
+    // });
+  }
+  return venues;
 }
