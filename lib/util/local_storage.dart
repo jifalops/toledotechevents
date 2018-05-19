@@ -18,6 +18,8 @@ Future<String> readLocalFile(String name) async {
     final file = await localFile(name);
     return file.readAsString();
   } catch (e) {
+    print('Exception while reading local file $name:');
+    print(e);
     return null;
   }
 }

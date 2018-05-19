@@ -36,15 +36,6 @@ Future<List<Venue>> getVenues() async {
   final data = await _venuesResource.get();
   if (data != null) {
     json.decode(data).forEach((item) => venues.add(Venue(item)));
-
-    // list.sort((a, b) {
-    //   return (b['events_count'] ?? 0) - (a['events_count'] ?? 0);
-    // });
-
-    // print('~~~ Top 10 Venues ~~~');
-    // list.take(10).forEach((venue) {
-    //   print('${venue['events_count']}: ${venue['title']}');
-    // });
   }
   return venues;
 }
