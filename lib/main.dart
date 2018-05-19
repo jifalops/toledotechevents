@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
-import 'colors.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_html_view/flutter_html_view.dart';
+
+import 'colors.dart';
 import 'data.dart';
 import 'model/event.dart';
 import 'model/venue.dart';
@@ -93,21 +96,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  List<Event> _events;
-  List<Venue> _venues;
+  // List<Event> _events;
+  // List<Venue> _venues;
 
   _MyHomePageState() {}
 
-  void _incrementCounter() {
-    getVenues().then((venues) {
-      getEvents().then((events) {
-        events.forEach((event) {
-          event.setVenue(venues);
-          print(event);
-        });
-        _events = events;
-      });
+  Future<List<Event>> getData() async {
+    var venues = await getVenues();
+    var events = await getEvents();
+    events.forEach((event) {
+      event.setVenue(venues);
+      print(event);
     });
+    return events;
+  }
+
+  void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -132,34 +136,21 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
-      body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: new Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
-            ),
-            new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
+      body: new FutureBuilder<List<Event>>(
+        future: getData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return new ListView(
+              children: _buildEvents(context, snapshot.data),
+            );
+            // return new Text(snapshot.data.title);
+          } else if (snapshot.hasError) {
+            return new Text("${snapshot.error}");
+          }
+
+          // By default, show a loading spinner
+          return new CircularProgressIndicator();
+        },
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
@@ -195,17 +186,31 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  List<Widget> _buildEvents(BuildContext context) {
+  List<Widget> _buildEvents(BuildContext context, List<Event> events) {
     var items = List<Widget>();
-    // _events.forEach(f)
+    events.forEach(
+      (event) => items.add(
+            Card(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  children: <Widget>[
+                    Text(event.toString()),
+                    HtmlView(data: event.content),
+                  ],
+                ),
+              ),
+            ),
+          ),
+    );
     return items;
   }
 
-  List<Widget> _buildVenues(BuildContext context) {
-    var items = List<Widget>();
-    for (var prop in _venues) {
-      // items.add(prop);
-    }
-    return items;
-  }
+  // List<Widget> _buildVenues(BuildContext context) {
+  //   var items = List<Widget>();
+  //   for (var prop in _venues) {
+  //     // items.add(prop);
+  //   }
+  //   return items;
+  // }
 }
