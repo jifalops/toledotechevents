@@ -7,18 +7,20 @@ import 'venue.dart';
  * A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
  */
 class Event {
-  final String title, summary, url, content;
+  final String title, summary, url, contentHtml;
   final DateTime published, updated, startTime, endTime;
   final List<double> _coordinates;
   String _venueTitle;
   int _id;
   Duration _duration;
   Venue _venue;
+  List<String> _tags;
+  List<Link> _links;
   Event(XmlElement e)
       : title = e.findElements('title').first.firstChild.toString(),
         summary = e.findElements('summary').first.firstChild.toString(),
         url = e.findElements('url').first.firstChild.toString(),
-        content = HtmlUnescape()
+        contentHtml = HtmlUnescape()
             .convert(e.findElements('content').first.firstChild.toString()),
         published = DateTime
             .parse(e.findElements('published').first.firstChild.toString()),
@@ -55,6 +57,28 @@ class Event {
       _duration = endTime.difference(startTime);
     }
     return _duration;
+  }
+
+  List<String> get tags {
+    if (_tags == null) {
+      _tags = List<String>();
+      contentHtml
+          .split('href="/events/tag/')
+          .skip(1)
+          .forEach((tag) => _tags.add(tag.split('"').first));
+    }
+    return _tags;
+  }
+
+  List<Link> get links {
+    if (_links == null) {
+      _links = List<Link>();
+      contentHtml.split('<a class="url" href="').skip(1).forEach((link) {
+        var parts = link.split('">');
+        _links.add(Link(parts.first, parts.skip(1).first.split('<').first));
+      });
+    }
+    return _links;
   }
 
   String get iCalendarUrl => url + '.ics';
@@ -113,10 +137,19 @@ published: $published
 updated: $updated
 $startTime - $endTime ($duration)
 [$latitude, $longitude]
-<content len=${content.length}>
+<content len=${contentHtml.length}>
+tags: $tags
+links: $links
 $venue
 ''';
   }
+}
+
+class Link {
+  final String url, text;
+  Link(this.url, this.text);
+  @override
+  String toString() => '$text => $url';
 }
 
 List<double> _getCoordinates(coords) {
