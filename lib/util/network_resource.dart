@@ -30,14 +30,14 @@ class NetworkResource {
     var file = await getCacheFile();
     return file == null
         ? true
-        : file.lastModifiedSync().difference(DateTime.now()) > maxAge;
+        : DateTime.now().difference(file.lastModifiedSync()) > maxAge;
   }
 
   Future<String> forceFetch() async {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       print('$url fetched.');
-      print('$url updating cache');
+      print('$url updating cache...');
       await writeLocalFile(filename, response.body);
       return response.body;
     } else {

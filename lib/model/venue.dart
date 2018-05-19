@@ -26,6 +26,28 @@ class Venue {
         hasWifi = v['wifi'],
         created = DateTime.parse(v['created_at']),
         updated = DateTime.parse(v['updated_at']);
+
+  @override
+  String toString() {
+    return '''
+  Venue $id:
+  $title
+  events: $eventCount
+  $description
+  $address
+  $url
+  $email
+  $phone
+  $notes
+  $sourceId
+  $duplicateOfId
+  [$latitude, $longitude]
+  created: $created
+  updated: $updated
+  Closed: $isClosed
+  Wifi: $hasWifi
+''';
+  }
 }
 
 String _getAddress(full, addr, city, state, zip) {

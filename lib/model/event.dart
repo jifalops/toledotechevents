@@ -7,23 +7,17 @@ import 'venue.dart';
  * A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
  */
 class Event {
-  final String title, summary, venueTitle, url, iCalendarUrl, content;
+  final String title, summary, url, content;
   final DateTime published, updated, startTime, endTime;
-  final double latitude, longitude;
+  final List<double> _coordinates;
+  String _venueTitle;
+  int _id;
+  Duration _duration;
   Venue _venue;
   Event(XmlElement e)
       : title = e.findElements('title').first.firstChild.toString(),
         summary = e.findElements('summary').first.firstChild.toString(),
-        venueTitle = e
-            .findElements('summary')
-            .first
-            .firstChild
-            .toString()
-            .split(' at ')
-            .last,
         url = e.findElements('url').first.firstChild.toString(),
-        iCalendarUrl = e.findElements('url').first.firstChild.toString() +
-            '.ics', // cheating
         content = HtmlUnescape()
             .convert(e.findElements('content').first.firstChild.toString()),
         published = DateTime
@@ -34,22 +28,39 @@ class Event {
             .parse(e.findElements('start_time').first.firstChild.toString()),
         endTime = DateTime
             .parse(e.findElements('end_time').first.firstChild.toString()),
-        latitude = double.parse(e
-                .findElements('georss:point')
-                .first
-                .firstChild
-                .toString()
-                .split(' ')
-                .first ??
-            '0'),
-        longitude = double.parse(e
-                .findElements('georss:point')
-                .first
-                .firstChild
-                .toString()
-                .split(' ')
-                .last ??
-            '0');
+        _coordinates = _getCoordinates(e
+            .toString()
+            .split('<georss:point>')
+            .last
+            .split('<')
+            .first
+            .split(' '));
+
+  int get id {
+    if (_id == null) {
+      _id = int.parse(url.split('/').last);
+    }
+    return _id;
+  }
+
+  String get venueTitle {
+    if (_venueTitle == null) {
+      _venueTitle = summary.split(' at ').last;
+    }
+    return _venueTitle;
+  }
+
+  Duration get duration {
+    if (_duration == null) {
+      _duration = endTime.difference(startTime);
+    }
+    return _duration;
+  }
+
+  String get iCalendarUrl => url + '.ics';
+
+  double get latitude => _coordinates[0];
+  double get longitude => _coordinates[1];
 
   Venue get venue => _venue;
 
@@ -58,28 +69,61 @@ class Event {
     if (sameTitle.length > 0) {
       sameTitle.sort((a, b) => b.eventCount - a.eventCount);
       sameTitle.forEach((v) {
-        if (v.latitude == latitude && v.longitude == longitude) {
+        if (latitude != 0.0 &&
+            longitude != 0.0 &&
+            v.latitude == latitude &&
+            v.longitude == longitude) {
           _venue = v;
           return; // break loop
         }
       });
-      print(
-          'Warning: no venues have the same coordinates as the event. Using the most popular venue with the same name.');
-      _venue = sameTitle.first;
-      return;
+      if (_venue == null) {
+        print(
+            'Warning ($id): no venues have the same coordinates as the event. Using the most popular venue with the same name.');
+        _venue = sameTitle.first;
+      }
     } else {
       print(
-          'Warning: no venues have the same title as in the event summary. Searching for overlapping coordinates.');
+          'Warning ($id): no venues have the same title as in the event summary. Searching for overlapping coordinates.');
       venues.forEach((v) {
-        if (v.latitude == latitude && v.longitude == longitude) {
+        if (latitude != 0.0 &&
+            longitude != 0.0 &&
+            v.latitude == latitude &&
+            v.longitude == longitude) {
           _venue = v;
           return; // break loop
         }
       });
     }
-    print('Warning: no suitable venues could be found for this event!');
-    return;
+    if (_venue == null) {
+      print('Warning ($id): no suitable venues could be found for this event!');
+    }
   }
+
+  @override
+  String toString() {
+    return '''
+Event $id:
+$title
+$summary
+$venueTitle
+$url
+$iCalendarUrl
+published: $published
+updated: $updated
+$startTime - $endTime ($duration)
+[$latitude, $longitude]
+<content len=${content.length}>
+$venue
+''';
+  }
+}
+
+List<double> _getCoordinates(coords) {
+  if (coords.length == 2) {
+    return [double.parse(coords[0]), double.parse(coords[1])];
+  }
+  return [0.0, 0.0];
 }
 
 /*

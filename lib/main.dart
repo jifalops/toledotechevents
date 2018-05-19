@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 import 'data.dart';
+import 'model/event.dart';
+import 'model/venue.dart';
 
 void main() => runApp(new MyApp());
 
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Toledo Tech Events',
       theme: _kTheme,
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: new MyHomePage(title: 'Toledo Tech Events'),
     );
   }
 }
@@ -91,15 +93,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  var _events, _venues;
+  List<Event> _events;
+  List<Venue> _venues;
 
-  _MyHomePageState() {
-
-  }
+  _MyHomePageState() {}
 
   void _incrementCounter() {
-    getEvents().then((events) => _events = events);
-    getVenues().then((venues) => _venues = venues);
+    getVenues().then((venues) {
+      getEvents().then((events) {
+        events.forEach((event) {
+          event.setVenue(venues);
+          print(event);
+        });
+        _events = events;
+      });
+    });
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -157,22 +165,46 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: new Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        iconSize: 24.0,
+        items: [
+          BottomNavigationBarItem(
+            backgroundColor: kPrimaryColor,
+            title: Text('Events'),
+            icon: Icon(Icons.event),
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: kPrimaryColor,
+            title: Text('Add'),
+            icon: Icon(Icons.add_circle_outline),
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: kPrimaryColor,
+            title: Text('Venues'),
+            icon: Icon(Icons.business),
+          ),
+          BottomNavigationBarItem(
+            backgroundColor: kPrimaryColor,
+            title: Text('About'),
+            icon: Icon(Icons.help),
+          ),
+        ],
+      ),
     );
   }
 
   List<Widget> _buildEvents(BuildContext context) {
     var items = List<Widget>();
-    for (var prop in _events) {
-      items.add(prop);
-    }
+    // _events.forEach(f)
     return items;
   }
 
   List<Widget> _buildVenues(BuildContext context) {
     var items = List<Widget>();
     for (var prop in _venues) {
-      items.add(prop);
+      // items.add(prop);
     }
     return items;
   }
