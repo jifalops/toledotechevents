@@ -19,7 +19,7 @@ final _venuesResource = NetworkResource(
   maxAge: Duration(minutes: 60),
 );
 
-Future<List<Event>> getEvents() async {
+Future<List<Event>> loadEvents() async {
   final events = List<Event>();
   final data = await _eventsResource.get();
   if (data != null) {
@@ -31,7 +31,7 @@ Future<List<Event>> getEvents() async {
   return events;
 }
 
-Future<List<Venue>> getVenues() async {
+Future<List<Venue>> loadVenues() async {
   final venues = List<Venue>();
   final data = await _venuesResource.get();
   if (data != null) {

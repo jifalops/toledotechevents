@@ -34,32 +34,22 @@ ThemeData _buildTheme() {
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(),
     ),
-    // textTheme: _buildTextTheme(base.textTheme),
-    // primaryTextTheme: _buildTextTheme(base.primaryTextTheme),
-    // accentTextTheme: _buildTextTheme(base.accentTextTheme),
+    textTheme: _buildTextTheme(base.textTheme),
+    primaryTextTheme: _buildTextTheme(base.primaryTextTheme),
+    accentTextTheme: _buildTextTheme(base.accentTextTheme),
   );
 }
 
 TextTheme _buildTextTheme(TextTheme base) {
   return base
       .copyWith(
-        headline: base.headline.copyWith(
-          fontWeight: FontWeight.w500,
+        title: base.title.copyWith(
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Ubuntu'
         ),
-        title: base.title.copyWith(fontSize: 18.0),
-        caption: base.caption.copyWith(
-          fontWeight: FontWeight.w400,
-          fontSize: 14.0,
+        body1: base.body1.copyWith(
+          fontFamily: 'Open Sans'
         ),
-        body2: base.body2.copyWith(
-          fontWeight: FontWeight.w500,
-          fontSize: 16.0,
-        ),
-      )
-      .apply(
-        fontFamily: 'Open Sans',
-        displayColor: kTextColorOnPrimary,
-        bodyColor: kPrimaryColorDark,
       );
 }
 
@@ -101,12 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _MyHomePageState() {}
 
-  Future<List<Event>> getData() async {
-    var venues = await getVenues();
-    var events = await getEvents();
+  Future<List<Event>> loadData() async {
+    var venues = await loadVenues();
+    var events = await loadEvents();
     events.forEach((event) {
       event.setVenue(venues);
-      print(event);
+      // print(event);
     });
     return events;
   }
@@ -137,11 +127,12 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Row(
         children: <Widget>[
           Text('Toledo'),
+          SizedBox(width: 3.0),
           Text('Tech Events', style: TextStyle(color: kSecondaryColor)),
         ],
       )),
       body: new FutureBuilder<List<Event>>(
-        future: getData(),
+        future: loadData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return new ListView(
@@ -159,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         iconSize: 24.0,
+        onTap: _navItemTapped,
         items: [
           BottomNavigationBarItem(
             title: Text('Events'),
@@ -181,6 +173,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _navItemTapped(int index) {
+    print('Bottomnav $index');
+  }
+
   List<Widget> _buildEvents(BuildContext context, List<Event> events) {
     var items = List<Widget>();
     events.forEach(
@@ -191,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   children: <Widget>[
                     Text(event.toString()),
-                    HtmlView(data: event.content),
+                    HtmlView(data: event.contentHtml),
                   ],
                 ),
               ),

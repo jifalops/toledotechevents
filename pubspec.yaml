@@ -1,5 +1,5 @@
 name: toledotechevents
-description: A new Flutter project.
+description: ToledoTechEvents.org's companion app.
 
 dependencies:
   flutter:
@@ -31,6 +31,24 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  fonts:
+      - family: Ubuntu
+        fonts:
+          - asset: fonts/Ubuntu-Bold.ttf
+            weight: 700
+  #   - family: Open Sans
+  #     fonts:
+  #       - asset: fonts/OpenSans-Regular.ttf
+  #       - asset: fonts/OpenSans-Bold.ttf
+  #         weight: 700
+  #       - asset: fonts/OpenSans-Italic.ttf
+  #         style: italic
+  #       - asset: fonts/OpenSans-Light.ttf
+  #         weight: 300
+  #       - asset: fonts/OpenSans-SemiBold.ttf
+  #         weight: 500
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
