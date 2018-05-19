@@ -28,7 +28,7 @@ class NetworkResource {
 
   Future<bool> checkIfExpired() async {
     var file = await getCacheFile();
-    return file == null
+    return (file == null || !file.existsSync())
         ? true
         : DateTime.now().difference(file.lastModifiedSync()) > maxAge;
   }
