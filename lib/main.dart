@@ -132,10 +132,14 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return new Scaffold(
       appBar: new AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: new Text(widget.title),
-      ),
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Row(
+        children: <Widget>[
+          Text('Toledo'),
+          Text('Tech Events', style: TextStyle(color: kSecondaryColor)),
+        ],
+      )),
       body: new FutureBuilder<List<Event>>(
         future: getData(),
         builder: (context, snapshot) {
@@ -152,32 +156,23 @@ class _MyHomePageState extends State<MyHomePage> {
           return new CircularProgressIndicator();
         },
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         iconSize: 24.0,
         items: [
           BottomNavigationBarItem(
-            backgroundColor: kPrimaryColor,
             title: Text('Events'),
             icon: Icon(Icons.event),
           ),
           BottomNavigationBarItem(
-            backgroundColor: kPrimaryColor,
             title: Text('Add'),
             icon: Icon(Icons.add_circle_outline),
           ),
           BottomNavigationBarItem(
-            backgroundColor: kPrimaryColor,
             title: Text('Venues'),
             icon: Icon(Icons.business),
           ),
           BottomNavigationBarItem(
-            backgroundColor: kPrimaryColor,
             title: Text('About'),
             icon: Icon(Icons.help),
           ),
