@@ -1,7 +1,7 @@
 import 'package:xml/xml.dart';
+import 'package:html/parser.dart' show parseFragment;
+import 'package:html/dom.dart';
 import 'package:html_unescape/html_unescape.dart';
-
-import 'venue.dart';
 
 /**
  * A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
@@ -10,10 +10,10 @@ class Event {
   final String title, summary, url, contentHtml;
   final DateTime published, updated, startTime, endTime;
   final List<double> _coordinates;
-  String _venueTitle;
+  EventVenue _venue;
+  String _descriptionHtml;
   int _id;
   Duration _duration;
-  Venue _venue;
   List<String> _tags;
   List<Link> _links;
   Event(XmlElement e)
@@ -45,11 +45,12 @@ class Event {
     return _id;
   }
 
-  String get venueTitle {
-    if (_venueTitle == null) {
-      _venueTitle = summary.split(' at ').last;
+  EventVenue get venue {
+    if (_venue == null) {
+      _venue = EventVenue(
+          parseFragment(contentHtml)..querySelector('.location.vcard'));
     }
-    return _venueTitle;
+    return _venue;
   }
 
   Duration get duration {
@@ -81,48 +82,19 @@ class Event {
     return _links;
   }
 
+  String get descriptionHtml {
+    if (_descriptionHtml == null) {
+      _descriptionHtml =
+          parseFragment(contentHtml).querySelector('.description').innerHtml;
+    }
+    return _descriptionHtml;
+  }
+
   String get iCalendarUrl => url + '.ics';
+  String get editUrl => url + '/edit';
 
   double get latitude => _coordinates[0];
   double get longitude => _coordinates[1];
-
-  Venue get venue => _venue;
-
-  void setVenue(List<Venue> venues) {
-    var sameTitle = venues.where((v) => v.title == venueTitle).toList();
-    if (sameTitle.length > 0) {
-      sameTitle.sort((a, b) => b.eventCount - a.eventCount);
-      sameTitle.forEach((v) {
-        if (latitude != 0.0 &&
-            longitude != 0.0 &&
-            v.latitude == latitude &&
-            v.longitude == longitude) {
-          _venue = v;
-          return; // break loop
-        }
-      });
-      if (_venue == null) {
-        print(
-            'Warning ($id): no venues have the same coordinates as the event. Using the most popular venue with the same name.');
-        _venue = sameTitle.first;
-      }
-    } else {
-      print(
-          'Warning ($id): no venues have the same title as in the event summary. Searching for overlapping coordinates.');
-      venues.forEach((v) {
-        if (latitude != 0.0 &&
-            longitude != 0.0 &&
-            v.latitude == latitude &&
-            v.longitude == longitude) {
-          _venue = v;
-          return; // break loop
-        }
-      });
-    }
-    if (_venue == null) {
-      print('Warning ($id): no suitable venues could be found for this event!');
-    }
-  }
 
   @override
   String toString() {
@@ -130,17 +102,17 @@ class Event {
 Event $id:
 $title
 $summary
-$venueTitle
 $url
-$iCalendarUrl
+edit: $editUrl
+ical: $iCalendarUrl
 published: $published
 updated: $updated
 $startTime - $endTime ($duration)
 [$latitude, $longitude]
-<content len=${contentHtml.length}>
 tags: $tags
 links: $links
 $venue
+$descriptionHtml
 ''';
   }
 }
@@ -150,6 +122,47 @@ class Link {
   Link(this.url, this.text);
   @override
   String toString() => '$text => $url';
+}
+
+class EventVenue {
+  final String url, title, address;
+  int _id;
+
+  EventVenue(DocumentFragment v)
+      : url = v.querySelector('a.url').attributes['href'],
+        title = v.querySelector('.fn.org')?.text ?? 'Unknown Venue',
+        address = _getAddress(v.querySelector('div.adr'));
+
+  String get mapUrl => 'http://maps.google.com/maps?q=$address';
+
+  int get id {
+    if (_id == null) {
+      try {
+        _id = int.parse(url.split('/').last);
+      } catch (e) {
+        _id = 0;
+      }
+    }
+    return _id;
+  }
+
+  @override
+  String toString() => '''
+Event Venue $id:
+$title
+$address
+$url
+$mapUrl
+''';
+}
+
+String _getAddress(Element e) {
+  if (e == null) return '-';
+  var addr = e.querySelector('.street-address')?.text ?? '';
+  var city = e.querySelector('.locality')?.text ?? '';
+  var state = e.querySelector('.region')?.text ?? '';
+  var zip = e.querySelector('.postal-code')?.text ?? '';
+  return '$addr, $city, $state $zip';
 }
 
 List<double> _getCoordinates(coords) {

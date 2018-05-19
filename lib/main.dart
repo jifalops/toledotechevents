@@ -1,12 +1,28 @@
 import 'dart:async';
 
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 
 import 'colors.dart';
 import 'data.dart';
 import 'model/event.dart';
-import 'model/venue.dart';
+
+const kSubscribeGoogleCalenderUrl =
+    'http://www.google.com/calendar/render?cid=http%3A%2F%2Ftoledotechevents.org%2Fevents.ics';
+const kSubscribeICalendarUrl = 'webcal://toledotechevents.org/events.ics';
+const kFileIssueUrl = 'http://github.com/jmslagle/calagator/issues';
+const kForumUrl = 'http://groups.google.com/group/tol-calagator/';
+
+String pastEventsUrl() {
+  var now = DateTime.now();
+  var fmt = new DateFormat('yyyy-MM-dd');
+  return 'http://toledotechevents.org/events?utf8=%E2%9C%93&date%5Bstart%5D=' +
+      fmt.format(now.subtract(Duration(days: 30))) +
+      '&date%5Bend%5D=' +
+      fmt.format(now) +
+      '&time%5Bstart%5D=&time%5Bend%5D=&commit=Filter';
+}
 
 void main() => runApp(new MyApp());
 
@@ -41,16 +57,11 @@ ThemeData _buildTheme() {
 }
 
 TextTheme _buildTextTheme(TextTheme base) {
-  return base
-      .copyWith(
-        title: base.title.copyWith(
-          fontWeight: FontWeight.w700,
-          fontFamily: 'Ubuntu'
-        ),
-        body1: base.body1.copyWith(
-          fontFamily: 'Open Sans'
-        ),
-      );
+  return base.copyWith(
+    title:
+        base.title.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
+    body1: base.body1.copyWith(fontFamily: 'Open Sans'),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -84,34 +95,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  // List<Event> _events;
-  // List<Venue> _venues;
-
-  _MyHomePageState() {}
-
-  Future<List<Event>> loadData() async {
-    var venues = await loadVenues();
-    var events = await loadEvents();
-    events.forEach((event) {
-      event.setVenue(venues);
-      // print(event);
-    });
-    return events;
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -132,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       )),
       body: new FutureBuilder<List<Event>>(
-        future: loadData(),
+        future: loadEvents(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return new ListView(
