@@ -24,8 +24,8 @@ class Venue {
         longitude = double.parse(v['longitude'] ?? '0'),
         isClosed = v['closed'],
         hasWifi = v['wifi'],
-        created = DateTime.parse(v['created_at']),
-        updated = DateTime.parse(v['updated_at']);
+        created = DateTime.parse(v['created_at']).toLocal(),
+        updated = DateTime.parse(v['updated_at']).toLocal();
 
   String get iCalendarUrl => url + '.ics';
   String get subscribeUrl => iCalendarUrl.replaceAll('http://', 'webcal://');

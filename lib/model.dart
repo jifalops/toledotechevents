@@ -21,7 +21,7 @@ const kForumUrl = 'http://groups.google.com/group/tol-calagator/';
 /// Past events, starting from 30 days ago.
 String pastEventsUrl() {
   var now = DateTime.now();
-  var fmt = new DateFormat('yyyy-MM-dd');
+  var fmt = DateFormat('yyyy-MM-dd');
   return 'http://toledotechevents.org/events?utf8=%E2%9C%93&date%5Bstart%5D=' +
       fmt.format(now.subtract(Duration(days: 30))) +
       '&date%5Bend%5D=' +

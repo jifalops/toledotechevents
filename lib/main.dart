@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 import 'theme.dart';
 import 'model.dart';
@@ -71,6 +72,7 @@ class MyHomePage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return new ListView(
+              // padding: EdgeInsets.all(8.0),
               children: _buildEvents(context, snapshot.data),
             );
           } else if (snapshot.hasError) {
@@ -141,21 +143,155 @@ class MyHomePage extends StatelessWidget {
 
   List<Widget> _buildEvents(BuildContext context, List<Event> events) {
     var items = List<Widget>();
-    events.forEach(
-      (event) => items.add(
-            Card(
+    var now = DateTime.now();
+
+    var today = List<Event>();
+    var tomorrow = List<Event>();
+    var nextTwoWeeks = List<Event>();
+    var afterTwoWeeks = List<Event>();
+
+    events.forEach((e) {
+      if (_isToday(e, now)) today.add(e);
+      if (_isTomorrow(e, now)) tomorrow.add(e);
+      if (_isNextTwoWeeks(e, now)) nextTwoWeeks.add(e);
+      if (_isAfterTwoWeeks(e, now)) afterTwoWeeks.add(e);
+    });
+
+    if (today.length > 0) {
+      items.add(
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Today',
+            style: Theme.of(context).textTheme.subhead,
+          ),
+        ),
+      );
+      today.forEach((event) {
+        items.add(_makeListItem(event, context));
+      });
+    }
+
+    if (tomorrow.length > 0) {
+      items.add(Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text('Tomorrow', style: Theme.of(context).textTheme.subhead),
+      ));
+      tomorrow.forEach((event) {
+        items.add(_makeListItem(event, context));
+      });
+    }
+
+    if (nextTwoWeeks.length > 0) {
+      items.add(Padding(
+        padding: EdgeInsets.all(8.0),
+        child:
+            Text('Next two weeks', style: Theme.of(context).textTheme.subhead),
+      ));
+      nextTwoWeeks.forEach((event) {
+        items.add(_makeListItem(event, context));
+      });
+    }
+
+    if (afterTwoWeeks.length > 0) {
+      items.add(Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text('Later', style: Theme.of(context).textTheme.subhead),
+      ));
+      afterTwoWeeks.forEach((event) {
+        items.add(_makeListItem(event, context));
+      });
+    }
+
+    return items;
+  }
+
+  Widget _makeListItem(Event event, context) {
+    return Card(
+      // elevation: 0.0,
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: new Row(
+          children: <Widget>[
+            Container(
+              width: 90.0,
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: kPrimaryColorLight),
+                ),
+              ),
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Text(_formatDay(event.startTime)),
+                  Text(_formatDate(event.startTime)),
+                ],
+              ),
+            ),
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(4.0),
                 child: Column(
                   children: <Widget>[
-                    Text(event.toString()),
-                    HtmlView(data: event.contentHtml),
+                    Text(
+                      event.title,
+                      style: Theme.of(context).textTheme.body2,
+                      maxLines: 1,
+                      // softWrap: true,
+                      overflow: TextOverflow.fade,
+                    ),
+                    Text(
+                        '${_formatTime(event.startTime)} - ${_formatTime(event.endTime, true)}'),
+                    Text(
+                      event.venue.title,
+                      maxLines: 1,
+                      // softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
+          ],
+        ),
+      ),
     );
-    return items;
   }
+
+  String _formatDay(DateTime dt) => DateFormat('EEEE').format(dt);
+  String _formatDate(DateTime dt) => DateFormat('MMM d').format(dt);
+
+  String _formatTime(DateTime dt, [bool ampm = false]) =>
+      DateFormat('h:mm' + (ampm ? 'a' : '')).format(dt);
+
+  bool _isToday(Event e, DateTime now) {
+    var min = _beginningOfDay(now);
+    var max = _beginningOfDay(now.add(Duration(days: 1)));
+    return e.endTime.isAfter(min) && e.startTime.isBefore(max);
+  }
+
+  bool _isTomorrow(Event e, DateTime now) {
+    var min = _beginningOfDay(now.add(Duration(days: 1)));
+    var max = _beginningOfDay(now.add(Duration(days: 2)));
+    return e.endTime.isAfter(min) && e.startTime.isBefore(max);
+  }
+
+  bool _isNextTwoWeeks(Event e, DateTime now) {
+    var min = _beginningOfDay(now.add(Duration(days: 2)));
+    var max = _beginningOfDay(now.add(Duration(days: 15)));
+    return e.endTime.isAfter(min) && e.startTime.isBefore(max);
+  }
+
+  bool _isAfterTwoWeeks(Event e, DateTime now) {
+    var min = _beginningOfDay(now.add(Duration(days: 15)));
+    return e.endTime.isAfter(min);
+  }
+
+  DateTime _beginningOfDay(DateTime dt) => dt
+      .subtract(Duration(hours: dt.hour))
+      .subtract(Duration(minutes: dt.minute))
+      .subtract(Duration(seconds: dt.second))
+      .subtract(Duration(milliseconds: dt.millisecond));
 }

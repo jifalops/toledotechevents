@@ -19,7 +19,6 @@ const kDividerColor = Color(0xFFf1f1f1);
 final kErrorColor = Colors.deepOrange[900];
 final kErrorBackgroundColor = Colors.deepOrange[50];
 
-
 final ThemeData kTheme = _buildTheme();
 
 ThemeData _buildTheme() {
@@ -51,9 +50,16 @@ ThemeData _buildTheme() {
 }
 
 TextTheme _buildTextTheme(TextTheme base) {
-  return base.copyWith(
+  var theme = base
+      .copyWith(
+        body1: base.body1.copyWith(fontSize: 16.0),
+        body2: base.body2.copyWith(fontSize: 16.0, fontWeight: FontWeight.w600),
+        subhead:
+            base.subhead.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300),
+      )
+      .apply(fontFamily: 'Open Sans');
+  return theme.copyWith(
     title:
-        base.title.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
-    body1: base.body1.copyWith(fontFamily: 'Open Sans'),
+        theme.title.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
   );
 }

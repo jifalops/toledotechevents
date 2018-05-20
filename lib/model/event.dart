@@ -25,13 +25,17 @@ class Event {
         contentHtml = HtmlUnescape()
             .convert(e.findElements('content').first.firstChild.toString()),
         published = DateTime
-            .parse(e.findElements('published').first.firstChild.toString()),
+            .parse(e.findElements('published').first.firstChild.toString())
+            .toLocal(),
         updated = DateTime
-            .parse(e.findElements('updated').first.firstChild.toString()),
+            .parse(e.findElements('updated').first.firstChild.toString())
+            .toLocal(),
         startTime = DateTime
-            .parse(e.findElements('start_time').first.firstChild.toString()),
+            .parse(e.findElements('start_time').first.firstChild.toString())
+            .toLocal(),
         endTime = DateTime
-            .parse(e.findElements('end_time').first.firstChild.toString()),
+            .parse(e.findElements('end_time').first.firstChild.toString())
+            .toLocal(),
         _coordinates = _getCoordinates(e
             .toString()
             .split('<georss:point>')
@@ -138,7 +142,7 @@ class EventVenue {
 
   EventVenue(DocumentFragment v)
       : url = v.querySelector('a.url').attributes['href'],
-        title = v.querySelector('.fn.org')?.text ?? 'Unknown Venue',
+        title = v.querySelector('.fn.org')?.text ?? 'Venue TBD',
         address = _getAddress(v.querySelector('div.adr'));
 
   String get mapUrl => 'http://maps.google.com/maps?q=$address';
