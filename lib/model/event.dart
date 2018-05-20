@@ -7,9 +7,11 @@ import 'package:html_unescape/html_unescape.dart';
  * A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
  */
 class Event {
+  // Directly parsed values
   final String title, summary, url, contentHtml;
   final DateTime published, updated, startTime, endTime;
   final List<double> _coordinates;
+  // Derivative values.
   EventVenue _venue;
   String _descriptionHtml;
   int _id;
@@ -38,6 +40,7 @@ class Event {
             .first
             .split(' '));
 
+  /// The event id.
   int get id {
     if (_id == null) {
       _id = int.parse(url.split('/').last);
@@ -45,6 +48,7 @@ class Event {
     return _id;
   }
 
+  /// The venue, taken from the event content.
   EventVenue get venue {
     if (_venue == null) {
       _venue = EventVenue(
@@ -92,6 +96,7 @@ class Event {
 
   String get iCalendarUrl => url + '.ics';
   String get editUrl => url + '/edit';
+  String get cloneUrl => url + '/clone';
 
   double get latitude => _coordinates[0];
   double get longitude => _coordinates[1];
@@ -104,6 +109,7 @@ $title
 $summary
 $url
 edit: $editUrl
+clone: $cloneUrl
 ical: $iCalendarUrl
 published: $published
 updated: $updated
@@ -116,6 +122,8 @@ $descriptionHtml
 ''';
   }
 }
+
+getTagUrl(String tag) => 'http://toledotechevents.org/events/tag/$tag';
 
 class Link {
   final String url, text;

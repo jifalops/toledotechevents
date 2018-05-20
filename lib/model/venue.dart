@@ -28,7 +28,7 @@ class Venue {
         updated = DateTime.parse(v['updated_at']);
 
   String get iCalendarUrl => url + '.ics';
-  String get subscribeUrl => iCalendarUrl.replaceAll('http', 'webcal');
+  String get subscribeUrl => iCalendarUrl.replaceAll('http://', 'webcal://');
   String get editUrl => url + '/edit';
 
   @override

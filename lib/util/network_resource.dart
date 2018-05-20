@@ -28,20 +28,25 @@ class NetworkResource {
 
   Future<bool> checkIfExpired() async {
     var file = await getCacheFile();
-    return (file == null || !file.existsSync())
-        ? true
-        : DateTime.now().difference(file.lastModifiedSync()) > maxAge;
+    return (file.existsSync())
+        ? DateTime.now().difference(file.lastModifiedSync()) > maxAge
+        : true;
   }
 
   Future<String> forceFetch() async {
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      print('$url fetched.');
-      print('$url updating cache...');
+      print('$url Fetched.');
+      print('$url Updating cache...');
       await writeLocalFile(filename, response.body);
       return response.body;
     } else {
-      print('$url fetch failed! Response: $response');
+      print('$url Fetch failed (${response.statusCode}).');
+      var file = await getCacheFile();
+      if (file.existsSync()) {
+        print('$url Using a cached copy.');
+        return readLocalFile(filename);
+      }
       return null;
     }
   }
