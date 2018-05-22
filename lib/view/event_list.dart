@@ -1,20 +1,47 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../model.dart';
 import '../theme.dart';
+import 'event_details.dart';
 
 class EventList extends StatefulWidget {
   final List<Event> events;
   EventList(this.events);
   @override
-  State<EventList> createState() => EventListState(events);
+  State<EventList> createState() => _EventListState(events);
 }
 
-class EventListState extends State<EventList> {
+class _EventListState extends State<EventList> with TickerProviderStateMixin {
   final List<Event> events;
   Event _selectedEvent;
+  final _controllers = List<AnimationController>();
 
-  EventListState(this.events);
+  _EventListState(this.events);
+
+  @override
+  void initState() {
+    super.initState();
+    events.forEach((e) => _controllers.add(AnimationController(
+        duration: const Duration(milliseconds: 200), vsync: this)));
+  }
+
+  @override
+  void dispose() {
+    _controllers.forEach((c) => c.dispose());
+    super.dispose();
+  }
+
+  Future<Null> _playAnimation(int index, bool forward) async {
+    try {
+      if (forward)
+        await _controllers[index].forward().orCancel;
+      else
+        await _controllers[index].reverse().orCancel;
+    } on TickerCanceled {
+      // the animation got canceled, probably because we were disposed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +73,7 @@ class EventListState extends State<EventList> {
           ),
         );
         events.forEach((event) {
-          items.add(_buildEvent(event));
+          items.add(_buildEvent(event, context));
         });
       }
     }
@@ -59,71 +86,90 @@ class EventListState extends State<EventList> {
     return items;
   }
 
-  Widget _buildEvent(Event event) {
-    return Card(
-      elevation: event == _selectedEvent ? 8.0 : 0.0,
-      child: InkWell(
-        onTap: () => _cardTapped(event),
-        child: Padding(
-          padding: EdgeInsets.all(4.0),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 90.0,
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: kPrimaryColorLight),
+  Widget _buildEvent(Event event, BuildContext context) {
+    return new SizeTransition(
+      sizeFactor: Tween<double>(
+        begin: 1.0,
+        end: 2.0,
+      ).animate(
+        new CurvedAnimation(
+          parent: _controllers[events.indexOf(event)],
+          curve: new Interval(
+            0.0,
+            1.0,
+            curve: Curves.ease,
+          ),
+        ),
+      ),
+      child: Card(
+        key: Key('${event.id}'),
+        elevation: event == _selectedEvent ? 8.0 : 0.0,
+        child: InkWell(
+          onTap: () => _cardTapped(event, context),
+          child: Padding(
+            padding: EdgeInsets.all(4.0),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 90.0,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(color: kPrimaryColorLight),
+                    ),
                   ),
-                ),
-                child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  // crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Text(_formatDay(event.startTime)),
-                    Text(_formatDate(event.startTime)),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(4.0),
                   child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      Text(
-                        event.title,
-                        style: Theme.of(context).textTheme.body2,
-                        maxLines: 1,
-                        // softWrap: true,
-                        overflow: TextOverflow.fade,
-                      ),
-                      Text(
-                          '${_formatTime(event.startTime)} - ${_formatTime(event.endTime, true)}'),
-                      Text(
-                        event.venue.title,
-                        maxLines: 1,
-                        // softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      Text(_formatDay(event.startTime)),
+                      Text(_formatDate(event.startTime)),
                     ],
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          event.title,
+                          style: Theme.of(context).textTheme.body2,
+                          maxLines: 1,
+                          // softWrap: true,
+                          overflow: TextOverflow.fade,
+                        ),
+                        Text(
+                            '${_formatTime(event.startTime)} - ${_formatTime(event.endTime, true)}'),
+                        Text(
+                          event.venue.title,
+                          maxLines: 1,
+                          // softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _cardTapped(Event event) {
+  void _cardTapped(Event event, BuildContext context) {
     setState(() => _selectedEvent = _selectedEvent == event ? null : event);
+    // _playAnimation(events.indexOf(event), _selectedEvent == event);
+    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+      return new EventDetails(event);
+    }));
   }
 }
 
 String _formatDay(DateTime dt) => DateFormat('EEEE').format(dt);
 String _formatDate(DateTime dt) => DateFormat('MMM d').format(dt);
-
 String _formatTime(DateTime dt, [bool ampm = false]) =>
     DateFormat('h:mm' + (ampm ? 'a' : '')).format(dt);
 

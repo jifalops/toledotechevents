@@ -41,25 +41,32 @@ final _venuesResource = NetworkResource(
   maxAge: Duration(minutes: 60),
 );
 
+List<Event> _events;
+List<Venue> _venues;
+
 /// Fetch events from the server or local cache.
-Future<List<Event>> loadEvents() async {
-  final events = List<Event>();
-  final data = await _eventsResource.get();
-  if (data != null) {
-    xml
-        .parse(data)
-        .findAllElements('entry')
-        .forEach((entry) => events.add(Event(entry)));
+Future<List<Event>> getEvents({bool forceReload = false}) async {
+  if (_events == null || forceReload) {
+    _events = List<Event>();
+    final data = await _eventsResource.get(forceReload: forceReload);
+    if (data != null) {
+      xml
+          .parse(data)
+          .findAllElements('entry')
+          .forEach((entry) => _events.add(Event(entry)));
+    }
   }
-  return events;
+  return _events;
 }
 
 /// Fetch venues from the server or local cache.
-Future<List<Venue>> loadVenues() async {
-  final venues = List<Venue>();
-  final data = await _venuesResource.get();
-  if (data != null) {
-    json.decode(data).forEach((item) => venues.add(Venue(item)));
+Future<List<Venue>> getVenues({bool forceReload = false}) async {
+  if (_venues == null || forceReload) {
+    _venues = List<Venue>();
+    final data = await _venuesResource.get(forceReload: forceReload);
+    if (data != null) {
+      json.decode(data).forEach((item) => _venues.add(Venue(item)));
+    }
   }
-  return venues;
+  return _venues;
 }
