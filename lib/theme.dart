@@ -53,7 +53,8 @@ TextTheme _buildTextTheme(TextTheme base) {
   var theme = base
       .copyWith(
         body1: base.body1.copyWith(fontSize: 16.0),
-        body2: base.body2.copyWith(fontSize: 16.0, fontWeight: FontWeight.w600),
+        body2: base.body2.copyWith(
+            fontSize: 16.0, fontWeight: FontWeight.w600, color: kPrimaryColor),
         subhead:
             base.subhead.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300),
       )
@@ -61,5 +62,7 @@ TextTheme _buildTextTheme(TextTheme base) {
   return theme.copyWith(
     title:
         theme.title.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
+    headline: theme.headline
+        .copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
   );
 }

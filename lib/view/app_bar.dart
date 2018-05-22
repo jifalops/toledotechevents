@@ -23,6 +23,10 @@ AppBar getAppBar(BuildContext context) {
         itemBuilder: (context) {
           return [
             PopupMenuItem(
+              child: Text('See past events'),
+              value: {'context': context, 'url': pastEventsUrl()},
+            ),
+            PopupMenuItem(
               child: Text('Subscribe to Google Calendar'),
               value: {'context': context, 'url': kSubscribeGoogleCalenderUrl},
             ),

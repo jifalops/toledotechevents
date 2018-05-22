@@ -19,8 +19,8 @@ class Event {
   List<String> _tags;
   List<Link> _links;
   Event(XmlElement e)
-      : title = e.findElements('title').first.firstChild.toString(),
-        summary = e.findElements('summary').first.firstChild.toString(),
+      : title = HtmlUnescape().convert(e.findElements('title').first.firstChild.toString()),
+        summary = HtmlUnescape().convert(e.findElements('summary').first.firstChild.toString()),
         url = e.findElements('url').first.firstChild.toString(),
         contentHtml = HtmlUnescape()
             .convert(e.findElements('content').first.firstChild.toString()),

@@ -78,6 +78,15 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
       }
     }
 
+    items.add(
+      Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text("What's happening?",
+              style: Theme.of(context).textTheme.headline),
+        ),
+      ),
+    );
     addItems('Today', today);
     addItems('Tomorrow', tomorrow);
     addItems('Next two weeks', nextTwoWeeks);
@@ -87,72 +96,33 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
   }
 
   Widget _buildEvent(Event event, BuildContext context) {
-    return new SizeTransition(
-      sizeFactor: Tween<double>(
-        begin: 1.0,
-        end: 2.0,
-      ).animate(
-        new CurvedAnimation(
-          parent: _controllers[events.indexOf(event)],
-          curve: new Interval(
-            0.0,
-            1.0,
-            curve: Curves.ease,
-          ),
-        ),
-      ),
-      child: Card(
-        key: Key('${event.id}'),
-        elevation: event == _selectedEvent ? 8.0 : 0.0,
-        child: InkWell(
-          onTap: () => _cardTapped(event, context),
-          child: Padding(
-            padding: EdgeInsets.all(4.0),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  width: 90.0,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: kPrimaryColorLight),
-                    ),
-                  ),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Text(_formatDay(event.startTime)),
-                      Text(_formatDate(event.startTime)),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(4.0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          event.title,
-                          style: Theme.of(context).textTheme.body2,
-                          maxLines: 1,
-                          // softWrap: true,
-                          overflow: TextOverflow.fade,
-                        ),
-                        Text(
-                            '${_formatTime(event.startTime)} - ${_formatTime(event.endTime, true)}'),
-                        Text(
-                          event.venue.title,
-                          maxLines: 1,
-                          // softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+    return Card(
+      key: Key('${event.id}'),
+      // elevation: 0.0,
+      child: InkWell(
+        onTap: () => _cardTapped(event, context),
+        child: Padding(
+          padding: EdgeInsets.all(4.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                event.title,
+                style: Theme.of(context).textTheme.body2,
+                // maxLines: 1,
+                // softWrap: true,
+                // overflow: TextOverflow.fade,
+              ),
+              SizedBox(height: 4.0),
+              _formatDateTime(event),
+              SizedBox(height: 4.0),
+              Text(
+                event.venue.title,
+                maxLines: 1,
+                // softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
       ),
@@ -168,8 +138,22 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
   }
 }
 
+Widget _formatDateTime(Event event) {
+  final isOneDay = _isToday(event, event.startTime);
+  final startDate =
+      '${_formatDay(event.startTime)} ${_formatDate(event.startTime)}';
+  final endTime = _formatTime(event.endTime, true);
+
+  final line1 =
+      startDate + (isOneDay ? '' : ' at ${_formatTime(event.startTime, true)}');
+  final line2 = isOneDay
+      ? '${_formatTime(event.startTime)}–$endTime'
+      : '${_formatDate(event.endTime)} at $endTime';
+  return _wrapStrings([line1, line2]);
+}
+
 String _formatDay(DateTime dt) => DateFormat('EEEE').format(dt);
-String _formatDate(DateTime dt) => DateFormat('MMM d').format(dt);
+String _formatDate(DateTime dt) => DateFormat('MMMM d').format(dt);
 String _formatTime(DateTime dt, [bool ampm = false]) =>
     DateFormat('h:mm' + (ampm ? 'a' : '')).format(dt);
 
@@ -201,3 +185,12 @@ DateTime _beginningOfDay(DateTime dt) => dt
     .subtract(Duration(minutes: dt.minute))
     .subtract(Duration(seconds: dt.second))
     .subtract(Duration(milliseconds: dt.millisecond));
+
+Flex _wrapStrings(List<String> strings, [Axis direction = Axis.vertical]) {
+  final texts = List<Text>();
+  strings.forEach((s) => texts.add(Text(s)));
+  return Flex(
+    direction: direction,
+    children: texts,
+  );
+}
