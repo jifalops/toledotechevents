@@ -52,17 +52,26 @@ ThemeData _buildTheme() {
 TextTheme _buildTextTheme(TextTheme base) {
   var theme = base
       .copyWith(
-        body1: base.body1.copyWith(fontSize: 16.0),
+        body1: base.body1.copyWith(fontSize: 16.0, height: 1.15),
         body2: base.body2.copyWith(
-            fontSize: 16.0, fontWeight: FontWeight.w600, color: kPrimaryColor),
-        subhead:
-            base.subhead.copyWith(fontSize: 18.0, fontWeight: FontWeight.w300),
+            fontSize: 18.0,
+            // height: 1.25,
+            fontWeight: FontWeight.w600,
+            color: kPrimaryColor),
+        button: base.button.copyWith(fontSize: 16.0),
+        caption: base.caption.copyWith(fontSize: 16.0),
       )
       .apply(fontFamily: 'Open Sans');
   return theme.copyWith(
     title:
         theme.title.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
-    headline: theme.headline
-        .copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
+    headline: theme.headline.copyWith(
+        height: 2.5, fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
+    subhead: base.subhead.copyWith(
+        fontSize: 18.0,
+        height: 1.75,
+        fontWeight: FontWeight.w300,
+        // color: kSecondaryColor,
+        fontFamily: 'Ubuntu'),
   );
 }

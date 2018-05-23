@@ -8,19 +8,19 @@ BottomNavigationBar getBottomNav(BuildContext context, onTap) {
     onTap: onTap,
     items: [
       BottomNavigationBarItem(
-        title: Text('Events'),
+        title: Text('Events', style: Theme.of(context).textTheme.button),
         icon: Icon(Icons.event),
       ),
       BottomNavigationBarItem(
-        title: Text('New'),
+        title: Text('New', style: Theme.of(context).textTheme.button),
         icon: Icon(Icons.add_circle_outline),
       ),
       BottomNavigationBarItem(
-        title: Text('Venues'),
+        title: Text('Venues', style: Theme.of(context).textTheme.button),
         icon: Icon(Icons.business),
       ),
       BottomNavigationBarItem(
-        title: Text('About'),
+        title: Text('About', style: Theme.of(context).textTheme.button),
         icon: Icon(Icons.help),
       ),
     ],
