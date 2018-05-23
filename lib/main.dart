@@ -6,7 +6,6 @@ import 'theme.dart';
 import 'model.dart';
 import 'view/event_list.dart';
 import 'view/app_bar.dart';
-import 'view/bottom_nav.dart';
 
 void main() => runApp(new MyApp());
 
@@ -36,8 +35,30 @@ class MyHomePageState extends State<MyHomePage> {
     return new Scaffold(
       appBar: getAppBar(context),
       body: _getBody(),
-      bottomNavigationBar: getBottomNav(
-          context, (index) => setState(() => _selectedPage = index)),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedPage,
+        iconSize: 24.0,
+        onTap: (index) => setState(() => _selectedPage = index),
+        items: [
+          BottomNavigationBarItem(
+            title: Text('Events', style: Theme.of(context).textTheme.button),
+            icon: Icon(Icons.event),
+          ),
+          BottomNavigationBarItem(
+            title: Text('New', style: Theme.of(context).textTheme.button),
+            icon: Icon(Icons.add_circle_outline),
+          ),
+          BottomNavigationBarItem(
+            title: Text('Venues', style: Theme.of(context).textTheme.button),
+            icon: Icon(Icons.business),
+          ),
+          BottomNavigationBarItem(
+            title: Text('About', style: Theme.of(context).textTheme.button),
+            icon: Icon(Icons.help),
+          ),
+        ],
+      ),
     );
   }
 

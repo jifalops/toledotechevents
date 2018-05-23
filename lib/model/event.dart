@@ -93,7 +93,7 @@ class Event {
   String get descriptionHtml {
     if (_descriptionHtml == null) {
       _descriptionHtml =
-          parseFragment(contentHtml).querySelector('.description').innerHtml;
+          parseFragment(contentHtml).querySelector('.description')?.innerHtml ?? '';
     }
     return _descriptionHtml;
   }

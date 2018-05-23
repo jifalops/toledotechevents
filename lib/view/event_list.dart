@@ -68,7 +68,7 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
       if (events.length > 0) {
         items.add(
           Padding(
-            padding: EdgeInsets.only(left: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(name, style: Theme.of(context).textTheme.subhead),
           ),
         );
@@ -134,10 +134,10 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
 
   void _cardTapped(Event event, int index, BuildContext context) {
     setState(() => _selectedEvent = _selectedEvent == event ? null : event);
-    _playAnimation(index, _selectedEvent == event);
-    // Navigator.push(context, new MaterialPageRoute(builder: (_) {
-    //   return new EventDetails(event);
-    // }));
+    // _playAnimation(index, _selectedEvent == event);
+    Navigator.push(context, new MaterialPageRoute(builder: (_) {
+      return new EventDetails(event);
+    }));
   }
 }
 
@@ -207,4 +207,3 @@ DateTime _beginningOfDay(DateTime dt) => dt
     .subtract(Duration(minutes: dt.minute))
     .subtract(Duration(seconds: dt.second))
     .subtract(Duration(milliseconds: dt.millisecond));
-

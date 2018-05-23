@@ -30,6 +30,7 @@ class Venue {
   String get iCalendarUrl => url + '.ics';
   String get subscribeUrl => iCalendarUrl.replaceAll('http://', 'webcal://');
   String get editUrl => url + '/edit';
+  String get mapUrl => 'http://maps.google.com/maps?q=$address';
 
   @override
   String toString() {
