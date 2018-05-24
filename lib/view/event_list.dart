@@ -51,6 +51,7 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
   List<Widget> _buildEventList(BuildContext context) {
     var items = List<Widget>();
     var now = DateTime.now();
+    var twoWeeks = now.add(Duration(days: 15)); // 15 intended.
 
     var today = List<Event>();
     var tomorrow = List<Event>();
@@ -58,10 +59,11 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
     var afterTwoWeeks = List<Event>();
 
     events.forEach((e) {
-      if (_isToday(e, now)) today.add(e);
-      if (_isTomorrow(e, now)) tomorrow.add(e);
-      if (_isNextTwoWeeks(e, now)) nextTwoWeeks.add(e);
-      if (_isAfterTwoWeeks(e, now)) afterTwoWeeks.add(e);
+      if (e.occursOnDay(now)) today.add(e);
+      if (e.occursOnDay(now.add(Duration(days: 1)))) tomorrow.add(e);
+      if (e.occursOnDayInRange(now.add(Duration(days: 2)), twoWeeks))
+        nextTwoWeeks.add(e);
+      if (e.occursOnOrAfterDay(twoWeeks)) afterTwoWeeks.add(e);
     });
 
     void addItems(String name, List<Event> events) {
@@ -123,8 +125,8 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
                 // softWrap: false,
                 overflow: TextOverflow.ellipsis,
               ),
-              // SizedBox(height: 4.0),
-              _formatDateTime(event, context),
+              SizedBox(height: 4.0),
+              buildEventTimeRange(event, context),
             ],
           ),
         ),
@@ -141,69 +143,38 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
   }
 }
 
-Widget _formatDateTime(Event event, BuildContext context) {
-  final isOneDay = _isToday(event, event.startTime);
-  final startDate =
-      '${_formatDay(event.startTime)}, ${_formatDate(event.startTime)}';
-  final startTime = _formatTime(event.startTime, !isOneDay);
-  final endTime = _formatTime(event.endTime, true);
+Widget buildEventTimeRange(Event event, BuildContext context) {
+  final startDay = formatDay(event.startTime);
+  final startDate = formatDate(event.startTime);
+  final startTime = formatTime(event.startTime, ampm: !event.isOneDay);
+  final endTime = formatTime(event.endTime, ampm: true);
 
-  return isOneDay
+  return event.isOneDay
       ? Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(startDate),
+            Text('$startDay, $startDate'),
             Text('$startTime – $endTime',
-                style:
-                    Theme.of(context).textTheme.caption.copyWith(height: 1.15)),
+                style: Theme.of(context).textTheme.caption),
           ],
         )
       : Column(
           children: <Widget>[
-            Row(children: <Widget>[
-              Text('$startDate'),
-              Text('$startTime –'),
-            ]),
             Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('$startDay, $startDate'),
+                  Text('$startTime',
+                      style: Theme.of(context).textTheme.caption),
+                ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(_formatDate(event.endTime)),
-                Text('$endTime'),
+                Text(
+                    '${formatDay(event.endTime)}, ${formatDate(event.endTime)}'),
+                Text('$endTime', style: Theme.of(context).textTheme.caption),
               ],
             ),
           ],
         );
 }
-
-String _formatDay(DateTime dt) => DateFormat('EEEE').format(dt);
-String _formatDate(DateTime dt) => DateFormat('MMMM d').format(dt);
-String _formatTime(DateTime dt, [bool ampm = false]) =>
-    DateFormat('h:mm' + (ampm ? 'a' : '')).format(dt);
-
-bool _isToday(Event e, DateTime now) {
-  var min = _beginningOfDay(now);
-  var max = _beginningOfDay(now.add(Duration(days: 1)));
-  return e.endTime.isAfter(min) && e.startTime.isBefore(max);
-}
-
-bool _isTomorrow(Event e, DateTime now) {
-  var min = _beginningOfDay(now.add(Duration(days: 1)));
-  var max = _beginningOfDay(now.add(Duration(days: 2)));
-  return e.endTime.isAfter(min) && e.startTime.isBefore(max);
-}
-
-bool _isNextTwoWeeks(Event e, DateTime now) {
-  var min = _beginningOfDay(now.add(Duration(days: 2)));
-  var max = _beginningOfDay(now.add(Duration(days: 15)));
-  return e.endTime.isAfter(min) && e.startTime.isBefore(max);
-}
-
-bool _isAfterTwoWeeks(Event e, DateTime now) {
-  var min = _beginningOfDay(now.add(Duration(days: 15)));
-  return e.endTime.isAfter(min);
-}
-
-DateTime _beginningOfDay(DateTime dt) => dt
-    .subtract(Duration(hours: dt.hour))
-    .subtract(Duration(minutes: dt.minute))
-    .subtract(Duration(seconds: dt.second))
-    .subtract(Duration(milliseconds: dt.millisecond));

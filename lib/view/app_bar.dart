@@ -54,7 +54,7 @@ void _overflowItemSelected(item) async {
     launch(item['url']);
   } else {
     final msg = item['url'].endsWith('ics')
-        ? 'No apps available to handle iCal link.'
+        ? 'No iCal apps installed.'
         : 'Could not launch URL.';
     Scaffold.of(item['context']).showSnackBar(
           SnackBar(

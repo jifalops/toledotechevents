@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 import 'package:xml/xml.dart' as xml;
+import 'package:flutter/material.dart';
 
 import 'util/network_resource.dart';
 import 'model/event.dart';
@@ -32,7 +33,7 @@ String pastEventsUrl() {
 final _eventsResource = NetworkResource(
   url: 'http://toledotechevents.org/events.atom',
   filename: 'events.atom',
-  maxAge: Duration(minutes: 60),
+  maxAge: Duration(days: 60), // TODO go back to minutes
 );
 
 final _venuesResource = NetworkResource(
@@ -69,4 +70,8 @@ Future<List<Venue>> getVenues({bool forceReload = false}) async {
     }
   }
   return _venues;
+}
+
+class NullWidget extends Container {
+  NullWidget() : super(width: 0.0, height: 0.0);
 }

@@ -1,47 +1,17 @@
-
 import 'package:flutter/material.dart';
+import '../model.dart';
 
-class MainScreen extends StatelessWidget {
+class VenueDetails extends StatelessWidget {
+  final Venue venue;
+
+  VenueDetails(this.venue);
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Main Screen'),
-      ),
-      body: new GestureDetector(
-        child: new Hero(
-          tag: 'imageHero',
-          child: new Image.network(
-            'https://raw.githubusercontent.com/flutter/website/master/_includes/code/layout/lakes/images/lake.jpg',
-          ),
+        appBar: new AppBar(
+          title: new Text('Venue details'),
         ),
-        onTap: () {
-          Navigator.push(context, new MaterialPageRoute(builder: (_) {
-            return new DetailScreen();
-          }));
-        },
-      ),
-    );
-  }
-}
-
-class DetailScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new GestureDetector(
-        child: new Center(
-          child: new Hero(
-            tag: 'imageHero',
-            child: new Image.network(
-              'https://raw.githubusercontent.com/flutter/website/master/_includes/code/layout/lakes/images/lake.jpg',
-            ),
-          ),
-        ),
-        onTap: () {
-          Navigator.pop(context);
-        },
-      ),
-    );
+        body: Text(venue.toString()));
   }
 }

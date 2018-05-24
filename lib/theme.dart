@@ -15,6 +15,7 @@ const kTextColorOnSecondary = Color(0xFF000000);
 
 const kBackgroundColor = Color(0xFFfefefe);
 const kDividerColor = Color(0xFFf1f1f1);
+const kFlatButtonColor = Color(0xFFfcfcfc);
 
 final kErrorColor = Colors.deepOrange[900];
 final kErrorBackgroundColor = Colors.deepOrange[50];
@@ -39,7 +40,6 @@ ThemeData _buildTheme() {
     buttonTheme: ButtonThemeData(
       textTheme: ButtonTextTheme.accent,
     ),
-    // primaryIconTheme: base.iconTheme.copyWith(color: kShrineBrown900),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(),
     ),
@@ -58,7 +58,7 @@ TextTheme _buildTextTheme(TextTheme base) {
             // height: 1.25,
             fontWeight: FontWeight.w600,
             color: kPrimaryColor),
-        button: base.button.copyWith(fontSize: 16.0),
+        button: base.button.copyWith(fontSize: 14.0),
         caption: base.caption.copyWith(fontSize: 16.0),
       )
       .apply(fontFamily: 'Open Sans');
@@ -74,4 +74,28 @@ TextTheme _buildTextTheme(TextTheme base) {
         // color: kSecondaryColor,
         fontFamily: 'Ubuntu'),
   );
+}
+
+class PrimaryButton extends FlatButton {
+  PrimaryButton(BuildContext context, String text, onPressed,
+      {Color color = kPrimaryColorLight, textColor = kTextColorOnPrimary, padding})
+      : super(
+            color: color,
+            textColor: textColor,
+            child: Text(text,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .button
+                    .copyWith(color: textColor)),
+            onPressed: onPressed,
+            padding: padding);
+}
+
+class SecondaryButton extends PrimaryButton {
+  SecondaryButton(BuildContext context, String text, onPressed, [padding])
+      : super(context, text, onPressed,
+            color: kSecondaryColor,
+            textColor: kTextColorOnPrimary,
+            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0));
 }

@@ -1,11 +1,14 @@
-import 'package:xml/xml.dart';
-import 'package:html/parser.dart' show parseFragment;
+import 'dart:async';
+import 'dart:core';
+import 'package:xml/xml.dart' as xml;
+import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:html/dom.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:intl/intl.dart';
 
-/**
- * A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
- */
+import '../util/network_resource.dart';
+
+/// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
 class Event {
   // Directly parsed values
   final String title, summary, url, contentHtml;
@@ -13,14 +16,19 @@ class Event {
   final List<double> _coordinates;
   // Derivative values.
   EventVenue _venue;
-  String _descriptionHtml;
+  String _descriptionHtml, _rsvpUrl, _googleCalendarUrl;
   int _id;
   Duration _duration;
   List<String> _tags;
   List<Link> _links;
-  Event(XmlElement e)
-      : title = HtmlUnescape().convert(e.findElements('title').first.firstChild.toString()),
-        summary = HtmlUnescape().convert(e.findElements('summary').first.firstChild.toString()),
+  bool _isOneDay;
+  NetworkResource _detailsPage;
+  Document _detailsDoc;
+  Event(xml.XmlElement e)
+      : title = HtmlUnescape()
+            .convert(e.findElements('title').first.firstChild.toString()),
+        summary = HtmlUnescape()
+            .convert(e.findElements('summary').first.firstChild.toString()),
         url = e.findElements('url').first.firstChild.toString(),
         contentHtml = HtmlUnescape()
             .convert(e.findElements('content').first.firstChild.toString()),
@@ -90,20 +98,55 @@ class Event {
     return _links;
   }
 
-  String get descriptionHtml {
-    if (_descriptionHtml == null) {
-      _descriptionHtml =
-          parseFragment(contentHtml).querySelector('.description')?.innerHtml ?? '';
-    }
-    return _descriptionHtml;
-  }
+  String get descriptionHtml => _descriptionHtml ??= HtmlUnescape().convert(
+      parseFragment(contentHtml).querySelector('.description')?.innerHtml ??
+          '');
 
   String get iCalendarUrl => url + '.ics';
+  Future<String> get googleCalendarUrl async {
+    if (_googleCalendarUrl == null) {
+      var doc = await detailsDoc;
+      if (doc != null) {
+        try {
+          _googleCalendarUrl =
+              doc.getElementById('google_calendar_export').attributes['href'];
+        } catch (e) {
+          // Doesnt exist
+          _googleCalendarUrl = '';
+        }
+      }
+    }
+    return _googleCalendarUrl;
+  }
+
   String get editUrl => url + '/edit';
   String get cloneUrl => url + '/clone';
 
   double get latitude => _coordinates[0];
   double get longitude => _coordinates[1];
+
+  NetworkResource get detailsPage {
+    return _detailsPage ??= NetworkResource(
+        url: url, filename: 'event_$id.html', maxAge: Duration(hours: 24));
+  }
+
+  Future<Document> get detailsDoc async =>
+      _detailsDoc ??= parse(await detailsPage.get());
+
+  Future<String> get rsvpUrl async {
+    if (_rsvpUrl == null) {
+      var doc = await detailsDoc;
+      if (doc != null) {
+        try {
+          _rsvpUrl = doc.querySelector('.rsvp').attributes['href'];
+        } catch (e) {
+          // Event does not have an RSVP url.
+          _rsvpUrl = '';
+        }
+      }
+    }
+    return _rsvpUrl;
+  }
 
   @override
   String toString() {
@@ -125,9 +168,30 @@ $venue
 $descriptionHtml
 ''';
   }
-}
 
-getTagUrl(String tag) => 'http://toledotechevents.org/events/tag/$tag';
+  bool get isOneDay {
+    return _isOneDay ??= startOfDay(startTime) == startOfDay(endTime);
+  }
+
+  bool occursOnDay(DateTime day) {
+    var min = startOfDay(day);
+    var max = startOfDay(day.add(Duration(days: 1)));
+    return endTime.isAfter(min) && startTime.isBefore(max);
+  }
+
+  /// true if the event occurs on or after [startDay] but *before* [endDay]
+  bool occursOnDayInRange(DateTime startDay, DateTime endDay) {
+    return endTime.isAfter(startOfDay(startDay)) &&
+        startTime.isBefore(startOfDay(endDay));
+  }
+
+  bool occursOnOrAfterDay(DateTime day) {
+    return endTime.isAfter(startOfDay(day));
+  }
+
+  static String getTagUrl(String tag) =>
+      'http://toledotechevents.org/events/tag/${Uri.encodeComponent(tag)}';
+}
 
 class Link {
   final String url, text;
@@ -137,15 +201,18 @@ class Link {
 }
 
 class EventVenue {
-  final String url, title, address;
+  final String url, title;
+  final Element _addressElement;
   int _id;
+  String _address, _street, _city, _state, _zip;
 
   EventVenue(DocumentFragment v)
       : url = v.querySelector('a.url').attributes['href'],
         title = v.querySelector('.fn.org')?.text ?? 'Venue TBD',
-        address = _getAddress(v.querySelector('div.adr'));
+        _addressElement = v.querySelector('div.adr');
 
-  String get mapUrl => 'http://maps.google.com/maps?q=$address';
+  String get mapUrl =>
+      'http://maps.google.com/maps?q=${Uri.encodeComponent(address)}';
 
   int get id {
     if (_id == null) {
@@ -158,6 +225,12 @@ class EventVenue {
     return _id;
   }
 
+  String get street => _street ??= _parseAddress('.street-address');
+  String get city => _city ??= _parseAddress('.locality');
+  String get state => _state ??= _parseAddress('.region');
+  String get zip => _zip ??= _parseAddress('.postal-code');
+  String get address => '$street, $city, $state $zip';
+
   @override
   String toString() => '''
 Event Venue $id:
@@ -166,16 +239,25 @@ $address
 $url
 $mapUrl
 ''';
+
+  String _parseAddress(String selector) =>
+      _addressElement?.querySelector(selector)?.text ?? '';
 }
 
-String _getAddress(Element e) {
-  if (e == null) return '-';
-  var addr = e.querySelector('.street-address')?.text ?? '';
-  var city = e.querySelector('.locality')?.text ?? '';
-  var state = e.querySelector('.region')?.text ?? '';
-  var zip = e.querySelector('.postal-code')?.text ?? '';
-  return '$addr, $city, $state $zip';
-}
+String _format(DateTime date, String pattern) =>
+    DateFormat(pattern).format(date);
+
+String formatDay(DateTime date, {pattern = 'EEEE'}) => _format(date, pattern);
+String formatDate(DateTime date, {pattern = 'MMMM d'}) =>
+    _format(date, pattern);
+String formatTime(DateTime date, {ampm = false, pattern = 'h:mm'}) =>
+    _format(date, pattern + (ampm ? 'a' : ''));
+
+DateTime startOfDay(DateTime dt) => dt
+    .subtract(Duration(hours: dt.hour))
+    .subtract(Duration(minutes: dt.minute))
+    .subtract(Duration(seconds: dt.second))
+    .subtract(Duration(milliseconds: dt.millisecond));
 
 List<double> _getCoordinates(coords) {
   if (coords.length == 2) {
