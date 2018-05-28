@@ -245,13 +245,16 @@ $mapUrl
 }
 
 String _format(DateTime date, String pattern) =>
-    DateFormat(pattern).format(date);
+    date != null ? DateFormat(pattern).format(date) : '';
 
-String formatDay(DateTime date, {pattern = 'EEEE'}) => _format(date, pattern);
-String formatDate(DateTime date, {pattern = 'MMMM d'}) =>
+String formatDay(DateTime date, {pattern: 'EEEE'}) => _format(date, pattern);
+String formatDate(DateTime date, {pattern: 'MMMM d'}) =>
     _format(date, pattern);
-String formatTime(DateTime date, {ampm = false, pattern = 'h:mm'}) =>
+String formatTime(DateTime date, {ampm: false, pattern: 'h:mm'}) =>
     _format(date, pattern + (ampm ? 'a' : ''));
+
+String formatDateTime(DateTime date, {pattern: "MMMM d, yyyy 'at' h:mma"}) =>
+  _format(date, pattern);
 
 DateTime startOfDay(DateTime dt) => dt
     .subtract(Duration(hours: dt.hour))

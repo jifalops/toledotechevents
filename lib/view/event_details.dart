@@ -70,12 +70,10 @@ class EventDetails extends StatelessWidget {
                         Text('Add to calendar: '),
                         Row(
                           children: [
-                            PrimaryButton(
+                            SecondaryButton(
                               context,
                               'ICAL',
                               () => launch(event.iCalendarUrl),
-                              // color: kFlatButtonColor,
-                              // textColor: kTextColorOnSecondary,
                             ),
                             SizedBox(width: 8.0),
                             FutureBuilder<Widget>(
@@ -158,13 +156,7 @@ class EventDetails extends StatelessWidget {
     var url = await event.googleCalendarUrl ?? '';
     return url.isEmpty
         ? NullWidget()
-        : PrimaryButton(
-            context,
-            'GOOGLE',
-            () => launch(url),
-            // color: kFlatButtonColor,
-            // textColor: kTextColorOnSecondary,
-          );
+        : SecondaryButton(context, 'GOOGLE', () => launch(url));
   }
 
   Future<Widget> _buildRsvpWidget(BuildContext context) async {
@@ -174,22 +166,8 @@ class EventDetails extends StatelessWidget {
         : Padding(
             padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
             child: Center(
-              child: RaisedButton(
-                elevation: 8.0,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                  child: Text(
-                    'RSVP / REGISTER',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .button
-                        .copyWith(color: Colors.white, fontSize: 16.0),
-                  ),
-                ),
-                color: kSecondaryColorDark,
-                onPressed: () => launch(url),
-              ),
+              child:
+                  PrimaryButton(context, 'RSVP / REGISTER', () => launch(url)),
             ),
           );
   }
@@ -201,11 +179,11 @@ class EventDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(venue.title, style: Theme.of(context).textTheme.body2),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: EdgeInsets.fromLTRB(8.0, 8.0, 4.0, 4.0),
+            child: Row(
+              children: [
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -214,13 +192,13 @@ class EventDetails extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-              PrimaryButton(
-                context,
-                'MAP',
-                () => launch(venue.mapUrl),
-              ),
-            ],
+                SecondaryButton(
+                  context,
+                  'MAP',
+                  () => launch(venue.mapUrl),
+                ),
+              ],
+            ),
           ),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             (venue.hasWifi
@@ -232,15 +210,11 @@ class EventDetails extends StatelessWidget {
                   )
                 : NullWidget()),
             // SizedBox(width: 16.0),
-            PrimaryButton(
-              context,
+            TertiaryButton(
               'VENUE DETAILS',
               () => Navigator.push(context, new MaterialPageRoute(builder: (_) {
                     return VenueDetails(venue);
                   })),
-              color: kFlatButtonColor,
-              textColor: kTextColorOnSecondary,
-              padding: EdgeInsets.all(0.0),
             ),
           ])
         ],
@@ -270,7 +244,7 @@ class EventDetails extends StatelessWidget {
                   ),
                 ),
               ),
-              PrimaryButton(
+              SecondaryButton(
                 context,
                 'MAP',
                 () => launch(event.venue.mapUrl),

@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:flutter/material.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart' show parse;
 
 import 'util/network_resource.dart';
 import 'model/event.dart';
@@ -33,7 +35,7 @@ String pastEventsUrl() {
 final _eventsResource = NetworkResource(
   url: 'http://toledotechevents.org/events.atom',
   filename: 'events.atom',
-  maxAge: Duration(days: 60), // TODO go back to minutes
+  maxAge: Duration(minutes: 60),
 );
 
 final _venuesResource = NetworkResource(
@@ -42,8 +44,23 @@ final _venuesResource = NetworkResource(
   maxAge: Duration(minutes: 60),
 );
 
+final _aboutPageResource = NetworkResource(
+  url: 'http://toledotechevents.org/about.html',
+  filename: 'about.html',
+  maxAge: Duration(hours: 24),
+);
+
+final _newEventPageResource = NetworkResource(
+  url: 'http://toledotechevents.org/events/new.html',
+  filename: 'new_event.html',
+  maxAge: Duration(hours: 24),
+);
+
 List<Event> _events;
 List<Venue> _venues;
+String _aboutSectionHtml;
+String _newEventAuthToken;
+// String _newEventForm; // Just rendering the html for now
 
 /// Fetch events from the server or local cache.
 Future<List<Event>> getEvents({bool forceReload = false}) async {
@@ -71,6 +88,40 @@ Future<List<Venue>> getVenues({bool forceReload = false}) async {
   }
   return _venues;
 }
+
+Future<String> getAboutSectionHtml({bool forceReload = false}) async {
+  if (_aboutSectionHtml == null || forceReload) {
+    final page = await _aboutPageResource.get(forceReload: forceReload);
+    if (page != null) {
+      _aboutSectionHtml =
+          parse(page)?.querySelector('.about-us')?.outerHtml ?? '';
+    }
+  }
+  return _aboutSectionHtml;
+}
+
+Future<String> getNewEventAuthToken({bool forceReload = false}) async {
+  if (_newEventAuthToken == null || forceReload) {
+    final page = await _newEventPageResource.get(forceReload: forceReload);
+    if (page != null) {
+      final search = 'name="authenticity_token" value="';
+      final start = page.indexOf(search) + search.length;
+      _newEventAuthToken = page.substring(start, page.indexOf('"', start));
+    }
+  }
+  return _newEventAuthToken;
+}
+
+// Future<String> getNewEventForm({bool forceReload = false}) async {
+//   if (_newEventForm == null || forceReload) {
+//     final page = await _newEventPageResource.get(forceReload: forceReload);
+//     if (page != null) {
+//       print('new event page length=${page.length}');
+//       _newEventForm = parse(page)?.getElementById('new_event')?.outerHtml ?? '';
+//     }
+//   }
+//   return _newEventForm;
+// }
 
 class NullWidget extends Container {
   NullWidget() : super(width: 0.0, height: 0.0);

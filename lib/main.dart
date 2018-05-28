@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html_view/flutter_html_view.dart';
 
 import 'theme.dart';
 import 'model.dart';
 import 'view/event_list.dart';
+import 'view/venue_list.dart';
+import 'view/create_event.dart';
 import 'view/app_bar.dart';
 
 void main() => runApp(new MyApp());
@@ -66,13 +69,36 @@ class MyHomePageState extends State<MyHomePage> {
     switch (_selectedPage) {
       // Add new event
       case 1:
-        return Text('Add new event');
+        // return CreateEventForm();
+        return FutureBuilder<String>(
+          future: getNewEventAuthToken(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return CreateEventForm(snapshot.data);
+            } else if (snapshot.hasError) {
+              return new Text('${snapshot.error}');
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        );
       // Venues list
       case 2:
         return Text('Venue list');
       // About page
       case 3:
-        return Text('About');
+        return FutureBuilder<String>(
+          future: getAboutSectionHtml(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return SingleChildScrollView(
+                child: HtmlView(data: snapshot.data),
+              );
+            } else if (snapshot.hasError) {
+              return new Text('${snapshot.error}');
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        );
       // Event list
       case 0:
       default:
@@ -84,7 +110,6 @@ class MyHomePageState extends State<MyHomePage> {
             } else if (snapshot.hasError) {
               return new Text('${snapshot.error}');
             }
-            // By default, show a loading spinner
             return Center(child: CircularProgressIndicator());
           },
         );

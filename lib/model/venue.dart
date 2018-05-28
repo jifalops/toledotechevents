@@ -62,9 +62,11 @@ class Venue {
   $title
   events: $eventCount
   $description
-  Address parts:
-  $_addressComposed
-  ---
+  $address
+  $street
+  $city
+  $state
+  $zip
   $url
   $email
   $phone
@@ -127,14 +129,6 @@ class _Address {
     }
   }
   _composed(_street, _city, _state, _zip) => '$_street, $_city, $_state $_zip';
-  @override
-  toString() => '''
-$address
-$street
-$city
-$state
-$zip
-''';
 }
 
 /*

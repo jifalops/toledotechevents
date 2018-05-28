@@ -38,7 +38,9 @@ ThemeData _buildTheme() {
     primaryColorLight: kPrimaryColorLight,
     textSelectionHandleColor: kPrimaryColorDark,
     buttonTheme: ButtonThemeData(
-      textTheme: ButtonTextTheme.accent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(4.0))
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(),
@@ -76,26 +78,53 @@ TextTheme _buildTextTheme(TextTheme base) {
   );
 }
 
-class PrimaryButton extends FlatButton {
-  PrimaryButton(BuildContext context, String text, onPressed,
-      {Color color = kPrimaryColorLight, textColor = kTextColorOnPrimary, padding})
+class PrimaryButton extends RaisedButton {
+  PrimaryButton(BuildContext context, String text, onPressed)
       : super(
-            color: color,
-            textColor: textColor,
+          elevation: 8.0,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: Text(
+              text,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .button
+                  .copyWith(color: Colors.white, fontSize: 16.0),
+            ),
+          ),
+          color: kSecondaryColorDark,
+          onPressed: onPressed,
+        );
+}
+
+class SecondaryButton extends FlatButton {
+  SecondaryButton(BuildContext context, String text, onPressed)
+      : super(
+            color: kPrimaryColorLight,
             child: Text(text,
                 style: Theme
                     .of(context)
                     .textTheme
                     .button
-                    .copyWith(color: textColor)),
-            onPressed: onPressed,
-            padding: padding);
+                    .copyWith(color: kTextColorOnPrimary)),
+            onPressed: onPressed);
 }
 
-class SecondaryButton extends PrimaryButton {
-  SecondaryButton(BuildContext context, String text, onPressed, [padding])
-      : super(context, text, onPressed,
-            color: kSecondaryColor,
-            textColor: kTextColorOnPrimary,
-            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0));
+class TertiaryButton extends FlatButton {
+  TertiaryButton(String text, onPressed)
+      : super(
+            color: kFlatButtonColor,
+            textColor: kPrimaryColor,
+            child: Text(text),
+            onPressed: onPressed,
+            padding: EdgeInsets.all(2.0));
 }
+
+// class SecondaryButton extends PrimaryButton {
+//   SecondaryButton(BuildContext context, String text, onPressed, [padding])
+//       : super(context, text, onPressed,
+//             color: kSecondaryColor,
+//             textColor: kTextColorOnPrimary,
+//             padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0));
+// }
