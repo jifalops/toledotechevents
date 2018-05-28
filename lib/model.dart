@@ -18,7 +18,7 @@ export 'model/venue.dart';
 const kSubscribeGoogleCalenderUrl =
     'http://www.google.com/calendar/render?cid=http%3A%2F%2Ftoledotechevents.org%2Fevents.ics';
 const kSubscribeICalendarUrl = 'webcal://toledotechevents.org/events.ics';
-const kFileIssueUrl = 'http://github.com/jmslagle/calagator/issues';
+const kFileIssueUrl = 'http://github.com/jifalops/toledotechevents/issues';
 const kForumUrl = 'http://groups.google.com/group/tol-calagator/';
 
 /// Past events, starting from 30 days ago.

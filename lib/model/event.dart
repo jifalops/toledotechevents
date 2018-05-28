@@ -189,6 +189,9 @@ $descriptionHtml
     return endTime.isAfter(startOfDay(day));
   }
 
+  static Event findById(List<Event> events, int id) =>
+      id > 0 ? events.where((e) => e.id == id).first : null;
+
   static String getTagUrl(String tag) =>
       'http://toledotechevents.org/events/tag/${Uri.encodeComponent(tag)}';
 }
@@ -207,7 +210,9 @@ class EventVenue {
   String _address, _street, _city, _state, _zip;
 
   EventVenue(DocumentFragment v)
-      : url = v.querySelector('a.url').attributes['href'],
+      : url = (v.querySelector('a.url')?.attributes?.containsKey('href') ?? false)
+        ? v.querySelector('a.url').attributes['href']
+        : '',
         title = v.querySelector('.fn.org')?.text ?? 'Venue TBD',
         _addressElement = v.querySelector('div.adr');
 
@@ -252,9 +257,6 @@ String formatDate(DateTime date, {pattern: 'MMMM d'}) =>
     _format(date, pattern);
 String formatTime(DateTime date, {ampm: false, pattern: 'h:mm'}) =>
     _format(date, pattern + (ampm ? 'a' : ''));
-
-String formatDateTime(DateTime date, {pattern: "MMMM d, yyyy 'at' h:mma"}) =>
-  _format(date, pattern);
 
 DateTime startOfDay(DateTime dt) => dt
     .subtract(Duration(hours: dt.hour))

@@ -39,8 +39,7 @@ ThemeData _buildTheme() {
     textSelectionHandleColor: kPrimaryColorDark,
     buttonTheme: ButtonThemeData(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(4.0))
-      ),
+          borderRadius: BorderRadius.all(Radius.circular(4.0))),
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(),
@@ -79,7 +78,8 @@ TextTheme _buildTextTheme(TextTheme base) {
 }
 
 class PrimaryButton extends RaisedButton {
-  PrimaryButton(BuildContext context, String text, onPressed)
+  PrimaryButton(BuildContext context, String text, onPressed,
+      {color: kSecondaryColorDark})
       : super(
           elevation: 8.0,
           child: Padding(
@@ -93,7 +93,7 @@ class PrimaryButton extends RaisedButton {
                   .copyWith(color: Colors.white, fontSize: 16.0),
             ),
           ),
-          color: kSecondaryColorDark,
+          color: color,
           onPressed: onPressed,
         );
 }
@@ -120,11 +120,3 @@ class TertiaryButton extends FlatButton {
             onPressed: onPressed,
             padding: EdgeInsets.all(2.0));
 }
-
-// class SecondaryButton extends PrimaryButton {
-//   SecondaryButton(BuildContext context, String text, onPressed, [padding])
-//       : super(context, text, onPressed,
-//             color: kSecondaryColor,
-//             textColor: kTextColorOnPrimary,
-//             padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0));
-// }

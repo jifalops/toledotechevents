@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import '../model.dart';
-
-String _authToken;
+import '../theme.dart';
+import '../util/datetime_picker_textfield.dart';
+import 'event_details.dart';
 
 class CreateEventForm extends StatefulWidget {
-  CreateEventForm(String authToken) {
-    _authToken = authToken;
-  }
+  final String authToken;
+  CreateEventForm(this.authToken);
 
   @override
   _CreateEventFormState createState() {
@@ -16,36 +18,33 @@ class CreateEventForm extends StatefulWidget {
   }
 }
 
+class _FormData {
+  String name, venue, rsvpUrl, websiteUrl, description, venueDetails;
+  // Venue venue;
+  DateTime startTime, endTime;
+  List<String> tags;
+}
+
 class _CreateEventFormState extends State<CreateEventForm> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final nameController = TextEditingController();
   final venueController = TextEditingController();
-  final startTimeController = TextEditingController();
-  final endTimeController = TextEditingController();
   final rsvpController = TextEditingController();
   final websiteController = TextEditingController();
   final descriptionController = TextEditingController();
   final venueDetailsController = TextEditingController();
   final tagsController = TextEditingController();
 
-  final startTimeFocus = FocusNode();
-  final endTimeFocus = FocusNode();
+  final data = _FormData();
 
   bool showVenueSuggestions = false;
-
-  @override
-  void initState() {
-    super.initState();
-    startTimeFocus.addListener(startTimeChanged);
-    endTimeFocus.addListener(endTimeChanged);
-    startTimeController.addListener(startTimeChanged);
-    endTimeController.addListener(endTimeChanged);
-  }
+  bool autovalidate = false;
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
+      autovalidate: autovalidate,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: ListView(
@@ -57,55 +56,34 @@ class _CreateEventFormState extends State<CreateEventForm> {
               // autofocus: true,
               decoration: InputDecoration(labelText: 'Event name'),
               validator: (value) {
-                if (value.isEmpty) {
+                if (value.trim().length < 3) {
                   return 'The event name is required.';
                 }
               },
+              // maxLines: null,
+              onSaved: (value) => data.name = value.trim(),
             ),
             SizedBox(height: 8.0),
             TextFormField(
-                controller: venueController,
-                decoration: InputDecoration(labelText: 'Venue'),
-                onFieldSubmitted: (text) {
-                  showVenueSuggestions = false;
-                }),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: startTimeController,
-              decoration: InputDecoration(
-                labelText: 'Start time',
-                suffixIcon:
-                    // startTimeController.text.isEmpty
-                    //     ? NullWidget()
-                    //     :
-                    IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    startTimeFocus.unfocus();
-                    startTimeController.clear();
-                  },
-                ),
-              ),
-              focusNode: startTimeFocus,
+              controller: venueController,
+              decoration: InputDecoration(labelText: 'Venue'),
+              onFieldSubmitted: (text) {
+                showVenueSuggestions = false;
+              },
+              // maxLines: null,
+              onSaved: (value) => data.venue = value.trim(),
             ),
             SizedBox(height: 8.0),
-            TextFormField(
-              controller: endTimeController,
-              decoration: InputDecoration(
-                labelText: 'End time',
-                suffixIcon:
-                    // endTimeController.text.isEmpty
-                    //     ? NullWidget()
-                    //     :
-                    IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    endTimeFocus.unfocus();
-                    endTimeController.clear();
-                  },
-                ),
-              ),
-              focusNode: endTimeFocus,
+            DateTimePickerTextFormField(
+              labelText: 'Start time',
+              errorText: 'Invalid start time.',
+              onSaved: (value) => data.startTime = value,
+            ),
+            SizedBox(height: 8.0),
+            DateTimePickerTextFormField(
+              labelText: 'End time',
+              errorText: 'Invalid end time.',
+              onSaved: (value) => data.endTime = value,
             ),
             SizedBox(height: 8.0),
             TextFormField(
@@ -118,7 +96,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   return 'Invalid URL';
                 }
               },
-              autovalidate: true,
+              onSaved: (value) => data.rsvpUrl = value,
             ),
             SizedBox(height: 8.0),
             TextFormField(
@@ -131,30 +109,109 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   return 'Invalid URL';
                 }
               },
-              autovalidate: true,
+              onSaved: (value) => data.websiteUrl = value,
             ),
             SizedBox(height: 8.0),
             TextFormField(
               controller: descriptionController,
               decoration: InputDecoration(
-                  labelText: 'Description',
-                  helperText: 'Markdown and some HTML supported.'),
+                labelText: 'Description',
+                helperText: 'Markdown and some HTML supported.',
+              ),
+              onSaved: (value) => data.description = value.trim(),
+              maxLines: null,
             ),
             SizedBox(height: 8.0),
             TextFormField(
               controller: venueDetailsController,
               decoration: InputDecoration(
-                  labelText: 'Venue Details',
-                  helperText:
-                      'Event-specific details like the room number.'),
+                labelText: 'Venue Details',
+                helperText: 'Event-specific details like the room number.',
+              ),
+              onSaved: (value) => data.venueDetails = value.trim(),
+              maxLines: null,
             ),
             SizedBox(height: 8.0),
             TextFormField(
-              controller: tagsController,
-              decoration: InputDecoration(
+                controller: tagsController,
+                decoration: InputDecoration(
                   labelText: 'Tags',
-                  helperText:
-                      'Comma-separated keywords.'),
+                  helperText: 'Comma-separated keywords.',
+                ),
+                onSaved: (value) {
+                  data.tags = value.split(',');
+                  data.tags.forEach((tag) => tag = tag.trim());
+                }),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: PrimaryButton(
+                  context,
+                  'CREATE EVENT',
+                  () {
+                    var text;
+                    if (formKey.currentState.validate()) {
+                      formKey.currentState.save();
+                      if (nameController.text.length < 3) {
+                        text = 'Event name is required.';
+                      }
+                      if (!data.endTime.isAfter(data.startTime)) {
+                        text = 'Event must end after it starts.';
+                      }
+                    } else {
+                      setState(() => autovalidate = true);
+                      text = 'Fix fields outlined in red.';
+                    }
+                    if (text != null) {
+                      _showSnackBar(context, text);
+                    } else {
+                      print('posting event...');
+                      var url = "http://toledotechevents.org/events";
+                      http.post(url, body: {
+                        'utf8': '✓',
+                        'authenticity_token': widget.authToken,
+                        'event[title]': nameController.text,
+                        'venue_name': data.venue,
+                        'start_date':
+                            DateFormat('yyyy-MM-dd').format(data.startTime),
+                        'start_time':
+                            DateFormat('h:mm a').format(data.startTime),
+                        'end_date':
+                            DateFormat('yyyy-MM-dd').format(data.endTime),
+                        'end_time': DateFormat('h:mm a').format(data.endTime),
+                        'event[url]': data.websiteUrl,
+                        'event[rsvp_url]': data.rsvpUrl,
+                        'event[description]': data.description,
+                        'event[venue_details]': data.venueDetails,
+                        'event[tag_list]': data.tags.join(','),
+                      }).then((response) {
+                        print("Response status: ${response.statusCode}");
+                        print("Response body: ${response.body}");
+                        if (response.statusCode == 302) {
+                          var id = int.parse(response.body
+                              .split('.org/events/')
+                              .last
+                              .split('"')
+                              .first);
+                          _showSnackBar(context, 'Created event $id');
+                          getEvents(forceReload: true).then((events) {
+                            Event event = Event.findById(events, id);
+                            if (event != null) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return EventDetails(event);
+                              }));
+                            } else {
+                              print('Failed to get newly created event $id');
+                            }
+                          });
+                        }
+                      });
+                    }
+                  },
+                  color: kPrimaryColor,
+                ),
+              ),
             ),
           ],
         ),
@@ -162,45 +219,13 @@ class _CreateEventFormState extends State<CreateEventForm> {
     );
   }
 
-  void startTimeChanged() {
-    if (startTimeController.text.isEmpty && startTimeFocus.hasFocus) {
-      getDateTimeInput(context).then((date) {
-        startTimeFocus.unfocus();
-        startTimeController.text = formatDateTime(date);
-      });
-    }
-  }
-
-  void endTimeChanged() {
-    if (endTimeController.text.isEmpty && endTimeFocus.hasFocus) {
-      getDateTimeInput(context).then((date) {
-        endTimeFocus.unfocus();
-        endTimeController.text = formatDateTime(date);
-      });
-    }
-  }
-
-  Future<DateTime> getDateTimeInput(BuildContext context) async {
-    final now = DateTime.now();
-    var date = await showDatePicker(
-        context: context,
-        firstDate: now.subtract(Duration(days: 365)),
-        lastDate: now.add(Duration(days: 365 * 2)),
-        initialDate: now);
-    if (date != null) {
-      date = startOfDay(date);
-      print('date: $date');
-      final time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay(hour: 12, minute: 0),
-      );
-      print('selected time: $time');
-      if (time != null) {
-        date = date.add(Duration(hours: time.hour, minutes: time.minute));
-        print('date: $date');
-      }
-    }
-    return date;
+  _showSnackBar(BuildContext context, String text) {
+    Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(text),
+            duration: Duration(seconds: 3),
+          ),
+        );
   }
 
   Future<List<Prediction>> autoCompleteVenue(String search,
