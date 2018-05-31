@@ -142,7 +142,7 @@ class EventDetails extends StatelessWidget {
                       ? HtmlView(
                           data:
                               '<a href="${event.links.first.url}">More information</a>')
-                      : NullWidget
+                      : NullWidget()
                 ],
               ),
             ),

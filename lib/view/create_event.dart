@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../model.dart';
 import '../theme.dart';
-import '../util/datetime_picker_textfield.dart';
+import '../util/datetime_picker_formfield.dart';
 import 'event_details.dart';
 
 class CreateEventForm extends StatefulWidget {
@@ -18,27 +18,105 @@ class CreateEventForm extends StatefulWidget {
   }
 }
 
-class _FormData {
-  String name, venue, rsvpUrl, websiteUrl, description, venueDetails;
+class EventData {
+  String name, venue, rsvpUrl, websiteUrl, description, venueDetails, tags;
   // Venue venue;
   DateTime startTime, endTime;
-  List<String> tags;
+  @override
+  String toString() => '''
+$name
+$venue
+$rsvpUrl
+$websiteUrl
+$description
+$venueDetails
+$startTime
+$endTime
+$tags
+''';
 }
 
 class _CreateEventFormState extends State<CreateEventForm> {
+  final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final venueController = TextEditingController();
-  final rsvpController = TextEditingController();
-  final websiteController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final venueDetailsController = TextEditingController();
-  final tagsController = TextEditingController();
-
-  final data = _FormData();
+  final eventData = EventData();
+  final format = DateFormat("MMMM d, yyyy 'at' h:mma");
 
   bool showVenueSuggestions = false;
   bool autovalidate = false;
+
+  _showSnackBar(String text) {
+    scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(text),
+        duration: Duration(milliseconds: 2500),
+      ),
+    );
+  }
+
+  void _handleSubmitted() {
+    final FormState form = formKey.currentState;
+    if (!form.validate()) {
+      autovalidate = true; // Start validating on every change.
+      _showSnackBar('Please fix the errors in red before submitting.');
+    } else {
+      form.save();
+      print(eventData);
+
+      // var text;
+      // if (formKey.currentState.validate()) {
+      //   formKey.currentState.save();
+      //   if (eventData.name == null || eventData.name.length < 3) {
+      //     text = 'Event name is required.';
+      //   }
+      //   if (!(eventData.endTime?.isAfter(eventData.startTime) ?? false)) {
+      //     text = 'Event must end after it starts.';
+      //   }
+      // } else {
+      //   setState(() => autovalidate = true);
+      //   text = 'Fix fields outlined in red.';
+      // }
+      // if (text != null) {
+      //   _showSnackBar(text);
+      // } else {
+      //   print('posting event...');
+      //   var url = "http://toledotechevents.org/events";
+      //   http.post(url, body: {
+      //     'utf8': '✓',
+      //     'authenticity_token': widget.authToken,
+      //     'event[title]': eventData.name,
+      //     'venue_name': eventData.venue,
+      //     'start_date': DateFormat('yyyy-MM-dd').format(eventData.startTime),
+      //     'start_time': DateFormat('h:mm a').format(eventData.startTime),
+      //     'end_date': DateFormat('yyyy-MM-dd').format(eventData.endTime),
+      //     'end_time': DateFormat('h:mm a').format(eventData.endTime),
+      //     'event[url]': eventData.websiteUrl,
+      //     'event[rsvp_url]': eventData.rsvpUrl,
+      //     'event[description]': eventData.description,
+      //     'event[venue_details]': eventData.venueDetails,
+      //     'event[tag_list]': eventData.tags,
+      //   }).then((response) {
+      //     print("Response status: ${response.statusCode}");
+      //     print("Response body: ${response.body}");
+      //     if (response.statusCode == 302) {
+      //       var id = int.parse(
+      //           response.body.split('.org/events/').last.split('"').first);
+      //       _showSnackBar('Created event $id');
+      //       getEvents(forceReload: true).then((events) {
+      //         Event event = Event.findById(events, id);
+      //         if (event != null) {
+      //           Navigator.push(context, MaterialPageRoute(builder: (_) {
+      //             return EventDetails(event);
+      //           }));
+      //         } else {
+      //           print('Failed to get newly created event $id');
+      //         }
+      //       });
+      //     }
+      //   });
+      // }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +130,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
             Text('Add Event', style: Theme.of(context).textTheme.headline),
             SizedBox(height: 16.0),
             TextFormField(
-              controller: nameController,
+              // controller: nameController,
               // autofocus: true,
               decoration: InputDecoration(labelText: 'Event name'),
               validator: (value) {
@@ -61,33 +139,36 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 }
               },
               // maxLines: null,
-              onSaved: (value) => data.name = value.trim(),
+              onSaved: (value) => eventData.name = value.trim(),
             ),
             SizedBox(height: 8.0),
             TextFormField(
-              controller: venueController,
+              // controller: venueController,
               decoration: InputDecoration(labelText: 'Venue'),
               onFieldSubmitted: (text) {
                 showVenueSuggestions = false;
               },
               // maxLines: null,
-              onSaved: (value) => data.venue = value.trim(),
+              onSaved: (value) => eventData.venue = value.trim(),
             ),
             SizedBox(height: 8.0),
-            DateTimePickerTextFormField(
-              labelText: 'Start time',
-              errorText: 'Invalid start time.',
-              onSaved: (value) => data.startTime = value,
+            DateTimePickerFormField(
+              format: format,
+              decoration: InputDecoration(labelText: 'Start time'),
+              validator: (value) =>
+                  value == null ? 'Invalid start time.' : null,
+              onSaved: (value) => eventData.startTime = value,
             ),
             SizedBox(height: 8.0),
-            DateTimePickerTextFormField(
-              labelText: 'End time',
-              errorText: 'Invalid end time.',
-              onSaved: (value) => data.endTime = value,
+            DateTimePickerFormField(
+              format: format,
+              decoration: InputDecoration(labelText: 'End time'),
+              validator: (value) => value == null ? 'Invalid end time.' : null,
+              onSaved: (value) => eventData.endTime = value,
             ),
             SizedBox(height: 8.0),
             TextFormField(
-              controller: rsvpController,
+              // controller: rsvpController,
               decoration: InputDecoration(labelText: 'RSVP / Register URL'),
               validator: (value) {
                 try {
@@ -96,11 +177,11 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   return 'Invalid URL';
                 }
               },
-              onSaved: (value) => data.rsvpUrl = value,
+              onSaved: (value) => eventData.rsvpUrl = value,
             ),
             SizedBox(height: 8.0),
             TextFormField(
-              controller: websiteController,
+              // controller: websiteController,
               decoration: InputDecoration(labelText: 'Website / More Info URL'),
               validator: (value) {
                 try {
@@ -109,38 +190,37 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   return 'Invalid URL';
                 }
               },
-              onSaved: (value) => data.websiteUrl = value,
+              onSaved: (value) => eventData.websiteUrl = value,
             ),
             SizedBox(height: 8.0),
             TextFormField(
-              controller: descriptionController,
+              // controller: descriptionController,
               decoration: InputDecoration(
                 labelText: 'Description',
                 helperText: 'Markdown and some HTML supported.',
               ),
-              onSaved: (value) => data.description = value.trim(),
+              onSaved: (value) => eventData.description = value.trim(),
               maxLines: null,
             ),
             SizedBox(height: 8.0),
             TextFormField(
-              controller: venueDetailsController,
+              // controller: venueDetailsController,
               decoration: InputDecoration(
                 labelText: 'Venue Details',
                 helperText: 'Event-specific details like the room number.',
               ),
-              onSaved: (value) => data.venueDetails = value.trim(),
+              onSaved: (value) => eventData.venueDetails = value.trim(),
               maxLines: null,
             ),
             SizedBox(height: 8.0),
             TextFormField(
-                controller: tagsController,
+                // controller: tagsController,
                 decoration: InputDecoration(
                   labelText: 'Tags',
                   helperText: 'Comma-separated keywords.',
                 ),
                 onSaved: (value) {
-                  data.tags = value.split(',');
-                  data.tags.forEach((tag) => tag = tag.trim());
+                  eventData.tags = value;
                 }),
             Center(
               child: Padding(
@@ -148,67 +228,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 child: PrimaryButton(
                   context,
                   'CREATE EVENT',
-                  () {
-                    var text;
-                    if (formKey.currentState.validate()) {
-                      formKey.currentState.save();
-                      if (nameController.text.length < 3) {
-                        text = 'Event name is required.';
-                      }
-                      if (!data.endTime.isAfter(data.startTime)) {
-                        text = 'Event must end after it starts.';
-                      }
-                    } else {
-                      setState(() => autovalidate = true);
-                      text = 'Fix fields outlined in red.';
-                    }
-                    if (text != null) {
-                      _showSnackBar(context, text);
-                    } else {
-                      print('posting event...');
-                      var url = "http://toledotechevents.org/events";
-                      http.post(url, body: {
-                        'utf8': '✓',
-                        'authenticity_token': widget.authToken,
-                        'event[title]': nameController.text,
-                        'venue_name': data.venue,
-                        'start_date':
-                            DateFormat('yyyy-MM-dd').format(data.startTime),
-                        'start_time':
-                            DateFormat('h:mm a').format(data.startTime),
-                        'end_date':
-                            DateFormat('yyyy-MM-dd').format(data.endTime),
-                        'end_time': DateFormat('h:mm a').format(data.endTime),
-                        'event[url]': data.websiteUrl,
-                        'event[rsvp_url]': data.rsvpUrl,
-                        'event[description]': data.description,
-                        'event[venue_details]': data.venueDetails,
-                        'event[tag_list]': data.tags.join(','),
-                      }).then((response) {
-                        print("Response status: ${response.statusCode}");
-                        print("Response body: ${response.body}");
-                        if (response.statusCode == 302) {
-                          var id = int.parse(response.body
-                              .split('.org/events/')
-                              .last
-                              .split('"')
-                              .first);
-                          _showSnackBar(context, 'Created event $id');
-                          getEvents(forceReload: true).then((events) {
-                            Event event = Event.findById(events, id);
-                            if (event != null) {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) {
-                                return EventDetails(event);
-                              }));
-                            } else {
-                              print('Failed to get newly created event $id');
-                            }
-                          });
-                        }
-                      });
-                    }
-                  },
+                  _handleSubmitted,
                   color: kPrimaryColor,
                 ),
               ),
@@ -217,15 +237,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
         ),
       ),
     );
-  }
-
-  _showSnackBar(BuildContext context, String text) {
-    Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(text),
-            duration: Duration(seconds: 3),
-          ),
-        );
   }
 
   Future<List<Prediction>> autoCompleteVenue(String search,
