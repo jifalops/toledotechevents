@@ -41,6 +41,8 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final eventData = EventData();
   final format = DateFormat("MMMM d, yyyy 'at' h:mma");
+  final startTimeController = TextEditingController();
+  final endTimeController = TextEditingController();
 
   bool showVenueSuggestions = false;
   bool autovalidate = false;
@@ -153,6 +155,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
             ),
             SizedBox(height: 8.0),
             DateTimePickerFormField(
+              // controller: startTimeController,
               format: format,
               decoration: InputDecoration(labelText: 'Start time'),
               validator: (value) =>
@@ -161,6 +164,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
             ),
             SizedBox(height: 8.0),
             DateTimePickerFormField(
+              // controller: endTimeController,
               format: format,
               decoration: InputDecoration(labelText: 'End time'),
               validator: (value) => value == null ? 'Invalid end time.' : null,
