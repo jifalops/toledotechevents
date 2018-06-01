@@ -25,11 +25,15 @@ class DateTimePickerFormField extends FormField<DateTime> {
   final int maxLength;
   final List<dynamic> inputFormatters; //TextInputFormatter
   final enabled;
+  final onChanged;
   DateTimePickerFormField({
     Key key,
 
     /// For representing the date as a string e.g. `DateFormat("MMMM d, yyyy 'at' h:mma")`
     @required this.format,
+
+    /// Called whenever the state's value changes
+    this.onChanged,
 
     /// If not null, the TextField [decoration]'s suffixIcon will be
     /// overridden to reset the input using the icon defined here.
@@ -44,13 +48,13 @@ class DateTimePickerFormField extends FormField<DateTime> {
     /// The latest choosable date. Defaults to 2100.
     DateTime lastDate,
 
-    /// The value will be `null` if parsing the DateTime fails.
+    /// The value passed will be `null` if parsing the DateTime fails.
     this.validator,
 
-    /// The value will be `null` if parsing the DateTime fails.
+    /// The value passed will be `null` if parsing the DateTime fails.
     this.onSaved,
 
-    /// The value will be `null` if parsing the DateTime fails.
+    /// The value passed will be `null` if parsing the DateTime fails.
     this.onFieldSubmitted,
     bool autovalidate: false,
 
@@ -79,56 +83,11 @@ class DateTimePickerFormField extends FormField<DateTime> {
         super(
             key: key,
             autovalidate: autovalidate,
-            validator: (value) {
-              if (validator != null) {
-                return validator(_toDate(controller.text, format));
-              }
-            },
-            onSaved: (value) {
-              if (onSaved != null) {
-                return onSaved(_toDate(controller.text, format));
-              }
-            },
+            validator: validator,
+            onSaved: onSaved,
             builder: (FormFieldState<DateTime> field) {
               final _DateTimePickerTextFormFieldState state = field;
               print('building textfield. $focusNode');
-              // return TextField(
-              //     controller: controller,
-              //     focusNode: focusNode,
-              //     decoration: resetIcon == null
-              //         ? decoration
-              //         : decoration.copyWith(
-              //             suffixIcon: state.showResetIcon
-              //                 ? IconButton(
-              //                     icon: Icon(resetIcon),
-              //                     onPressed: () {
-              //                       focusNode.unfocus();
-              //                       state._previousValue = '';
-              //                       controller.clear();
-              //                     },
-              //                   )
-              //                 : Container(width: 0.0, height: 0.0),
-              //           ),
-              //     keyboardType: keyboardType,
-              //     style: style,
-              //     textAlign: textAlign,
-              //     autofocus: autofocus,
-              //     obscureText: obscureText,
-              //     autocorrect: autocorrect,
-              //     maxLengthEnforced: maxLengthEnforced,
-              //     maxLines: maxLines,
-              //     maxLength: maxLength,
-              //     inputFormatters: inputFormatters,
-              //     enabled: enabled,
-              //     onSubmitted: (value) {
-              //       if (onFieldSubmitted != null) {
-              //         try {
-              //           return onFieldSubmitted(format.parse(controller.text));
-              //         } catch (e) {
-              //           return onFieldSubmitted(null);
-              //         }
-              //       }
-              //     });
             });
 
   @override
@@ -142,6 +101,12 @@ class _DateTimePickerTextFormFieldState extends FormFieldState<DateTime> {
   String _previousValue = '';
 
   _DateTimePickerTextFormFieldState(this.parent);
+
+  @override
+  void setValue(DateTime value) {
+    super.setValue(value);
+    if (parent.onChanged != null) parent.onChanged(value);
+  }
 
   @override
   void initState() {
@@ -166,7 +131,10 @@ class _DateTimePickerTextFormFieldState extends FormFieldState<DateTime> {
         parent.focusNode.hasFocus) {
       getDateTimeInput(context).then((date) {
         parent.focusNode.unfocus();
-        setState(() => parent.controller.text = parent.format.format(date));
+        setState(() {
+          parent.controller.text = parent.format.format(date);
+          setValue(date);
+        });
       });
     } else if (parent.resetIcon != null &&
         parent.controller.text.isEmpty == showResetIcon) {
@@ -174,6 +142,9 @@ class _DateTimePickerTextFormFieldState extends FormFieldState<DateTime> {
       // parent.focusNode.unfocus();
     }
     _previousValue = parent.controller.text;
+    if (!parent.focusNode.hasFocus) {
+      setValue(_toDate(parent.controller.text, parent.format));
+    }
   }
 
   Future<DateTime> getDateTimeInput(BuildContext context) async {
@@ -197,57 +168,73 @@ class _DateTimePickerTextFormFieldState extends FormFieldState<DateTime> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-        controller: parent.controller,
-        focusNode: parent.focusNode,
-        decoration: parent.resetIcon == null
-            ? parent.decoration
-            : parent.decoration.copyWith(
-                suffixIcon: showResetIcon
-                    ? IconButton(
-                        icon: Icon(parent.resetIcon),
-                        onPressed: () {
-                          parent.focusNode.unfocus();
-                          _previousValue = '';
-                          parent.controller.clear();
-                        },
-                      )
-                    : Container(width: 0.0, height: 0.0),
-              ),
-        keyboardType: parent.keyboardType,
-        style: parent.style,
-        textAlign: parent.textAlign,
-        autofocus: parent.autofocus,
-        obscureText: parent.obscureText,
-        autocorrect: parent.autocorrect,
-        maxLengthEnforced: parent.maxLengthEnforced,
-        maxLines: parent.maxLines,
-        maxLength: parent.maxLength,
-        inputFormatters: parent.inputFormatters,
-        enabled: parent.enabled,
-        onSubmitted: (value) {
-          if (parent.onFieldSubmitted != null) {
-            return parent.onFieldSubmitted(
-                _toDate(parent.controller.text, parent.format));
-          }
-        });
+    return TextFormField(
+      controller: parent.controller,
+      focusNode: parent.focusNode,
+      decoration: parent.resetIcon == null
+          ? parent.decoration
+          : parent.decoration.copyWith(
+              suffixIcon: showResetIcon
+                  ? IconButton(
+                      icon: Icon(parent.resetIcon),
+                      onPressed: () {
+                        parent.focusNode.unfocus();
+                        _previousValue = '';
+                        parent.controller.clear();
+                      },
+                    )
+                  : Container(width: 0.0, height: 0.0),
+            ),
+      keyboardType: parent.keyboardType,
+      style: parent.style,
+      textAlign: parent.textAlign,
+      autofocus: parent.autofocus,
+      obscureText: parent.obscureText,
+      autocorrect: parent.autocorrect,
+      maxLengthEnforced: parent.maxLengthEnforced,
+      maxLines: parent.maxLines,
+      maxLength: parent.maxLength,
+      inputFormatters: parent.inputFormatters,
+      enabled: parent.enabled,
+      onFieldSubmitted: (value) {
+        if (parent.onFieldSubmitted != null) {
+          return parent.onFieldSubmitted(_toDate(value, parent.format));
+        }
+      },
+      validator: (value) {
+        if (parent.validator != null) {
+          return parent.validator(_toDate(value, parent.format));
+        }
+      },
+      onSaved: (value) {
+        if (parent.onSaved != null) {
+          return parent.onSaved(_toDate(value, parent.format));
+        }
+      },
+    );
   }
 }
 
 String _toString(DateTime date, DateFormat formatter) {
-  try {
-    return formatter.format(date);
-  } catch (e) {
-    return '';
+  if (date != null) {
+    try {
+      return formatter.format(date);
+    } catch (e) {
+      debugPrint('Error formatting date: $e');
+    }
   }
+  return '';
 }
 
 DateTime _toDate(String string, DateFormat formatter) {
-  try {
-    return formatter.parse(string);
-  } catch (e) {
-    return null;
+  if (string != null && string.isNotEmpty) {
+    try {
+      return formatter.parse(string);
+    } catch (e) {
+      debugPrint('Error parsing date: $e');
+    }
   }
+  return null;
 }
 
 DateTime _startOfDay(DateTime dt) => dt

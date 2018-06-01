@@ -13,7 +13,7 @@ class EventList extends StatefulWidget {
 }
 
 class _EventListState extends State<EventList> with TickerProviderStateMixin {
-  final List<Event> events;
+  List<Event> events;
   Event _selectedEvent;
   final _controllers = List<AnimationController>();
 
@@ -43,9 +43,16 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
     }
   }
 
+  Future<Null> refresh() async {
+    events = await getEvents(forceReload: true);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView(children: _buildEventList(context));
+    return RefreshIndicator(
+        onRefresh: refresh,
+        child: ListView(children: _buildEventList(context)));
   }
 
   List<Widget> _buildEventList(BuildContext context) {

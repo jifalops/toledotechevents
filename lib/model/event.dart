@@ -189,8 +189,13 @@ $descriptionHtml
     return endTime.isAfter(startOfDay(day));
   }
 
-  static Event findById(List<Event> events, int id) =>
-      id > 0 ? events.where((e) => e.id == id).first : null;
+  static Event findById(List<Event> events, int id) {
+    try {
+      return events.firstWhere((e) => e.id == id, orElse: null);
+    } catch (e) {
+      return null;
+    }
+  }
 
   static String getTagUrl(String tag) =>
       'http://toledotechevents.org/events/tag/${Uri.encodeComponent(tag)}';

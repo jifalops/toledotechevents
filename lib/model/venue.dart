@@ -81,8 +81,13 @@ class Venue {
 ''';
   }
 
-  static Venue findById(List<Venue> venues, int id) =>
-      id > 0 ? venues.where((v) => v.id == id).first : null;
+  static Venue findById(List<Venue> venues, int id) {
+    try {
+      return venues.firstWhere((v) => v.id == id, orElse: null);
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 class _Address {
