@@ -25,7 +25,7 @@ class DateTimePickerFormField extends FormField<DateTime> {
   final int maxLength;
   final List<dynamic> inputFormatters; //TextInputFormatter
   final enabled;
-  final onChanged;
+  final ValueChanged<DateTime> onChanged;
   DateTimePickerFormField({
     Key key,
 

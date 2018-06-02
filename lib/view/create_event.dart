@@ -7,7 +7,7 @@ import '../model.dart';
 import '../theme.dart';
 import '../util/datetime_picker_formfield.dart';
 import 'event_details.dart';
-import 'event_list.dart';
+import '../util/simple_autocomplete_textfield.dart';
 
 class CreateEventForm extends StatefulWidget {
   final String authToken;
@@ -43,24 +43,26 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final eventData = EventData();
   final format = DateFormat("MMMM d, yyyy 'at' h:mma");
   final venueController = TextEditingController();
-  final venuFocusNode = FocusNode();
+  // final venuFocusNode = FocusNode();
   final startTimeController = TextEditingController();
   final endTimeController = TextEditingController();
 
-  bool showVenueSuggestions = false;
+  // bool showVenueSuggestions = false;
   bool autovalidate = false;
 
-  _CreateEventFormState() {
-    venueController.addListener(() {
-      setState(
-          () => showVenueSuggestions = venueController.text.trim().isNotEmpty);
-    });
-    venuFocusNode.addListener(() {
-      if (!venuFocusNode.hasFocus) {
-        setState(() => showVenueSuggestions = false);
-      }
-    });
-  }
+  String venueHelperText;
+
+  // _CreateEventFormState() {
+  //   venueController.addListener(() {
+  //     setState(
+  //         () => showVenueSuggestions = venueController.text.trim().isNotEmpty);
+  //   });
+  //   venuFocusNode.addListener(() {
+  //     if (!venuFocusNode.hasFocus) {
+  //       setState(() => showVenueSuggestions = false);
+  //     }
+  //   });
+  // }
 
   _showSnackBar(BuildContext context, String text) {
     Scaffold.of(context).showSnackBar(
@@ -194,28 +196,107 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 onSaved: (value) => eventData.name = value.trim(),
               ),
               SizedBox(height: 8.0),
-              TextFormField(
+              SimpleAutocompleteTextField<Venue>(
                 controller: venueController,
-                focusNode: venuFocusNode,
-                decoration: InputDecoration(labelText: 'Venue'),
-                onSaved: (value) => eventData.venueTitle = value.trim(),
-              ),
-              showVenueSuggestions
-                  ? FutureBuilder(
-                      future: autoCompleteVenue(venueController.text),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: _predictionsView(snapshot.data),
-                          );
-                        } else if (snapshot.hasError) {
-                          return new Text('${snapshot.error}');
+                decoration: InputDecoration(
+                    labelText: 'Venue',
+                    helperText: venueHelperText),
+                onChanged: (value) {
+                  // print('venue changed');
+                  setState(() {
+                    venueHelperText = value?.address;
+                    eventData.venue = value;
+                  });
+                },
+                onSaved: (value) {
+                  eventData.venue = value;
+                  if (value == null)
+                    eventData.venueTitle = venueController.text;
+                  else
+                    eventData.venueTitle = value.title;
+                },
+                itemBuilder: (context, venue) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Text(venue.title,
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                        Text(venue.address),
+                        Text('${venue.eventCount}'),
+                      ],
+                    ),
+                itemParser: VenueParser(),
+                onSearch: (search) async {
+                  // debugPrint('Sorting...');
+                  search = search.toLowerCase().trim();
+                  final venues = await getVenues();
+                  final results = List<Venue>();
+                  results.addAll(venues);
+                  results.sort((a, b) {
+                    int mostPopular(Venue a, Venue b) {
+                      return b.eventCount - a.eventCount;
+                    }
+
+                    // if (search.length < 3) {
+                    //   return mostPopular(a, b);
+                    // }
+                    final aTitleStartsWith =
+                        a.title.toLowerCase().startsWith(search);
+                    final bTitleStartsWith =
+                        b.title.toLowerCase().startsWith(search);
+                    if (aTitleStartsWith && bTitleStartsWith)
+                      return mostPopular(a, b);
+                    else if (aTitleStartsWith)
+                      return -1;
+                    else if (bTitleStartsWith)
+                      return 1;
+                    else {
+                      final aTitleContains =
+                          a.title.toLowerCase().contains(search);
+                      final bTitleContains =
+                          b.title.toLowerCase().contains(search);
+                      if (aTitleContains && bTitleContains)
+                        return mostPopular(a, b);
+                      else if (aTitleContains)
+                        return -1;
+                      else if (bTitleContains)
+                        return 1;
+                      else {
+                        final aAddressContains =
+                            a.address.toLowerCase().contains(search);
+                        final bAddressContains =
+                            b.address.toLowerCase().contains(search);
+                        if (aAddressContains && bAddressContains)
+                          return mostPopular(a, b);
+                        else if (aAddressContains)
+                          return -1;
+                        else if (bAddressContains)
+                          return 1;
+                        else {
+                          return mostPopular(a, b);
                         }
-                        return Center(child: CircularProgressIndicator());
-                      },
-                    )
-                  : NullWidget(),
+                      }
+                    }
+                  });
+                  // results.take(3).forEach((venue) => debugPrint(venue.title));
+                  return results;
+                },
+              ),
+              // showVenueSuggestions
+              //     ? FutureBuilder(
+              //         future: autoCompleteVenue(venueController.text),
+              //         builder: (context, snapshot) {
+              //           if (snapshot.hasData) {
+              //             return Column(
+              //               crossAxisAlignment: CrossAxisAlignment.stretch,
+              //               children: _predictionsView(snapshot.data),
+              //             );
+              //           } else if (snapshot.hasError) {
+              //             return new Text('${snapshot.error}');
+              //           }
+              //           return Center(child: CircularProgressIndicator());
+              //         },
+              //       )
+              //     : NullWidget(),
               SizedBox(height: 8.0),
               DateTimePickerFormField(
                 controller: startTimeController,
@@ -324,7 +405,10 @@ class _CreateEventFormState extends State<CreateEventForm> {
 
   List<Widget> _predictionsView(List<Prediction> predictions) {
     final list = List<Widget>();
-    predictions?.forEach((Prediction p) => list.add(Text(p.venue.title)));
+    predictions?.forEach((Prediction p) {
+      list.add(Text(p.venue.title));
+      list.add(Text(p.venue.address));
+    });
     return list;
   }
 
@@ -356,12 +440,23 @@ class _CreateEventFormState extends State<CreateEventForm> {
   }
 }
 
-class Prediction implements Comparable {
+class Prediction implements Comparable<Prediction> {
   final Venue venue;
   int score = 0;
   Prediction(this.venue);
   @override
   int compareTo(other) {
+    if (score == other.score) {
+      return other.venue.eventCount.compareTo(venue.eventCount);
+    }
     return other.score.compareTo(score);
   }
+}
+
+class VenueParser extends ItemParser<Venue> {
+  @override
+  String asString(Venue item) => item?.title ?? '';
+
+  @override
+  Venue parse(String string) => null;
 }
