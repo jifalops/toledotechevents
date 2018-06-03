@@ -7,7 +7,7 @@ import '../model.dart';
 import '../theme.dart';
 import '../util/datetime_picker_formfield.dart';
 import 'event_details.dart';
-import '../util/simple_autocomplete_textfield.dart';
+import '../util/simple_autocomplete_formfield.dart';
 
 class CreateEventForm extends StatefulWidget {
   final String authToken;
@@ -195,7 +195,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 onSaved: (value) => eventData.name = value.trim(),
               ),
               SizedBox(height: 8.0),
-              SimpleAutocompleteTextField<Venue>(
+              SimpleAutocompleteFormField<Venue>(
                 suggestionsContainerHeight: 156.0,
                 maxSuggestions: 10,
                 controller: venueController,

@@ -13,7 +13,7 @@ class ItemParser<T> {
   ItemParser({@required this.itemFromString, @required this.itemToString});
 }
 
-class SimpleAutocompleteTextField<T> extends FormField<T> {
+class SimpleAutocompleteFormField<T> extends FormField<T> {
   final Key key;
   final int minSearchLength;
   final int maxSuggestions;
@@ -23,7 +23,7 @@ class SimpleAutocompleteTextField<T> extends FormField<T> {
   final ValueChanged<T> onChanged;
   final IconData resetIcon;
   final double suggestionsContainerHeight;
-  // TextFormField transient properties
+  // TextFormField properties
   final FormFieldValidator<T> validator;
   final FormFieldSetter<T> onSaved;
   final ValueChanged<T> onFieldSubmitted;
@@ -43,7 +43,7 @@ class SimpleAutocompleteTextField<T> extends FormField<T> {
   final List<dynamic> inputFormatters; //TextInputFormatter
   final enabled;
 
-  SimpleAutocompleteTextField(
+  SimpleAutocompleteFormField(
       {this.key,
       this.minSearchLength: 1,
       this.maxSuggestions: 3,
@@ -92,18 +92,18 @@ class SimpleAutocompleteTextField<T> extends FormField<T> {
             });
 
   @override
-  _SimpleAutocompleteTextFieldState<T> createState() =>
-      _SimpleAutocompleteTextFieldState<T>(this);
+  _SimpleAutocompleteFormFieldState<T> createState() =>
+      _SimpleAutocompleteFormFieldState<T>(this);
 }
 
-class _SimpleAutocompleteTextFieldState<T> extends FormFieldState<T> {
-  final SimpleAutocompleteTextField<T> parent;
+class _SimpleAutocompleteFormFieldState<T> extends FormFieldState<T> {
+  final SimpleAutocompleteFormField<T> parent;
   List<T> suggestions;
   bool showSuggestions = false;
   bool showResetIcon = false;
   T tappedSuggestion;
 
-  _SimpleAutocompleteTextFieldState(this.parent);
+  _SimpleAutocompleteFormFieldState(this.parent);
 
   @override
   void initState() {
