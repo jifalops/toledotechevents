@@ -88,6 +88,17 @@ class Venue {
       return null;
     }
   }
+  static Venue findByTitle(List<Venue> venues, String title) {
+    try {
+      final results = venues.where((v) => v.title == title).toList();
+      results.sort((a,b) {
+        return b.eventCount - a.eventCount;
+      });
+      return results.first;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 class _Address {

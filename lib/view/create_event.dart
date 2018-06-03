@@ -49,6 +49,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
 
   // bool showVenueSuggestions = false;
   bool autovalidate = false;
+  List<Venue> venues;
 
   String venueHelperText;
 
@@ -184,7 +185,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
               Text('Add Event', style: Theme.of(context).textTheme.headline),
               SizedBox(height: 16.0),
               TextFormField(
-                // controller: nameController,
                 // autofocus: true,
                 decoration: InputDecoration(labelText: 'Event name'),
                 validator: (value) {
@@ -192,15 +192,15 @@ class _CreateEventFormState extends State<CreateEventForm> {
                     return 'The event name is required.';
                   }
                 },
-                // maxLines: null,
                 onSaved: (value) => eventData.name = value.trim(),
               ),
               SizedBox(height: 8.0),
               SimpleAutocompleteTextField<Venue>(
+                suggestionsContainerHeight: 156.0,
+                maxSuggestions: 10,
                 controller: venueController,
                 decoration: InputDecoration(
-                    labelText: 'Venue',
-                    helperText: venueHelperText),
+                    labelText: 'Venue', helperText: venueHelperText),
                 onChanged: (value) {
                   // print('venue changed');
                   setState(() {
@@ -219,26 +219,31 @@ class _CreateEventFormState extends State<CreateEventForm> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         Text(venue.title,
-                            style: TextStyle(fontWeight: FontWeight.w500)),
-                        Text(venue.address),
-                        Text('${venue.eventCount}'),
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                        Text(
+                          venue.address,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        // Text('${venue.eventCount}'),
                       ],
                     ),
-                itemParser: VenueParser(),
+                itemParser: ItemParser<Venue>(
+                  itemToString: (item) => item?.title ?? '',
+                  itemFromString: (string) => Venue.findByTitle(venues, string),
+                ),
                 onSearch: (search) async {
                   // debugPrint('Sorting...');
                   search = search.toLowerCase().trim();
-                  final venues = await getVenues();
+                  venues ??= await getVenues();
                   final results = List<Venue>();
-                  results.addAll(venues);
+                  results.addAll(venues.where((v) =>
+                      v.title.toLowerCase().contains(search) ||
+                      v.address.toLowerCase().contains(search)));
                   results.sort((a, b) {
                     int mostPopular(Venue a, Venue b) {
                       return b.eventCount - a.eventCount;
                     }
 
-                    // if (search.length < 3) {
-                    //   return mostPopular(a, b);
-                    // }
                     final aTitleStartsWith =
                         a.title.toLowerCase().startsWith(search);
                     final bTitleStartsWith =
@@ -281,22 +286,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   return results;
                 },
               ),
-              // showVenueSuggestions
-              //     ? FutureBuilder(
-              //         future: autoCompleteVenue(venueController.text),
-              //         builder: (context, snapshot) {
-              //           if (snapshot.hasData) {
-              //             return Column(
-              //               crossAxisAlignment: CrossAxisAlignment.stretch,
-              //               children: _predictionsView(snapshot.data),
-              //             );
-              //           } else if (snapshot.hasError) {
-              //             return new Text('${snapshot.error}');
-              //           }
-              //           return Center(child: CircularProgressIndicator());
-              //         },
-              //       )
-              //     : NullWidget(),
               SizedBox(height: 8.0),
               DateTimePickerFormField(
                 controller: startTimeController,
@@ -330,7 +319,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                // controller: rsvpController,
                 decoration: InputDecoration(labelText: 'RSVP / Register URL'),
                 validator: (value) {
                   try {
@@ -343,7 +331,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                // controller: websiteController,
                 decoration:
                     InputDecoration(labelText: 'Website / More Info URL'),
                 validator: (value) {
@@ -357,7 +344,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                // controller: descriptionController,
                 decoration: InputDecoration(
                   labelText: 'Description',
                   helperText: 'Markdown and some HTML supported.',
@@ -367,7 +353,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                // controller: venueDetailsController,
                 decoration: InputDecoration(
                   labelText: 'Venue Details',
                   helperText: 'Event-specific details like the room number.',
@@ -377,7 +362,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                  // controller: tagsController,
                   decoration: InputDecoration(
                     labelText: 'Tags',
                     helperText: 'Comma-separated keywords.',
@@ -402,61 +386,4 @@ class _CreateEventFormState extends State<CreateEventForm> {
       ),
     );
   }
-
-  List<Widget> _predictionsView(List<Prediction> predictions) {
-    final list = List<Widget>();
-    predictions?.forEach((Prediction p) {
-      list.add(Text(p.venue.title));
-      list.add(Text(p.venue.address));
-    });
-    return list;
-  }
-
-  Future<List<Prediction>> autoCompleteVenue(String search,
-      [int maxSuggestions = 3]) async {
-    final predictions = List<Prediction>();
-    final venues = await getVenues();
-    Prediction p;
-    if (search.length >= 1) {
-      venues.forEach((venue) {
-        p = Prediction(venue);
-        if (venue.title == search)
-          p.score += 100;
-        else if (venue.title.startsWith(search))
-          p.score += 50;
-        else if (venue.title.contains(search)) p.score += 25;
-
-        if (venue.address == search)
-          p.score += 100;
-        else if (venue.address.startsWith(search))
-          p.score += 50;
-        else if (venue.address.contains(search)) p.score += 25;
-
-        predictions.add(p);
-      });
-    }
-    predictions.sort();
-    return predictions.take(maxSuggestions).toList();
-  }
-}
-
-class Prediction implements Comparable<Prediction> {
-  final Venue venue;
-  int score = 0;
-  Prediction(this.venue);
-  @override
-  int compareTo(other) {
-    if (score == other.score) {
-      return other.venue.eventCount.compareTo(venue.eventCount);
-    }
-    return other.score.compareTo(score);
-  }
-}
-
-class VenueParser extends ItemParser<Venue> {
-  @override
-  String asString(Venue item) => item?.title ?? '';
-
-  @override
-  Venue parse(String string) => null;
 }

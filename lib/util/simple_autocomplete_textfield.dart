@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 typedef Future<List<T>> Suggestions<T>(String search);
 typedef Widget ItemBuilder<T>(BuildContext context, T item);
 
-abstract class ItemParser<T> {
-  String asString(T item);
-  T parse(String string);
+typedef String ItemToString<T>(T item);
+typedef T ItemFromString<T>(String string);
+
+class ItemParser<T> {
+  final ItemToString itemToString;
+  final ItemFromString itemFromString;
+  ItemParser({@required this.itemFromString, @required this.itemToString});
 }
 
 class SimpleAutocompleteTextField<T> extends FormField<T> {
@@ -18,6 +22,7 @@ class SimpleAutocompleteTextField<T> extends FormField<T> {
   final Suggestions<T> onSearch;
   final ValueChanged<T> onChanged;
   final IconData resetIcon;
+  final double suggestionsContainerHeight;
   // TextFormField transient properties
   final FormFieldValidator<T> validator;
   final FormFieldSetter<T> onSaved;
@@ -46,6 +51,7 @@ class SimpleAutocompleteTextField<T> extends FormField<T> {
       @required this.onSearch,
       this.itemParser,
       this.onChanged,
+      this.suggestionsContainerHeight,
 
       /// If not null, the TextField [decoration]'s suffixIcon will be
       /// overridden to reset the input using the icon defined here.
@@ -95,26 +101,44 @@ class _SimpleAutocompleteTextFieldState<T> extends FormFieldState<T> {
   List<T> suggestions;
   bool showSuggestions = false;
   bool showResetIcon = false;
+  T tappedSuggestion;
 
-  _SimpleAutocompleteTextFieldState(this.parent) {
-    parent.controller.addListener(() {
-      // debugPrint('Setting state...');
+  _SimpleAutocompleteTextFieldState(this.parent);
+
+  @override
+  void initState() {
+    super.initState();
+    parent.focusNode.addListener(inputChanged);
+    parent.controller.addListener(inputChanged);
+  }
+
+  @override
+  void dispose() {
+    parent.controller.removeListener(inputChanged);
+    parent.focusNode.removeListener(inputChanged);
+    super.dispose();
+  }
+
+  void inputChanged() {
+    if (parent.focusNode.hasFocus) {
       setState(() {
         showSuggestions =
             parent.controller.text.trim().length >= parent.minSearchLength;
         if (parent.resetIcon != null &&
-            parent.controller.text.isEmpty == showResetIcon) {
+            parent.controller.text.trim().isEmpty == showResetIcon) {
           showResetIcon = !showResetIcon;
         }
       });
-    });
-    parent.focusNode.addListener(() {
-      if (!parent.focusNode.hasFocus) {
-        // debugPrint('Setting state...');
-        setState(() => showSuggestions = false);
-      }
-    });
+    } else {
+      setState(() => showSuggestions = false);
+      setValue(_value);
+    }
   }
+
+  T get _value => _toString<T>(tappedSuggestion, parent.itemParser) ==
+          parent.controller.text
+      ? tappedSuggestion
+      : _toObject<T>(parent.controller.text, parent.itemParser);
 
   @override
   void setValue(T value) {
@@ -154,18 +178,17 @@ class _SimpleAutocompleteTextFieldState<T> extends FormFieldState<T> {
         enabled: parent.enabled,
         onFieldSubmitted: (value) {
           if (parent.onFieldSubmitted != null) {
-            return parent
-                .onFieldSubmitted(_toObject<T>(value, parent.itemParser));
+            return parent.onFieldSubmitted(_value);
           }
         },
         validator: (value) {
           if (parent.validator != null) {
-            return parent.validator(_toObject<T>(value, parent.itemParser));
+            return parent.validator(_value);
           }
         },
         onSaved: (value) {
           if (parent.onSaved != null) {
-            return parent.onSaved(_toObject<T>(value, parent.itemParser));
+            return parent.onSaved(_value);
           }
         },
       ),
@@ -174,9 +197,14 @@ class _SimpleAutocompleteTextFieldState<T> extends FormFieldState<T> {
               future: _buildSuggestions(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: snapshot.data,
+                  return Container(
+                    height: parent.suggestionsContainerHeight,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: snapshot.data,
+                      ),
+                    ),
                   );
                 } else if (snapshot.hasError) {
                   return new Text('${snapshot.error}');
@@ -196,9 +224,10 @@ class _SimpleAutocompleteTextFieldState<T> extends FormFieldState<T> {
         ?.forEach((suggestion) => list.add(InkWell(
               child: parent.itemBuilder(context, suggestion),
               onTap: () {
-                parent.controller.text = _toString(suggestion, parent.itemParser);
+                tappedSuggestion = suggestion;
+                parent.controller.text =
+                    _toString<T>(suggestion, parent.itemParser);
                 parent.focusNode.unfocus();
-                setValue(suggestion);
               },
             )));
     return list;
@@ -206,7 +235,7 @@ class _SimpleAutocompleteTextFieldState<T> extends FormFieldState<T> {
 }
 
 String _toString<T>(T value, ItemParser parser) =>
-    parser?.asString(value) ?? value?.toString() ?? '';
+    parser?.itemToString(value) ?? value?.toString() ?? '';
 
 T _toObject<T>(String string, ItemParser parser) =>
-    parser?.parse(string) ?? null;
+    parser?.itemFromString(string) ?? null;

@@ -111,14 +111,12 @@ class _DateTimePickerTextFormFieldState extends FormFieldState<DateTime> {
   @override
   void initState() {
     super.initState();
-    print('Initializing datepicker state, ${parent.focusNode}');
     parent.focusNode.addListener(inputChanged);
     parent.controller.addListener(inputChanged);
   }
 
   @override
   void dispose() {
-    print('Disposing datepicker.');
     parent.controller.removeListener(inputChanged);
     parent.focusNode.removeListener(inputChanged);
     super.dispose();
