@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
-
+import 'package:flutter/scheduler.dart' show timeDilation;
 import 'theme.dart';
 import 'model.dart';
 import 'view/event_list.dart';
@@ -36,6 +36,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // timeDilation = 10.0;
     return new Scaffold(
       appBar: getAppBar(context),
       body: _getBody(),

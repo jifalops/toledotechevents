@@ -9,42 +9,45 @@ class Venue {
       _city,
       _state,
       _zip,
-      url,
+      homepage,
       email,
       phone,
-      notes;
+      accessNotes;
   final int id, eventCount, sourceId, duplicateOfId;
   final double latitude, longitude;
   final bool isClosed, hasWifi;
   final DateTime created, updated;
   _Address __addressComposed;
   Venue(Map v)
-      : title = v['title'],
-        description = v['description'],
-        _address = v['address'],
-        _street = v['street_address'],
-        _city = v['locality'],
-        _state = v['region'],
-        _zip = v['postal_code'],
-        url = v['url'],
-        email = v['email'],
-        phone = v['telephone'],
-        notes = v['access_notes'],
-        id = v['id'],
+      : title = v['title'] ?? '',
+        description = v['description'] ?? '',
+        _address = v['address'] ?? '',
+        _street = v['street_address'] ?? '',
+        _city = v['locality'] ?? '',
+        _state = v['region'] ?? '',
+        _zip = v['postal_code'] ?? '',
+        homepage = v['url'] ?? '',
+        email = v['email'] ?? '',
+        phone = v['telephone'] ?? '',
+        accessNotes = v['access_notes'] ?? '',
+        id = v['id'] ?? '',
         eventCount = v['events_count'] ?? 0,
         sourceId = v['source_id'] ?? 0,
         duplicateOfId = v['duplicate_of_id'] ?? 0,
         latitude = double.parse(v['latitude'] ?? '0'),
         longitude = double.parse(v['longitude'] ?? '0'),
-        isClosed = v['closed'],
-        hasWifi = v['wifi'],
-        created = DateTime.parse(v['created_at']).toLocal(),
-        updated = DateTime.parse(v['updated_at']).toLocal();
+        isClosed = v['closed'] ?? false,
+        hasWifi = v['wifi'] ?? false,
+        created = DateTime.parse(v['created_at'] ?? '').toLocal(),
+        updated = DateTime.parse(v['updated_at'] ?? '').toLocal();
 
+  String get url => 'http://toledotechevents.org/venues/$id';
   String get iCalendarUrl => url + '.ics';
   String get subscribeUrl => iCalendarUrl.replaceAll('http://', 'webcal://');
   String get editUrl => url + '/edit';
   String get mapUrl => 'http://maps.google.com/maps?q=$address';
+  String get phoneUrl => 'tel://$phone';
+  String get emailUrl => 'mailto:$email';
 
   _Address get _addressComposed => __addressComposed ??= _Address(
       title, _address, _street, _city, _state, _zip, latitude, longitude);
@@ -67,10 +70,11 @@ class Venue {
   $city
   $state
   $zip
+  $homepage
   $url
   $email
   $phone
-  $notes
+  $accessNotes
   $sourceId
   $duplicateOfId
   [$latitude, $longitude]
@@ -88,10 +92,11 @@ class Venue {
       return null;
     }
   }
+
   static Venue findByTitle(List<Venue> venues, String title) {
     try {
       final results = venues.where((v) => v.title == title).toList();
-      results.sort((a,b) {
+      results.sort((a, b) {
         return b.eventCount - a.eventCount;
       });
       return results.first;
@@ -105,15 +110,14 @@ class _Address {
   String address, street, city, state, zip;
   _Address(
       String title, String _address, _street, _city, _state, _zip, lat, lng) {
-    final bool hasLatLng =
-        lat != null && lat != 0.0 && lng != null && lng != 0.0;
-    if (_street != null && _street.isNotEmpty && _street != 'null') {
+    final bool hasLatLng = lat != 0.0 && lng != 0.0;
+    if (_street.isNotEmpty && _street != 'null') {
       street = _street;
       city = _city ?? '';
       state = _state ?? '';
       zip = _zip ?? '';
       address = _composed(street, city, state, zip);
-    } else if (_address != null && _address.isNotEmpty) {
+    } else if (_address.isNotEmpty) {
       address = _address;
       _address = _address.replaceAll(',', '');
       var words = _address.split(' ');
@@ -135,11 +139,8 @@ class _Address {
       } catch (e) {}
     } else {
       street = title;
-      city = (_city == null || _city.isEmpty)
-          ? (hasLatLng ? '$lat, $lng' : 'Toledo')
-          : _city;
-      state =
-          (_state == null || _state.isEmpty) ? (hasLatLng ? '' : 'OH') : _state;
+      city = _city.isEmpty ? (hasLatLng ? '$lat, $lng' : 'Toledo') : _city;
+      state = _state.isEmpty ? (hasLatLng ? '' : 'OH') : _state;
       zip = _zip ?? '';
       address = _composed(street, city, state, zip);
     }

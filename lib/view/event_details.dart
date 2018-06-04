@@ -58,17 +58,7 @@ class EventDetails extends StatelessWidget {
                               () => launch(event.iCalendarUrl),
                             ),
                             SizedBox(width: 8.0),
-                            FutureBuilder<Widget>(
-                              future: _buildGoogleCalendarWidget(context),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return snapshot.data;
-                                } else if (snapshot.hasError) {
-                                  return Text('${snapshot.error}');
-                                }
-                                return NullWidget();
-                              },
-                            ),
+                            SecondaryButton(context, 'GOOGLE', () => _launchGoogleCalendarUrl(),),
                           ],
                         ),
                       ],
@@ -133,10 +123,10 @@ class EventDetails extends StatelessWidget {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      leading: IconButton(
-        icon: Icon(Icons.close),
-        onPressed: () => Navigator.pop(context),
-      ),
+      // leading: IconButton(
+      //   icon: Icon(Icons.close),
+      //   onPressed: () => Navigator.pop(context),
+      // ),
       title: Text('Event details'),
       actions: <Widget>[
         // overflow menu
@@ -160,11 +150,9 @@ class EventDetails extends StatelessWidget {
     );
   }
 
-  Future<Widget> _buildGoogleCalendarWidget(BuildContext context) async {
+  void _launchGoogleCalendarUrl() async {
     var url = await event.googleCalendarUrl ?? '';
-    return url.isEmpty
-        ? NullWidget()
-        : SecondaryButton(context, 'GOOGLE', () => launch(url));
+    if (url.isNotEmpty) launch(url);
   }
 
   Future<Widget> _buildRsvpWidget(BuildContext context) async {
@@ -184,7 +172,7 @@ class EventDetails extends StatelessWidget {
     Venue venue = Venue.findById(venues, event.venue.id);
     if (venue != null) {
       return Hero(
-        tag: 'venue${venue.id}',
+        tag: 'venue-${venue.id}',
         child: Card(
           elevation: 0.0,
           child: Column(
@@ -206,27 +194,31 @@ class EventDetails extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(venue.street),
-                          Text('${venue.city}, ${venue.state} ${venue.zip}'),
+                          Hero(tag: 'venue-street-${venue.id}', child: Text(venue.street)),
+                          Hero(tag:'venue-city-${venue.id}', child: Text('${venue.city}, ${venue.state} ${venue.zip}')),
                         ],
                       ),
                     ),
-                    SecondaryButton(
-                      context,
-                      'MAP',
-                      () => launch(venue.mapUrl),
+                    Hero(tag: 'venue-map-${venue.id}',
+                                          child: SecondaryButton(
+                        context,
+                        'MAP',
+                        () => launch(venue.mapUrl),
+                      ),
                     ),
                   ],
                 ),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 (venue.hasWifi
-                    ? Row(
-                        children: <Widget>[
-                          Icon(Icons.wifi, color: kSecondaryColor),
-                          Text(' Public WiFi')
-                        ],
-                      )
+                    ? Hero(tag: 'venue-wifi-${venue.id}',
+                                          child: Row(
+                          children: <Widget>[
+                            Icon(Icons.wifi, color: kSecondaryColor),
+                            Text(' Public WiFi')
+                          ],
+                        ),
+                    )
                     : NullWidget()),
                 // SizedBox(width: 16.0),
                 TertiaryButton(
@@ -270,17 +262,21 @@ class EventDetails extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(event.venue.street),
-                          Text(
-                              '${event.venue.city}, ${event.venue.state} ${event.venue.zip}'),
+                          Hero(tag:'venue-street-${event.venue.id}', child: Text(event.venue.street)),
+                          Hero(tag: 'venue-city-${event.venue.id}',
+                                                      child: Text(
+                                '${event.venue.city}, ${event.venue.state} ${event.venue.zip}'),
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  SecondaryButton(
-                    context,
-                    'MAP',
-                    () => launch(event.venue.mapUrl),
+                  Hero(tag: 'venue-map-${event.venue.id}',
+                                      child: SecondaryButton(
+                      context,
+                      'MAP',
+                      () => launch(event.venue.mapUrl),
+                    ),
                   ),
                 ],
               ),

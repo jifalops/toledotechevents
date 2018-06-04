@@ -9,7 +9,8 @@ import 'venue_details.dart';
 enum VenuesOrder {
   popular,
   newest,
-  hot // Can't do recent without list of _past_ events
+  hot
+  // Can't do recent without list of _past_ events
 }
 
 class VenueList extends StatefulWidget {
@@ -89,40 +90,44 @@ class _VenueListState extends State<VenueList> {
     ));
 
     widget.venues.forEach((venue) {
-      items.add(Card(
-        elevation: _selectedVenue == venue ? 8.0 : 0.0,
-        color: kBackgroundColor,
-        child: InkWell(
-          onTap: () => _cardTapped(venue, context),
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                // Hero(
-                //   tag: 'event-title-${event.id}',
-                //   child:
-                Text(
-                  venue.title,
-                  style: Theme.of(context).textTheme.body2,
-                  maxLines: 2,
-                  overflow: TextOverflow.fade,
-                ),
-                // ),
-                // Hero(
-                //   tag: 'event-venue-title-${event.id}',
-                //   child:
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('${venue.eventCount} events',
-                        style: Theme.of(context).textTheme.caption),
-                    Text(widget.format.format(venue.created),
-                        style: Theme.of(context).textTheme.caption),
-                  ],
-                ),
-              ],
+      items.add(Hero(
+        tag: 'venue-${venue.id}',
+        child: Card(
+          elevation: _selectedVenue == venue ? 8.0 : 0.0,
+          color: kBackgroundColor,
+          child: InkWell(
+            onTap: () => _cardTapped(venue, context),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Hero(
+                    tag: 'venue-title-${venue.id}',
+                    child: Text(
+                      venue.title,
+                      style: Theme.of(context).textTheme.body2,
+                      maxLines: 2,
+                      overflow: TextOverflow.fade,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Hero(
+                        tag: 'venue-events-${venue.id}',
+                        child: Text('${venue.eventCount} events',
+                            style: Theme.of(context).textTheme.caption),
+                      ),
+                      Hero(
+                        tag: 'venue-created-${venue.id}',
+                        child: Text(widget.format.format(venue.created),
+                            style: Theme.of(context).textTheme.caption),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -169,9 +174,8 @@ class _VenueListState extends State<VenueList> {
         break;
     }
   }
+
   String sortIndicator(VenuesOrder order) {
-    return sortOrder == order
-    ? (sortReverse ? ' ↑' : ' ↓')
-    : '';
+    return sortOrder == order ? (sortReverse ? ' ↑' : ' ↓') : '';
   }
 }
