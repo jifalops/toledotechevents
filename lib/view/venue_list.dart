@@ -52,31 +52,37 @@ class _VenueListState extends State<VenueList> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TertiaryButton(
-          'POPULAR',
+          'POPULAR${sortIndicator(VenuesOrder.popular)}',
           () => setState(() {
                 if (sortOrder == VenuesOrder.popular)
                   sortReverse = !sortReverse;
-                else
+                else {
                   sortOrder = VenuesOrder.popular;
+                  sortReverse = false;
+                }
               }),
         ),
         SizedBox(width: 8.0),
         TertiaryButton(
-          'NEWEST',
+          'NEWEST${sortIndicator(VenuesOrder.newest)}',
           () => setState(() {
                 if (sortOrder == VenuesOrder.newest)
                   sortReverse = !sortReverse;
-                else
+                else {
                   sortOrder = VenuesOrder.newest;
+                  sortReverse = false;
+                }
               }),
         ),
         TertiaryButton(
-          'HOT',
+          'HOT${sortIndicator(VenuesOrder.hot)}',
           () => setState(() {
                 if (sortOrder == VenuesOrder.hot)
                   sortReverse = !sortReverse;
-                else
+                else {
                   sortOrder = VenuesOrder.hot;
+                  sortReverse = false;
+                }
               }),
         ),
       ],
@@ -162,5 +168,10 @@ class _VenueListState extends State<VenueList> {
             : widget.venues.sort((a, b) => hotness(b).compareTo(hotness(a)));
         break;
     }
+  }
+  String sortIndicator(VenuesOrder order) {
+    return sortOrder == order
+    ? (sortReverse ? ' ↑' : ' ↓')
+    : '';
   }
 }
