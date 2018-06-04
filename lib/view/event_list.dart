@@ -1,50 +1,24 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
 import '../model.dart';
 import '../theme.dart';
+import 'event_listitem.dart';
 import 'event_details.dart';
 
 class EventList extends StatefulWidget {
   final List<Event> events;
   EventList(this.events);
   @override
-  State<EventList> createState() => _EventListState(events);
+  State<EventList> createState() => _EventListState();
 }
 
-class _EventListState extends State<EventList> with TickerProviderStateMixin {
-  List<Event> events;
+class _EventListState extends State<EventList> {
   Event _selectedEvent;
-  final _controllers = List<AnimationController>();
-
-  _EventListState(this.events);
-
-  @override
-  void initState() {
-    super.initState();
-    events.forEach((e) => _controllers.add(AnimationController(
-        duration: const Duration(milliseconds: 200), vsync: this)));
-  }
-
-  @override
-  void dispose() {
-    _controllers.forEach((c) => c.dispose());
-    super.dispose();
-  }
-
-  Future<Null> _playAnimation(int index, bool forward) async {
-    try {
-      if (forward)
-        await _controllers[index].forward().orCancel;
-      else
-        await _controllers[index].reverse().orCancel;
-    } on TickerCanceled {
-      // the animation got canceled, probably because we were disposed
-    }
-  }
 
   Future<Null> refresh() async {
-    events = await getEvents(forceReload: true);
+    widget.events.clear();
+    widget.events.addAll(await getEvents(forceReload: true));
     setState(() {});
   }
 
@@ -65,7 +39,7 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
     var nextTwoWeeks = List<Event>();
     var afterTwoWeeks = List<Event>();
 
-    events.forEach((e) {
+    widget.events.forEach((e) {
       if (e.occursOnDay(now)) today.add(e);
       if (e.occursOnDay(now.add(Duration(days: 1)))) tomorrow.add(e);
       if (e.occursOnDayInRange(now.add(Duration(days: 2)), twoWeeks))
@@ -82,7 +56,14 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
           ),
         );
         events.asMap().forEach((i, event) {
-          items.add(_buildEvent(event, i, context));
+          items.add(
+            EventListItem(
+              event,
+              color: i % 2 == 0 ? kBackgroundColor : kDividerColor,
+              elevation: _selectedEvent == event ? 8.0 : 0.0,
+              onTap: () => _cardTapped(event, context),
+            ),
+          );
         });
       }
     }
@@ -104,84 +85,63 @@ class _EventListState extends State<EventList> with TickerProviderStateMixin {
     return items;
   }
 
-  Widget _buildEvent(Event event, int index, BuildContext context) {
-    return Card(
-      key: Key('${event.id}'),
-      elevation: 0.0,
-      color: index % 2 == 0 ? kBackgroundColor : kDividerColor,
-      child: InkWell(
-        onTap: () => _cardTapped(event, index, context),
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                event.title,
-                // textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.body2,
-                maxLines: 2,
-                // softWrap: true,
-                overflow: TextOverflow.fade,
-              ),
-              // SizedBox(height: 4.0),
-              Text(
-                event.venue.title,
-                style: Theme.of(context).textTheme.caption,
-                maxLines: 1,
-                // softWrap: false,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 4.0),
-              buildEventTimeRange(event, context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _cardTapped(Event event, int index, BuildContext context) {
+  void _cardTapped(Event event, BuildContext context) async {
+    timeDilation = 10.0;
     setState(() => _selectedEvent = _selectedEvent == event ? null : event);
-    // _playAnimation(index, _selectedEvent == event);
-    Navigator.push(context, new MaterialPageRoute(builder: (_) {
-      return new EventDetails(event);
-    }));
+    if (_selectedEvent != null) {
+      // Navigator.of(context).widget.observers.add(IntermediateRouteObserver(() {
+      //   Navigator
+      //       .push(context,
+      //           DetailsRoute(builder: (context) => EventDetails(event)))
+      //       .then((_) => Navigator.pop(context));
+      // }));
+      await Future.delayed(Duration(milliseconds: 250));
+      // Navigator.of(context).
+      await Navigator.push(
+          context,
+          FadePageRoute(builder: (context) => EventDetails(event)),
+          // IntermediateRoute(
+          //   builder: (context) => EventListItem(
+          //         _selectedEvent,
+          //         key: Key('event-intermediate-${event.id}'),
+          //         elevation: 8.0,
+          //         onTap: () {},
+          //       ),
+            // onComplete: (_) {
+            //
+            // }
+          );
+      await Future.delayed(Duration(milliseconds: 400));
+      setState(() => _selectedEvent = null);
+    }
   }
 }
 
-Widget buildEventTimeRange(Event event, BuildContext context) {
-  final startDay = formatDay(event.startTime);
-  final startDate = formatDate(event.startTime);
-  final startTime = formatTime(event.startTime, ampm: !event.isOneDay);
-  final endTime = formatTime(event.endTime, ampm: true);
+class IntermediateRouteObserver extends NavigatorObserver {
+  final onDidPush;
+  IntermediateRouteObserver(this.onDidPush);
+  @override
+  void didPush(Route route, Route previousRoute) {
+    if (route is IntermediateRoute) onDidPush();
+    super.didPush(route, previousRoute);
+  }
+}
 
-  return event.isOneDay
-      ? Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text('$startDay, $startDate'),
-            Text('$startTime – $endTime',
-                style: Theme.of(context).textTheme.caption),
-          ],
-        )
-      : Column(
-          children: <Widget>[
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('$startDay, $startDate'),
-                  Text('$startTime',
-                      style: Theme.of(context).textTheme.caption),
-                ]),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                    '${formatDay(event.endTime)}, ${formatDate(event.endTime)}'),
-                Text('$endTime', style: Theme.of(context).textTheme.caption),
-              ],
-            ),
-          ],
-        );
+class IntermediateRoute extends MaterialPageRoute {
+  IntermediateRoute({@required WidgetBuilder builder})
+      : super(builder: builder);
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return child;
+  }
+}
+
+class DetailsRoute extends MaterialPageRoute {
+  DetailsRoute({@required WidgetBuilder builder}) : super(builder: builder);
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return child;
+  }
 }

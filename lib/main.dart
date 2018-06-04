@@ -9,6 +9,7 @@ import 'view/event_list.dart';
 import 'view/venue_list.dart';
 import 'view/create_event.dart';
 import 'view/app_bar.dart';
+import 'view/animated_page.dart';
 
 void main() => runApp(new MyApp());
 
@@ -74,7 +75,7 @@ class MyHomePageState extends State<MyHomePage> {
           future: getNewEventAuthToken(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return CreateEventForm(snapshot.data);
+              return AnimatedPage(CreateEventForm(snapshot.data));
             } else if (snapshot.hasError) {
               return new Text('${snapshot.error}');
             }
@@ -83,7 +84,7 @@ class MyHomePageState extends State<MyHomePage> {
         );
       // Venues list
       case 2:
-        return Text('Venue list');
+        return AnimatedPage(Text('Venue list'));
       // About page
       case 3:
         return FutureBuilder<String>(
@@ -91,7 +92,7 @@ class MyHomePageState extends State<MyHomePage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return SingleChildScrollView(
-                child: HtmlView(data: snapshot.data),
+                child: AnimatedPage(HtmlView(data: snapshot.data)),
               );
             } else if (snapshot.hasError) {
               return new Text('${snapshot.error}');
@@ -106,7 +107,7 @@ class MyHomePageState extends State<MyHomePage> {
           future: getEvents(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return EventList(snapshot.data);
+              return AnimatedPage(EventList(snapshot.data));
             } else if (snapshot.hasError) {
               return new Text('${snapshot.error}');
             }

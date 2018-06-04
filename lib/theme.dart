@@ -120,3 +120,20 @@ class TertiaryButton extends FlatButton {
             onPressed: onPressed,
             padding: EdgeInsets.all(2.0));
 }
+
+class FadePageRoute extends MaterialPageRoute {
+  FadePageRoute({@required WidgetBuilder builder}) : super(builder: builder);
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    // return AnimatedCrossFade(
+    //   crossFadeState: CrossFadeState.showFirst,
+    //   duration: Duration(milliseconds: 400),
+    //   firstChild: firstChild,
+    //   secondChild: child,
+    // );
+    return FadeTransition(opacity: animation, child: child);
+    // return child;
+  }
+}

@@ -8,43 +8,17 @@ import 'venue_details.dart';
 
 class EventDetails extends StatelessWidget {
   final Event event;
-
   EventDetails(this.event);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('Event details'),
-        actions: <Widget>[
-          // overflow menu
-          PopupMenuButton(
-            icon: Icon(Icons.more_vert),
-            onSelected: (url) => launch(url),
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                  child: Text('Edit this event'),
-                  value: event.editUrl,
-                ),
-                PopupMenuItem(
-                  child: Text('Clone this event'),
-                  value: event.cloneUrl,
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
-      body: ListView(
-        children: <Widget>[
-          Card(
-            key: Key('${event.id}'),
-            elevation: 0.0,
+      appBar: _buildAppBar(context),
+      body: SingleChildScrollView(
+        child: Hero(
+          tag: 'event-${event.id}',
+          child: Card(
+            elevation: 8.0,
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -53,17 +27,25 @@ class EventDetails extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 16.0, bottom: 24.0),
                     child: Center(
-                      child: Text(
-                        event.title,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.title,
+                      child: Hero(
+                        tag: 'event-title-${event.id}',
+                        child: Text(
+                          event.title,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.title,
+                        ),
                       ),
                     ),
                   ),
-                  Center(child: _buildEventTimeRange(event, context)),
+                  Center(
+                    child: Hero(
+                      tag: 'event-times-${event.id}',
+                      child: _buildEventTimeRange(context),
+                    ),
+                  ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 8.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -82,7 +64,7 @@ class EventDetails extends StatelessWidget {
                                 if (snapshot.hasData) {
                                   return snapshot.data;
                                 } else if (snapshot.hasError) {
-                                  return new Text('${snapshot.error}');
+                                  return Text('${snapshot.error}');
                                 }
                                 return NullWidget();
                               },
@@ -98,7 +80,7 @@ class EventDetails extends StatelessWidget {
                       if (snapshot.hasData) {
                         return snapshot.data;
                       } else if (snapshot.hasError) {
-                        return new Text('${snapshot.error}');
+                        return Text('${snapshot.error}');
                       }
                       return NullWidget();
                     },
@@ -108,20 +90,17 @@ class EventDetails extends StatelessWidget {
                     child:
                         // Text('Venue', style: Theme.of(context).textTheme.subhead),
                         event.venue != null
-                            ? Card(
-                                elevation: 0.0,
-                                child: FutureBuilder<List<Venue>>(
-                                  future: getVenues(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return _buildVenue(
-                                          snapshot.data, context);
-                                    } else if (snapshot.hasError) {
-                                      return new Text('${snapshot.error}');
-                                    }
-                                    return _buildEventVenue(context);
-                                  },
-                                ),
+                            ? FutureBuilder<List<Venue>>(
+                                future: getVenues(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return _buildVenue(
+                                        snapshot.data, context);
+                                  } else if (snapshot.hasError) {
+                                    return Text('${snapshot.error}');
+                                  }
+                                  return _buildEventVenue(context);
+                                },
                               )
                             : Text(
                                 'Venue TBD',
@@ -147,8 +126,37 @@ class EventDetails extends StatelessWidget {
               ),
             ),
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.close),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Text('Event details'),
+      actions: <Widget>[
+        // overflow menu
+        PopupMenuButton(
+          icon: Icon(Icons.more_vert),
+          onSelected: (url) => launch(url),
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem(
+                child: Text('Edit this event'),
+                value: event.editUrl,
+              ),
+              PopupMenuItem(
+                child: Text('Clone this event'),
+                value: event.cloneUrl,
+              ),
+            ];
+          },
+        ),
+      ],
     );
   }
 
@@ -175,49 +183,63 @@ class EventDetails extends StatelessWidget {
   Widget _buildVenue(List<Venue> venues, BuildContext context) {
     Venue venue = Venue.findById(venues, event.venue.id);
     if (venue != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(venue.title, style: Theme.of(context).textTheme.body2),
-          Padding(
-            padding: EdgeInsets.fromLTRB(8.0, 8.0, 4.0, 4.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(venue.street),
-                      Text('${venue.city}, ${venue.state} ${venue.zip}'),
-                    ],
-                  ),
+      return Hero(
+        tag: 'venue${venue.id}',
+        child: Card(
+          elevation: 0.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Hero(
+                tag: 'event-venue-title-${event.id}',
+                child: Hero(
+                  tag: 'venue-title-${venue.id}',
+                  child: Text(venue.title,
+                      style: Theme.of(context).textTheme.body2),
                 ),
-                SecondaryButton(
-                  context,
-                  'MAP',
-                  () => launch(venue.mapUrl),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(8.0, 8.0, 4.0, 4.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(venue.street),
+                          Text('${venue.city}, ${venue.state} ${venue.zip}'),
+                        ],
+                      ),
+                    ),
+                    SecondaryButton(
+                      context,
+                      'MAP',
+                      () => launch(venue.mapUrl),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                (venue.hasWifi
+                    ? Row(
+                        children: <Widget>[
+                          Icon(Icons.wifi, color: kSecondaryColor),
+                          Text(' Public WiFi')
+                        ],
+                      )
+                    : NullWidget()),
+                // SizedBox(width: 16.0),
+                TertiaryButton(
+                  'VENUE DETAILS',
+                  () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => VenueDetails(venue))),
+                ),
+              ])
+            ],
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            (venue.hasWifi
-                ? Row(
-                    children: <Widget>[
-                      Icon(Icons.wifi, color: kSecondaryColor),
-                      Text(' Public WiFi')
-                    ],
-                  )
-                : NullWidget()),
-            // SizedBox(width: 16.0),
-            TertiaryButton(
-              'VENUE DETAILS',
-              () => Navigator.push(context, new MaterialPageRoute(builder: (_) {
-                    return VenueDetails(venue);
-                  })),
-            ),
-          ])
-        ],
+        ),
       );
     } else {
       return _buildEventVenue(context);
@@ -226,32 +248,45 @@ class EventDetails extends StatelessWidget {
 
   Widget _buildEventVenue(BuildContext context) {
     if (event.venue != null && event.venue.id > 0) {
-      return Column(
-        children: <Widget>[
-          Text(event.venue.title, style: Theme.of(context).textTheme.body2),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(event.venue.street),
-                      Text(
-                          '${event.venue.city}, ${event.venue.state} ${event.venue.zip}'),
-                    ],
-                  ),
+      return Hero(
+        tag: 'venue-${event.venue.id}',
+        child: Card(
+          elevation: 0.0,
+          child: Column(
+            children: <Widget>[
+              Hero(
+                tag: 'event-venue-title-${event.id}',
+                child: Hero(
+                  tag: 'venue-title-${event.venue.id}',
+                  child: Text(event.venue.title,
+                      style: Theme.of(context).textTheme.body2),
                 ),
               ),
-              SecondaryButton(
-                context,
-                'MAP',
-                () => launch(event.venue.mapUrl),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(event.venue.street),
+                          Text(
+                              '${event.venue.city}, ${event.venue.state} ${event.venue.zip}'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SecondaryButton(
+                    context,
+                    'MAP',
+                    () => launch(event.venue.mapUrl),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       );
     } else {
       return Text('Venue TBD', style: Theme.of(context).textTheme.body2);
@@ -269,41 +304,25 @@ class EventDetails extends StatelessWidget {
     return chips;
   }
 
-  // void _overflowItemSelected(item) async {
-  //   if (await canLaunch(item['url'])) {
-  //     launch(item['url']);
-  //   } else {
-  //     final msg = item['url'].endsWith('ics')
-  //         ? 'No apps available to handle iCal link.'
-  //         : 'Could not launch URL.';
-  //     Scaffold.of(item['context']).showSnackBar(
-  //           SnackBar(
-  //             content: Text(msg),
-  //             duration: Duration(seconds: 3),
-  //           ),
-  //         );
-  //   }
-  // }
-}
-
-Widget _buildEventTimeRange(Event event, BuildContext context) {
-  final startDay = formatDay(event.startTime);
-  final startDate = formatDate(event.startTime);
-  final startTime = formatTime(event.startTime, ampm: !event.isOneDay);
-  final endTime = formatTime(event.endTime, ampm: true);
-  final style = Theme.of(context).textTheme.body2;
-  return event.isOneDay
-      ? Text('$startDay, $startDate, $startTime – $endTime', style: style)
-      : Column(
-          children: <Widget>[
-            Text(
-              '$startDay, $startDate, $startTime –',
-              style: style,
-            ),
-            Text(
-              '${formatDay(event.endTime)}, ${formatDate(event.endTime)}, $endTime',
-              style: style,
-            )
-          ],
-        );
+  Widget _buildEventTimeRange(BuildContext context) {
+    final startDay = formatDay(event.startTime);
+    final startDate = formatDate(event.startTime);
+    final startTime = formatTime(event.startTime, ampm: !event.isOneDay);
+    final endTime = formatTime(event.endTime, ampm: true);
+    final style = Theme.of(context).textTheme.body2;
+    return event.isOneDay
+        ? Text('$startDay, $startDate, $startTime – $endTime', style: style)
+        : Column(
+            children: <Widget>[
+              Text(
+                '$startDay, $startDate, $startTime –',
+                style: style,
+              ),
+              Text(
+                '${formatDay(event.endTime)}, ${formatDate(event.endTime)}, $endTime',
+                style: style,
+              )
+            ],
+          );
+  }
 }
