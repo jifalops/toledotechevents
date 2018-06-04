@@ -1,4 +1,4 @@
-package com.example.toledotechevents;
+package org.toledotechevents;
 
 import android.os.Bundle;
 
