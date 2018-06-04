@@ -16,9 +16,11 @@ class EventListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: 'event-${event.id}',
-      child: Card(
+    return
+    // Hero(
+    //   tag: 'event-${event.id}',
+    //   child:
+      Card(
         elevation: elevation,
         color: color,
         child: InkWell(
@@ -57,7 +59,6 @@ class EventListItem extends StatelessWidget {
               ],
             ),
           ),
-        ),
         // ),
       ),
     );

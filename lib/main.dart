@@ -84,7 +84,17 @@ class MyHomePageState extends State<MyHomePage> {
         );
       // Venues list
       case 2:
-        return AnimatedPage(Text('Venue list'));
+        return FutureBuilder<List<Venue>>(
+          future: getVenues(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return AnimatedPage(VenueList(snapshot.data));
+            } else if (snapshot.hasError) {
+              return new Text('${snapshot.error}');
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        );
       // About page
       case 3:
         return FutureBuilder<String>(

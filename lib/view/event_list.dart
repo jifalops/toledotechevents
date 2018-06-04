@@ -86,7 +86,7 @@ class _EventListState extends State<EventList> {
   }
 
   void _cardTapped(Event event, BuildContext context) async {
-    timeDilation = 10.0;
+    // timeDilation = 10.0;
     setState(() => _selectedEvent = _selectedEvent == event ? null : event);
     if (_selectedEvent != null) {
       // Navigator.of(context).widget.observers.add(IntermediateRouteObserver(() {
@@ -98,50 +98,50 @@ class _EventListState extends State<EventList> {
       await Future.delayed(Duration(milliseconds: 250));
       // Navigator.of(context).
       await Navigator.push(
-          context,
-          FadePageRoute(builder: (context) => EventDetails(event)),
-          // IntermediateRoute(
-          //   builder: (context) => EventListItem(
-          //         _selectedEvent,
-          //         key: Key('event-intermediate-${event.id}'),
-          //         elevation: 8.0,
-          //         onTap: () {},
-          //       ),
-            // onComplete: (_) {
-            //
-            // }
-          );
+        context,
+        FadePageRoute(builder: (context) => EventDetails(_selectedEvent)),
+        // IntermediateRoute(
+        //   builder: (context) => EventListItem(
+        //         _selectedEvent,
+        //         key: Key('event-intermediate-${event.id}'),
+        //         elevation: 8.0,
+        //         onTap: () {},
+        //       ),
+        // onComplete: (_) {
+        //
+        // }
+      );
       await Future.delayed(Duration(milliseconds: 400));
       setState(() => _selectedEvent = null);
     }
   }
 }
 
-class IntermediateRouteObserver extends NavigatorObserver {
-  final onDidPush;
-  IntermediateRouteObserver(this.onDidPush);
-  @override
-  void didPush(Route route, Route previousRoute) {
-    if (route is IntermediateRoute) onDidPush();
-    super.didPush(route, previousRoute);
-  }
-}
+// class IntermediateRouteObserver extends NavigatorObserver {
+//   final onDidPush;
+//   IntermediateRouteObserver(this.onDidPush);
+//   @override
+//   void didPush(Route route, Route previousRoute) {
+//     if (route is IntermediateRoute) onDidPush();
+//     super.didPush(route, previousRoute);
+//   }
+// }
 
-class IntermediateRoute extends MaterialPageRoute {
-  IntermediateRoute({@required WidgetBuilder builder})
-      : super(builder: builder);
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    return child;
-  }
-}
+// class IntermediateRoute extends MaterialPageRoute {
+//   IntermediateRoute({@required WidgetBuilder builder})
+//       : super(builder: builder);
+//   @override
+//   Widget buildTransitions(BuildContext context, Animation<double> animation,
+//       Animation<double> secondaryAnimation, Widget child) {
+//     return child;
+//   }
+// }
 
-class DetailsRoute extends MaterialPageRoute {
-  DetailsRoute({@required WidgetBuilder builder}) : super(builder: builder);
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    return child;
-  }
-}
+// class DetailsRoute extends MaterialPageRoute {
+//   DetailsRoute({@required WidgetBuilder builder}) : super(builder: builder);
+//   @override
+//   Widget buildTransitions(BuildContext context, Animation<double> animation,
+//       Animation<double> secondaryAnimation, Widget child) {
+//     return child;
+//   }
+// }
