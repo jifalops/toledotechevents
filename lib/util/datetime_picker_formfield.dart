@@ -87,7 +87,7 @@ class DateTimePickerFormField extends FormField<DateTime> {
             onSaved: onSaved,
             builder: (FormFieldState<DateTime> field) {
               final _DateTimePickerTextFormFieldState state = field;
-              print('building textfield. $focusNode');
+              // print('building textfield. $focusNode');
             });
 
   @override
@@ -235,9 +235,9 @@ DateTime _toDate(String string, DateFormat formatter) {
   return null;
 }
 
-DateTime _startOfDay(DateTime dt) => dt
-    .subtract(Duration(hours: dt.hour))
-    .subtract(Duration(minutes: dt.minute))
-    .subtract(Duration(seconds: dt.second))
-    .subtract(Duration(milliseconds: dt.millisecond))
-    .subtract(Duration(microseconds: dt.microsecond));
+DateTime _startOfDay(DateTime date) => date.subtract(Duration(
+    hours: date.hour,
+    minutes: date.minute,
+    seconds: date.second,
+    milliseconds: date.millisecond,
+    microseconds: date.microsecond));
