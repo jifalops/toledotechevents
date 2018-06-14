@@ -3,11 +3,11 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import '../model.dart';
 import '../theme.dart';
-import '../util/datetime_picker_formfield.dart';
 import 'event_details.dart';
-import '../util/simple_autocomplete_formfield.dart';
 
 class CreateEventForm extends StatefulWidget {
   final String authToken;
@@ -196,7 +196,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
               ),
               SizedBox(height: 8.0),
               SimpleAutocompleteFormField<Venue>(
-                suggestionsContainerHeight: 156.0,
+                // suggestionsContainerHeight: 156.0,
                 maxSuggestions: 10,
                 controller: venueController,
                 decoration: InputDecoration(

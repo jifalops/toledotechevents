@@ -6,8 +6,8 @@ import 'package:xml/xml.dart' as xml;
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
+import 'package:network_resource/network_resource.dart';
 
-import 'util/network_resource.dart';
 import 'model/event.dart';
 import 'model/venue.dart';
 
@@ -67,9 +67,9 @@ Future<List<Event>> getEvents({bool forceReload = false}) async {
   if (_events == null || forceReload) {
     _events = List<Event>();
     final data = await _eventsResource.get(forceReload: forceReload);
-    if (data != null) {
+    if (data.data != null) {
       xml
-          .parse(data)
+          .parse(data.data)
           .findAllElements('entry')
           .forEach((entry) => _events.add(Event(entry)));
     }
@@ -82,8 +82,8 @@ Future<List<Venue>> getVenues({bool forceReload = false}) async {
   if (_venues == null || forceReload) {
     _venues = List<Venue>();
     final data = await _venuesResource.get(forceReload: forceReload);
-    if (data != null) {
-      json.decode(data).forEach((item) => _venues.add(Venue(item)));
+    if (data.data != null) {
+      json.decode(data.data).forEach((item) => _venues.add(Venue(item)));
     }
   }
   return _venues;
@@ -103,10 +103,10 @@ Future<String> getAboutSectionHtml({bool forceReload = false}) async {
 Future<String> getNewEventAuthToken({bool forceReload = false}) async {
   if (_newEventAuthToken == null || forceReload) {
     final page = await _newEventPageResource.get(forceReload: forceReload);
-    if (page != null) {
+    if (page.data != null) {
       final search = 'name="authenticity_token" value="';
-      final start = page.indexOf(search) + search.length;
-      _newEventAuthToken = page.substring(start, page.indexOf('"', start));
+      final start = page.data.indexOf(search) + search.length;
+      _newEventAuthToken = page.data.substring(start, page.data.indexOf('"', start));
     }
   }
   return _newEventAuthToken;

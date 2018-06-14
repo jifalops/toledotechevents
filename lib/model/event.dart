@@ -5,8 +5,7 @@ import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:html/dom.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
-
-import '../util/network_resource.dart';
+import 'package:network_resource/network_resource.dart';
 
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
 class Event {
