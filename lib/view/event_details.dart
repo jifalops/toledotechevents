@@ -18,7 +18,7 @@ class EventDetails extends StatelessWidget {
         child: Hero(
           tag: 'event-${event.id}',
           child: Card(
-            elevation: 8.0,
+            elevation: 0.0,
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -244,7 +244,7 @@ class EventDetails extends StatelessWidget {
         ),
       );
     } else {
-      return _buildEventVenue(context);
+      return NullWidget();// _buildEventVenue(context);
     }
   }
 
@@ -255,6 +255,7 @@ class EventDetails extends StatelessWidget {
         child: Card(
           elevation: 0.0,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Hero(
                 tag: 'event-venue-title-${event.id}',
