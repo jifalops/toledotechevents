@@ -17,9 +17,9 @@ class EventListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return
-    // Hero(
-    //   tag: 'event-${event.id}',
-    //   child:
+    Hero(
+      tag: 'event-${event.id}',
+      child:
       Card(
         elevation: elevation,
         color: color,
@@ -30,36 +30,36 @@ class EventListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                // Hero(
-                //   tag: 'event-title-${event.id}',
-                //   child:
+                Hero(
+                  tag: 'event-title-${event.id}',
+                  child:
                 Text(
                   event.title,
                   style: Theme.of(context).textTheme.body2,
                   maxLines: 2,
                   overflow: TextOverflow.fade,
                 ),
-                // ),
-                // Hero(
-                //   tag: 'event-venue-title-${event.id}',
-                //   child:
+                ),
+                Hero(
+                  tag: 'event-venue-title-${event.id}',
+                  child:
                 Text(
                   event.venue.title,
                   style: Theme.of(context).textTheme.caption,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                // ),
+                ),
                 SizedBox(height: 4.0),
-                // Hero(
-                //   tag: 'event-times-${event.id}',
-                //   child:
+                Hero(
+                  tag: 'event-times-${event.id}',
+                  child:
                 _buildEventTimeRange(context),
-                // ),
+                ),
               ],
             ),
           ),
-        // ),
+        ),
       ),
     );
   }

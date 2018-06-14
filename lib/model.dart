@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:network_resource/network_resource.dart';
-
 import 'model/event.dart';
 import 'model/venue.dart';
 
@@ -67,7 +66,7 @@ Future<List<Event>> getEvents({bool forceReload = false}) async {
   if (_events == null || forceReload) {
     _events = List<Event>();
     final data = await _eventsResource.get(forceReload: forceReload);
-    if (data.data != null) {
+    if (data.data != null && data.data.isNotEmpty) {
       xml
           .parse(data.data)
           .findAllElements('entry')
@@ -82,7 +81,7 @@ Future<List<Venue>> getVenues({bool forceReload = false}) async {
   if (_venues == null || forceReload) {
     _venues = List<Venue>();
     final data = await _venuesResource.get(forceReload: forceReload);
-    if (data.data != null) {
+    if (data.data != null && data.data.isNotEmpty) {
       json.decode(data.data).forEach((item) => _venues.add(Venue(item)));
     }
   }
@@ -92,9 +91,9 @@ Future<List<Venue>> getVenues({bool forceReload = false}) async {
 Future<String> getAboutSectionHtml({bool forceReload = false}) async {
   if (_aboutSectionHtml == null || forceReload) {
     final page = await _aboutPageResource.get(forceReload: forceReload);
-    if (page != null) {
+    if (page.data != null) {
       _aboutSectionHtml =
-          parse(page)?.querySelector('.about-us')?.outerHtml ?? '';
+          parse(page.data)?.querySelector('.about-us')?.outerHtml ?? '';
     }
   }
   return _aboutSectionHtml;

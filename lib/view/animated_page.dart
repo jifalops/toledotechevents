@@ -54,7 +54,7 @@ class PageAnimation extends StatelessWidget {
           ),
         ),
         scale = Tween(
-          begin: 0.92,
+          begin: 0.95,
           end: 1.0,
         ).animate(CurvedAnimation(
           parent: controller,

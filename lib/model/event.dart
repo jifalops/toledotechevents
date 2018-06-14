@@ -6,7 +6,6 @@ import 'package:html/dom.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:network_resource/network_resource.dart';
-
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
 class Event {
   // Directly parsed values
@@ -130,7 +129,7 @@ class Event {
   }
 
   Future<Document> get detailsDoc async =>
-      _detailsDoc ??= parse(await detailsPage.get());
+      _detailsDoc ??= parse((await detailsPage.get()).data);
 
   Future<String> get rsvpUrl async {
     if (_rsvpUrl == null) {
