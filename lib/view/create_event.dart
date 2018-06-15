@@ -180,207 +180,217 @@ class _CreateEventFormState extends State<CreateEventForm> {
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            children: <Widget>[
-              Text('Add Event', style: Theme.of(context).textTheme.headline),
-              SizedBox(height: 16.0),
-              TextFormField(
-                // autofocus: true,
-                decoration: InputDecoration(labelText: 'Event name'),
-                validator: (value) {
-                  if (value.trim().length < 3) {
-                    return 'The event name is required.';
-                  }
-                },
-                onSaved: (value) => eventData.name = value.trim(),
-              ),
-              SizedBox(height: 8.0),
-              SimpleAutocompleteFormField<Venue>(
-                // suggestionsContainerHeight: 156.0,
-                maxSuggestions: 10,
-                controller: venueController,
-                decoration: InputDecoration(
-                    labelText: 'Venue', helperText: venueHelperText),
-                onChanged: (value) {
-                  // print('venue changed');
-                  setState(() {
-                    venueHelperText = value?.address;
-                    eventData.venue = value;
-                  });
-                },
-                onSaved: (value) {
-                  eventData.venue = value;
-                  if (value == null)
-                    eventData.venueTitle = venueController.text;
-                  else
-                    eventData.venueTitle = value.title;
-                },
-                itemBuilder: (context, venue) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(venue.title,
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                        Text(
-                          venue.address,
-                          style: Theme.of(context).textTheme.caption,
+          child: Center(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 800.0),
+              child: Column(
+                children: <Widget>[
+                  Text('Add Event',
+                      style: Theme.of(context).textTheme.headline),
+                  SizedBox(height: 16.0),
+                  TextFormField(
+                    // autofocus: true,
+                    decoration: InputDecoration(labelText: 'Event name'),
+                    validator: (value) {
+                      if (value.trim().length < 3) {
+                        return 'The event name is required.';
+                      }
+                    },
+                    onSaved: (value) => eventData.name = value.trim(),
+                  ),
+                  SizedBox(height: 8.0),
+                  SimpleAutocompleteFormField<Venue>(
+                    // suggestionsContainerHeight: 156.0,
+                    maxSuggestions: 10,
+                    controller: venueController,
+                    decoration: InputDecoration(
+                        labelText: 'Venue', helperText: venueHelperText),
+                    onChanged: (value) {
+                      // print('venue changed');
+                      setState(() {
+                        venueHelperText = value?.address;
+                        eventData.venue = value;
+                      });
+                    },
+                    onSaved: (value) {
+                      eventData.venue = value;
+                      if (value == null)
+                        eventData.venueTitle = venueController.text;
+                      else
+                        eventData.venueTitle = value.title;
+                    },
+                    itemBuilder: (context, venue) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Text(venue.title,
+                                style: TextStyle(fontWeight: FontWeight.w600)),
+                            Text(
+                              venue.address,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            // Text('${venue.eventCount}'),
+                          ],
                         ),
-                        // Text('${venue.eventCount}'),
-                      ],
+                    itemParser: ItemParser<Venue>(
+                      itemToString: (item) => item?.title ?? '',
+                      itemFromString: (string) =>
+                          Venue.findByTitle(venues, string),
                     ),
-                itemParser: ItemParser<Venue>(
-                  itemToString: (item) => item?.title ?? '',
-                  itemFromString: (string) => Venue.findByTitle(venues, string),
-                ),
-                onSearch: (search) async {
-                  // debugPrint('Sorting...');
-                  search = search.toLowerCase().trim();
-                  venues ??= await getVenues();
-                  final results = List<Venue>();
-                  results.addAll(venues.where((v) =>
-                      v.title.toLowerCase().contains(search) ||
-                      v.address.toLowerCase().contains(search)));
-                  results.sort((a, b) {
-                    int mostPopular(Venue a, Venue b) {
-                      return b.eventCount - a.eventCount;
-                    }
+                    onSearch: (search) async {
+                      // debugPrint('Sorting...');
+                      search = search.toLowerCase().trim();
+                      venues ??= await getVenues();
+                      final results = List<Venue>();
+                      results.addAll(venues.where((v) =>
+                          v.title.toLowerCase().contains(search) ||
+                          v.address.toLowerCase().contains(search)));
+                      results.sort((a, b) {
+                        int mostPopular(Venue a, Venue b) {
+                          return b.eventCount - a.eventCount;
+                        }
 
-                    final aTitleStartsWith =
-                        a.title.toLowerCase().startsWith(search);
-                    final bTitleStartsWith =
-                        b.title.toLowerCase().startsWith(search);
-                    if (aTitleStartsWith && bTitleStartsWith)
-                      return mostPopular(a, b);
-                    else if (aTitleStartsWith)
-                      return -1;
-                    else if (bTitleStartsWith)
-                      return 1;
-                    else {
-                      final aTitleContains =
-                          a.title.toLowerCase().contains(search);
-                      final bTitleContains =
-                          b.title.toLowerCase().contains(search);
-                      if (aTitleContains && bTitleContains)
-                        return mostPopular(a, b);
-                      else if (aTitleContains)
-                        return -1;
-                      else if (bTitleContains)
-                        return 1;
-                      else {
-                        final aAddressContains =
-                            a.address.toLowerCase().contains(search);
-                        final bAddressContains =
-                            b.address.toLowerCase().contains(search);
-                        if (aAddressContains && bAddressContains)
+                        final aTitleStartsWith =
+                            a.title.toLowerCase().startsWith(search);
+                        final bTitleStartsWith =
+                            b.title.toLowerCase().startsWith(search);
+                        if (aTitleStartsWith && bTitleStartsWith)
                           return mostPopular(a, b);
-                        else if (aAddressContains)
+                        else if (aTitleStartsWith)
                           return -1;
-                        else if (bAddressContains)
+                        else if (bTitleStartsWith)
                           return 1;
                         else {
-                          return mostPopular(a, b);
+                          final aTitleContains =
+                              a.title.toLowerCase().contains(search);
+                          final bTitleContains =
+                              b.title.toLowerCase().contains(search);
+                          if (aTitleContains && bTitleContains)
+                            return mostPopular(a, b);
+                          else if (aTitleContains)
+                            return -1;
+                          else if (bTitleContains)
+                            return 1;
+                          else {
+                            final aAddressContains =
+                                a.address.toLowerCase().contains(search);
+                            final bAddressContains =
+                                b.address.toLowerCase().contains(search);
+                            if (aAddressContains && bAddressContains)
+                              return mostPopular(a, b);
+                            else if (aAddressContains)
+                              return -1;
+                            else if (bAddressContains)
+                              return 1;
+                            else {
+                              return mostPopular(a, b);
+                            }
+                          }
                         }
+                      });
+                      // results.take(3).forEach((venue) => debugPrint(venue.title));
+                      return results;
+                    },
+                  ),
+                  SizedBox(height: 8.0),
+                  DateTimePickerFormField(
+                    controller: startTimeController,
+                    format: format,
+                    decoration: InputDecoration(labelText: 'Start time'),
+                    validator: (value) {
+                      return value == null ? 'Invalid start time.' : null;
+                    },
+                    onSaved: (value) => eventData.startTime = value,
+                    onChanged: (value) {
+                      if (value != null && endTimeController.text.isEmpty) {
+                        endTimeController.text =
+                            format.format(value.add(Duration(hours: 1)));
                       }
-                    }
-                  });
-                  // results.take(3).forEach((venue) => debugPrint(venue.title));
-                  return results;
-                },
-              ),
-              SizedBox(height: 8.0),
-              DateTimePickerFormField(
-                controller: startTimeController,
-                format: format,
-                decoration: InputDecoration(labelText: 'Start time'),
-                validator: (value) {
-                  return value == null ? 'Invalid start time.' : null;
-                },
-                onSaved: (value) => eventData.startTime = value,
-                onChanged: (value) {
-                  if (value != null && endTimeController.text.isEmpty) {
-                    endTimeController.text =
-                        format.format(value.add(Duration(hours: 1)));
-                  }
-                },
-              ),
-              SizedBox(height: 8.0),
-              DateTimePickerFormField(
-                controller: endTimeController,
-                format: format,
-                decoration: InputDecoration(labelText: 'End time'),
-                validator: (value) =>
-                    value == null ? 'Invalid end time.' : null,
-                onSaved: (value) => eventData.endTime = value,
-                onChanged: (value) {
-                  if (value != null && startTimeController.text.isEmpty) {
-                    startTimeController.text =
-                        format.format(value.subtract(Duration(hours: 1)));
-                  }
-                },
-              ),
-              SizedBox(height: 8.0),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'RSVP / Register URL'),
-                validator: (value) {
-                  try {
-                    Uri.parse(value);
-                  } catch (e) {
-                    return 'Invalid URL';
-                  }
-                },
-                onSaved: (value) => eventData.rsvpUrl = value.toLowerCase(),
-              ),
-              SizedBox(height: 8.0),
-              TextFormField(
-                decoration:
-                    InputDecoration(labelText: 'Website / More Info URL'),
-                validator: (value) {
-                  try {
-                    Uri.parse(value);
-                  } catch (e) {
-                    return 'Invalid URL';
-                  }
-                },
-                onSaved: (value) => eventData.websiteUrl = value.toLowerCase(),
-              ),
-              SizedBox(height: 8.0),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  helperText: 'Markdown and some HTML supported.',
-                ),
-                onSaved: (value) => eventData.description = value.trim(),
-                maxLines: null,
-              ),
-              SizedBox(height: 8.0),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Venue Details',
-                  helperText: 'Event-specific details like the room number.',
-                ),
-                onSaved: (value) => eventData.venueDetails = value.trim(),
-                maxLines: null,
-              ),
-              SizedBox(height: 8.0),
-              TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Tags',
-                    helperText: 'Comma-separated keywords.',
+                    },
                   ),
-                  onSaved: (value) {
-                    eventData.tags = value;
-                  }),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: PrimaryButton(
-                    context,
-                    'CREATE EVENT',
-                    _handleSubmitted,
-                    color: kPrimaryColor,
+                  SizedBox(height: 8.0),
+                  DateTimePickerFormField(
+                    controller: endTimeController,
+                    format: format,
+                    decoration: InputDecoration(labelText: 'End time'),
+                    validator: (value) =>
+                        value == null ? 'Invalid end time.' : null,
+                    onSaved: (value) => eventData.endTime = value,
+                    onChanged: (value) {
+                      if (value != null && startTimeController.text.isEmpty) {
+                        startTimeController.text =
+                            format.format(value.subtract(Duration(hours: 1)));
+                      }
+                    },
                   ),
-                ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    decoration:
+                        InputDecoration(labelText: 'RSVP / Register URL'),
+                    validator: (value) {
+                      try {
+                        Uri.parse(value);
+                      } catch (e) {
+                        return 'Invalid URL';
+                      }
+                    },
+                    onSaved: (value) => eventData.rsvpUrl = value.toLowerCase(),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    decoration:
+                        InputDecoration(labelText: 'Website / More Info URL'),
+                    validator: (value) {
+                      try {
+                        Uri.parse(value);
+                      } catch (e) {
+                        return 'Invalid URL';
+                      }
+                    },
+                    onSaved: (value) =>
+                        eventData.websiteUrl = value.toLowerCase(),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      helperText: 'Markdown and some HTML supported.',
+                    ),
+                    onSaved: (value) => eventData.description = value.trim(),
+                    maxLines: null,
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Venue Details',
+                      helperText:
+                          'Event-specific details like the room number.',
+                    ),
+                    onSaved: (value) => eventData.venueDetails = value.trim(),
+                    maxLines: null,
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Tags',
+                        helperText: 'Comma-separated keywords.',
+                      ),
+                      onSaved: (value) {
+                        eventData.tags = value;
+                      }),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: PrimaryButton(
+                        context,
+                        'CREATE EVENT',
+                        _handleSubmitted,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

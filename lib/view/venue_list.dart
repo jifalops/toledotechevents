@@ -89,12 +89,12 @@ class _VenueListState extends State<VenueList> {
       ],
     ));
 
-    widget.venues.forEach((venue) {
+    widget.venues.asMap().forEach((i, venue) {
       items.add(Hero(
         tag: 'venue-${venue.id}',
         child: Card(
           elevation: _selectedVenue == venue ? 8.0 : 0.0,
-          color: kBackgroundColor,
+          color: i % 2 == 0 ? kDividerColor : kBackgroundColor,
           child: InkWell(
             onTap: () => _cardTapped(venue, context),
             child: Padding(

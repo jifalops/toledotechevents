@@ -38,10 +38,10 @@ class EventDetails extends StatelessWidget {
                     ),
                   ),
                   Center(
-                    child: Hero(
-                      tag: 'event-times-${event.id}',
+                    // child: Hero(
+                      // tag: 'event-times-${event.id}',
                       child: _buildEventTimeRange(context),
-                    ),
+                    // ),
                   ),
                   Padding(
                     padding:

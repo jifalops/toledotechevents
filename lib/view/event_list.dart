@@ -59,7 +59,7 @@ class _EventListState extends State<EventList> {
           items.add(
             EventListItem(
               event,
-              color: i % 2 == 0 ? kBackgroundColor : kDividerColor,
+              color: i % 2 == 0 ? kDividerColor : kBackgroundColor,
               elevation: _selectedEvent == event ? 8.0 : 0.0,
               onTap: () => _cardTapped(event, context),
             ),
