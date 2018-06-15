@@ -1,3 +1,14 @@
+import 'dart:core';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' show parse, parseFragment;
+import 'package:network_resource/network_resource.dart';
+import 'package:english_words/english_words.dart' as words;
+import 'package:html_unescape/html_unescape.dart';
+import '../theme.dart';
+import '../internal/deleter.dart';
+
 /**
  * A ToledoTechEvents venue. See http://toledotechevents.org/venues.json.
  */
@@ -18,6 +29,9 @@ class Venue {
   final bool isClosed, hasWifi;
   final DateTime created, updated;
   _Address __addressComposed;
+  NetworkResource _detailsPage;
+  dom.Document _detailsDoc;
+  List<VenueEvent> _pastEvents, _futureEvents;
   Venue(Map v)
       : title = v['title'] ?? '',
         description = v['description'] ?? '',
@@ -58,6 +72,42 @@ class Venue {
   String get state => _addressComposed.state;
   String get zip => _addressComposed.zip;
 
+  NetworkResource get detailsPage {
+    return _detailsPage ??= NetworkResource(
+        url: url, filename: 'venue_$id.html', maxAge: Duration(hours: 24));
+  }
+
+  Future<dom.Document> get detailsDoc async =>
+      _detailsDoc ??= parse((await detailsPage.get()).data);
+
+  Future<List<VenueEvent>> get pastEvents async {
+    if (_pastEvents == null) {
+      _pastEvents = List<VenueEvent>();
+      (await detailsDoc)
+          .querySelector('#past_events')
+          .querySelectorAll('tr')
+          .forEach((tableRow) {
+        if (tableRow.className != 'blank_list')
+          _pastEvents.add(VenueEvent(tableRow));
+      });
+    }
+    return _pastEvents;
+  }
+
+  Future<List<VenueEvent>> get futureEvents async {
+    if (_futureEvents == null) {
+      _futureEvents = List<VenueEvent>();
+      (await detailsDoc)
+          .querySelector('#future_events')
+          .querySelectorAll('tr')
+          .forEach((tableRow) {
+        if (tableRow.className != 'blank_list')
+          _futureEvents.add(VenueEvent(tableRow));
+      });
+    }
+    return _futureEvents;
+  }
+
   @override
   String toString() {
     return '''
@@ -85,6 +135,21 @@ class Venue {
 ''';
   }
 
+  void delete(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text('Confirm'),
+              content: Text('Delete venue $id?\nThis cannot be undone.'),
+              actions: <Widget>[
+                TertiaryButton('DELETE', () async {
+                  Navigator.pop(ctx);
+                  Deleter.delete(venue: this, context: context);
+                }),
+              ],
+            ));
+  }
+
   static Venue findById(List<Venue> venues, int id) {
     try {
       return venues.firstWhere((v) => v.id == id, orElse: null);
@@ -103,6 +168,26 @@ class Venue {
     } catch (e) {
       return null;
     }
+  }
+
+  static List<Venue> findSpam(List<Venue> venues) {
+    final spam = List<Venue>();
+
+    bool hasEnglishWord(String string) {
+      bool found = false;
+      string.split(' ').forEach((word) {
+        if (words.all.contains(word.toLowerCase())) {
+          found = true;
+          return;
+        }
+      });
+      return found;
+    }
+
+    venues.forEach((venue) {
+      if (!hasEnglishWord(venue.title)) spam.add(venue);
+    });
+    return spam;
   }
 }
 
@@ -146,6 +231,22 @@ class _Address {
     }
   }
   _composed(_street, _city, _state, _zip) => '$_street, $_city, $_state $_zip';
+}
+
+class VenueEvent {
+  final String url, title;
+  int _id;
+  VenueEvent(dom.Element tableRow)
+      :
+        // .querySelectorAll()
+        //         .forEach((anchor) => _pastEvents.add(VenueEvent(
+        //             anchor.attributes['href'], HtmlUnescape().convert(anchor.text))));
+
+        url =
+            tableRow.querySelector('.summary.p-name.u-url').attributes['href'],
+        title = HtmlUnescape()
+            .convert(tableRow.querySelector('.summary.p-name.u-url').text);
+  int get id => _id ??= int.parse(url.split('/').last);
 }
 
 /*

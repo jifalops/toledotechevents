@@ -39,8 +39,8 @@ class EventDetails extends StatelessWidget {
                   ),
                   Center(
                     // child: Hero(
-                      // tag: 'event-times-${event.id}',
-                      child: _buildEventTimeRange(context),
+                    // tag: 'event-times-${event.id}',
+                    child: _buildEventTimeRange(context),
                     // ),
                   ),
                   Padding(
@@ -135,7 +135,12 @@ class EventDetails extends StatelessWidget {
         // overflow menu
         PopupMenuButton(
           icon: Icon(Icons.more_vert),
-          onSelected: (url) => launch(url),
+          onSelected: (String url) {
+            if (url == 'delete')
+              event.delete(context);
+            else
+              launch(url);
+          },
           itemBuilder: (context) {
             return [
               PopupMenuItem(
@@ -146,6 +151,10 @@ class EventDetails extends StatelessWidget {
                 child: Text('Clone this event'),
                 value: event.cloneUrl,
               ),
+              // PopupMenuItem(
+              //   child: Text('Delete this event'),
+              //   value: 'delete',
+              // ),
             ];
           },
         ),
@@ -244,7 +253,7 @@ class EventDetails extends StatelessWidget {
         ),
       );
     } else {
-      return NullWidget();// _buildEventVenue(context);
+      return NullWidget(); // _buildEventVenue(context);
     }
   }
 

@@ -37,8 +37,8 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     // timeDilation = 10.0;
-    return new Scaffold(
-      appBar: getAppBar(context),
+    return Scaffold(
+      appBar: getAppBar(context, _selectedPage),
       body: _getBody(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

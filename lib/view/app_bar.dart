@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../model.dart';
 import '../theme.dart';
+import 'venue_list_spam.dart';
 
-AppBar getAppBar(BuildContext context) {
+AppBar getAppBar(BuildContext context, int selectedPage) {
   return AppBar(
     title: Row(
       children: <Widget>[
@@ -42,6 +43,12 @@ AppBar getAppBar(BuildContext context) {
               child: Text('Report an issue'),
               value: {'context': context, 'url': kFileIssueUrl},
             ),
+            selectedPage == 2
+                ? PopupMenuItem(
+                    child: Text('Remove spam'),
+                    value: {'context': context, 'url': 'showSpam'},
+                  )
+                : null
           ];
         },
       ),
@@ -50,7 +57,13 @@ AppBar getAppBar(BuildContext context) {
 }
 
 void _overflowItemSelected(item) async {
-  if (await canLaunch(item['url'])) {
+  if (item['url'] == 'showSpam') {
+    final venues = await getVenues();
+    Navigator.push(
+      item['context'],
+      FadePageRoute(builder: (context) => VenueSpamList(venues)),
+    );
+  } else if (await canLaunch(item['url'])) {
     launch(item['url']);
   } else {
     final msg = item['url'].endsWith('ics')

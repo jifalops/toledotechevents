@@ -2,10 +2,14 @@ import 'dart:async';
 import 'dart:core';
 import 'package:xml/xml.dart' as xml;
 import 'package:html/parser.dart' show parse, parseFragment;
-import 'package:html/dom.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:network_resource/network_resource.dart';
+import 'package:flutter/material.dart';
+import '../theme.dart';
+import '../internal/deleter.dart';
+
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
 class Event {
   // Directly parsed values
@@ -21,7 +25,7 @@ class Event {
   List<Link> _links;
   bool _isOneDay;
   NetworkResource _detailsPage;
-  Document _detailsDoc;
+  dom.Document _detailsDoc;
   Event(xml.XmlElement e)
       : title = HtmlUnescape()
             .convert(e.findElements('title').first.firstChild.toString()),
@@ -128,7 +132,7 @@ class Event {
         url: url, filename: 'event_$id.html', maxAge: Duration(hours: 24));
   }
 
-  Future<Document> get detailsDoc async =>
+  Future<dom.Document> get detailsDoc async =>
       _detailsDoc ??= parse((await detailsPage.get()).data);
 
   Future<String> get rsvpUrl async {
@@ -187,6 +191,20 @@ $descriptionHtml
     return endTime.isAfter(startOfDay(day));
   }
 
+  void delete(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+                title: Text('Confirm'),
+                content: Text('Delete event $id?\nThis cannot be undone.'),
+                actions: <Widget>[
+                  TertiaryButton('DELETE', () async {
+                    Navigator.pop(ctx);
+                    Deleter.delete(event: this, context: context);
+                  })
+                ]));
+  }
+
   static Event findById(List<Event> events, int id) {
     try {
       return events.firstWhere((e) => e.id == id, orElse: null);
@@ -208,14 +226,15 @@ class Link {
 
 class EventVenue {
   final String url, title;
-  final Element _addressElement;
+  final dom.Element _addressElement;
   int _id;
   String _address, _street, _city, _state, _zip;
 
-  EventVenue(DocumentFragment v)
-      : url = (v.querySelector('a.url')?.attributes?.containsKey('href') ?? false)
-        ? v.querySelector('a.url').attributes['href']
-        : '',
+  EventVenue(dom.DocumentFragment v)
+      : url =
+            (v.querySelector('a.url')?.attributes?.containsKey('href') ?? false)
+                ? v.querySelector('a.url').attributes['href']
+                : '',
         title = v.querySelector('.fn.org')?.text ?? 'Venue TBD',
         _addressElement = v.querySelector('div.adr');
 
@@ -256,8 +275,7 @@ String _format(DateTime date, String pattern) =>
     date != null ? DateFormat(pattern).format(date) : '';
 
 String formatDay(DateTime date, {pattern: 'EEEE'}) => _format(date, pattern);
-String formatDate(DateTime date, {pattern: 'MMMM d'}) =>
-    _format(date, pattern);
+String formatDate(DateTime date, {pattern: 'MMMM d'}) => _format(date, pattern);
 String formatTime(DateTime date, {ampm: false, pattern: 'h:mm'}) =>
     _format(date, pattern + (ampm ? 'a' : ''));
 

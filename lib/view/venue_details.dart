@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart';
 import '../model.dart';
 import '../theme.dart';
@@ -34,8 +35,9 @@ class VenueDetails extends StatelessWidget {
         PopupMenuButton(
           icon: Icon(Icons.more_vert),
           onSelected: (url) async {
-            print('url $url');
-            if (await canLaunch(url))
+            if (url == 'delete') {
+              venue.delete(context);
+            } else if (await canLaunch(url))
               launch(url);
             else {
               _scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -46,10 +48,6 @@ class VenueDetails extends StatelessWidget {
           },
           itemBuilder: (context) {
             return [
-              PopupMenuItem(
-                child: Text('Edit this venue'),
-                value: venue.editUrl,
-              ),
               PopupMenuItem(
                 child: Text('See past venue events'),
                 value: venue.url,
@@ -62,6 +60,16 @@ class VenueDetails extends StatelessWidget {
                 child: Text('Subscribe via web'),
                 value: venue.subscribeUrl,
               ),
+              PopupMenuItem(
+                child: Text('Edit this venue'),
+                value: venue.editUrl,
+              ),
+              venue.eventCount <= 0
+                  ? PopupMenuItem(
+                      child: Text('Delete this venue'),
+                      value: 'delete',
+                    )
+                  : null,
             ];
           },
         ),
@@ -103,8 +111,7 @@ class VenueDetails extends StatelessWidget {
                         style: Theme.of(context).textTheme.caption,
                       ),
                     ),
-                    Text(' since ',
-                        style: Theme.of(context).textTheme.caption),
+                    Text(' since ', style: Theme.of(context).textTheme.caption),
                     Hero(
                       tag: 'venue-created-${venue.id}',
                       child: Text(format.format(venue.created),
@@ -119,21 +126,25 @@ class VenueDetails extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Hero(tag: 'venue-street-${venue.id}',
-                                                      child: Text(
+                          Hero(
+                            tag: 'venue-street-${venue.id}',
+                            child: Text(
                               venue.street,
                               style: Theme.of(context).textTheme.body2,
                             ),
                           ),
-                          Hero(tag: 'venue-city-${venue.id}',
-                                                      child: Text('${venue.city}, ${venue.state} ${venue.zip}',
+                          Hero(
+                            tag: 'venue-city-${venue.id}',
+                            child: Text(
+                                '${venue.city}, ${venue.state} ${venue.zip}',
                                 style: Theme.of(context).textTheme.body2),
                           ),
                         ],
                       ),
                     ),
-                    Hero(tag: 'venue-map-${venue.id}',
-                                          child: SecondaryButton(
+                    Hero(
+                      tag: 'venue-map-${venue.id}',
+                      child: SecondaryButton(
                         context,
                         'MAP',
                         () => launch(venue.mapUrl),
@@ -143,15 +154,16 @@ class VenueDetails extends StatelessWidget {
                 ),
                 SizedBox(height: 16.0),
                 venue.hasWifi
-                    ? Hero(tag: 'venue-wifi-${venue.id}',
-                                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    ? Hero(
+                        tag: 'venue-wifi-${venue.id}',
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Icon(Icons.wifi, color: kSecondaryColor),
                             Text(' Public WiFi')
                           ],
                         ),
-                    )
+                      )
                     : NullWidget(),
                 SizedBox(height: 8.0),
                 Text(venue.accessNotes),
@@ -176,6 +188,54 @@ class VenueDetails extends StatelessWidget {
                 SizedBox(height: 8.0),
                 HtmlView(
                     data: '<a href="${venue.homepage}">${venue.homepage}</a>'),
+                SizedBox(height: 16.0),
+                FutureBuilder<List<VenueEvent>>(
+                  future: venue.futureEvents,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final items = List<Widget>();
+                      items.add(Text('Upcoming events',
+                          style: TextStyle(fontWeight: FontWeight.bold)));
+                      if (snapshot.data.length > 0) {
+                        snapshot.data.forEach((event) =>
+                            items.add(Text('${event.id}: ${event.title}')));
+                      } else {
+                        items.add(Text('none',
+                            style: TextStyle(fontStyle: FontStyle.italic)));
+                      }
+                      return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: items);
+                    } else if (snapshot.hasError) {
+                      return new Text('${snapshot.error}');
+                    }
+                    return Center(child: CircularProgressIndicator());
+                  },
+                ),
+                SizedBox(height: 16.0),
+                FutureBuilder<List<VenueEvent>>(
+                  future: venue.pastEvents,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final items = List<Widget>();
+                      items.add(Text('Past events',
+                          style: TextStyle(fontWeight: FontWeight.bold)));
+                      if (snapshot.data.length > 0) {
+                        snapshot.data.forEach((event) =>
+                            items.add(Text('${event.id}: ${event.title}')));
+                      } else {
+                        items.add(Text('none',
+                            style: TextStyle(fontStyle: FontStyle.italic)));
+                      }
+                      return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: items);
+                    } else if (snapshot.hasError) {
+                      return new Text('${snapshot.error}');
+                    }
+                    return Center(child: CircularProgressIndicator());
+                  },
+                ),
               ],
             ),
           ),
