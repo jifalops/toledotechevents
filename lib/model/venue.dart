@@ -29,7 +29,7 @@ class Venue {
   final bool isClosed, hasWifi;
   final DateTime created, updated;
   _Address __addressComposed;
-  NetworkResource _detailsPage;
+  StringNetworkResource _detailsPage;
   dom.Document _detailsDoc;
   List<VenueEvent> _pastEvents, _futureEvents;
   Venue(Map v)
@@ -72,13 +72,13 @@ class Venue {
   String get state => _addressComposed.state;
   String get zip => _addressComposed.zip;
 
-  NetworkResource get detailsPage {
-    return _detailsPage ??= NetworkResource(
+  StringNetworkResource get detailsPage {
+    return _detailsPage ??= StringNetworkResource(
         url: url, filename: 'venue_$id.html', maxAge: Duration(hours: 24));
   }
 
   Future<dom.Document> get detailsDoc async =>
-      _detailsDoc ??= parse((await detailsPage.get()).data);
+      _detailsDoc ??= parse(await detailsPage.get());
 
   Future<List<VenueEvent>> get pastEvents async {
     if (_pastEvents == null) {

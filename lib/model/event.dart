@@ -24,7 +24,7 @@ class Event {
   List<String> _tags;
   List<Link> _links;
   bool _isOneDay;
-  NetworkResource _detailsPage;
+  StringNetworkResource _detailsPage;
   dom.Document _detailsDoc;
   Event(xml.XmlElement e)
       : title = HtmlUnescape()
@@ -127,13 +127,13 @@ class Event {
   double get latitude => _coordinates[0];
   double get longitude => _coordinates[1];
 
-  NetworkResource get detailsPage {
-    return _detailsPage ??= NetworkResource(
+  StringNetworkResource get detailsPage {
+    return _detailsPage ??= StringNetworkResource(
         url: url, filename: 'event_$id.html', maxAge: Duration(hours: 24));
   }
 
   Future<dom.Document> get detailsDoc async =>
-      _detailsDoc ??= parse((await detailsPage.get()).data);
+      _detailsDoc ??= parse(await detailsPage.get());
 
   Future<String> get rsvpUrl async {
     if (_rsvpUrl == null) {
