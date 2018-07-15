@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:flutter/material.dart';
-import 'package:html/dom.dart';
+// import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:network_resource/network_resource.dart';
 import 'model/event.dart';

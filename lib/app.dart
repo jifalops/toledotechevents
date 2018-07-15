@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
@@ -11,27 +9,27 @@ import 'view/create_event.dart';
 import 'view/app_bar.dart';
 import 'view/animated_page.dart';
 
-void main() => runApp(new MyApp());
+// void main() => runApp(new MyApp());
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Toledo Tech Events',
       theme: kTheme,
-      home: MyHomePage(),
+      home: MainPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MainPage extends StatefulWidget {
   @override
-  MyHomePageState createState() {
-    return new MyHomePageState();
+  MainPageState createState() {
+    return new MainPageState();
   }
 }
 
-class MyHomePageState extends State<MyHomePage> {
+class MainPageState extends State<MainPage> {
   int _selectedPage = 0;
 
   @override
