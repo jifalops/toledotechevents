@@ -6,8 +6,8 @@ import 'package:html/dom.dart' as dom;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:network_resource/network_resource.dart';
-import 'package:flutter/material.dart';
-import '../theme.dart';
+// import 'package:flutter/material.dart';
+// import '../theme.dart';
 import '../internal/deleter.dart';
 
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.

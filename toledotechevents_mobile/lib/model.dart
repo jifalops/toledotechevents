@@ -25,7 +25,7 @@ String pastEventsUrl() {
   var now = DateTime.now();
   var fmt = DateFormat('yyyy-MM-dd');
   return 'http://toledotechevents.org/events?utf8=%E2%9C%93&date%5Bstart%5D=' +
-      fmt.format(now.subtract(Duration(days: 30))) +
+      fmt.format(now.subtract(Duration(days: 90))) +
       '&date%5Bend%5D=' +
       fmt.format(now) +
       '&time%5Bstart%5D=&time%5Bend%5D=&commit=Filter';

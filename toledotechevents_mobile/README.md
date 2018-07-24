@@ -46,7 +46,7 @@ The data model also contains the main site's **about page**, **add event page**,
 
 ## View
 
-There are six primary screens, four top-level screens where the two lists lead to a details screen.
+There are six primary screens, four top-level screens where the two lists lead to details screens.
 
 ```
 | Events list
@@ -85,6 +85,10 @@ This screen simply shows the information from the main site's about page. Embedd
 
 ### Additional views
 
+#### Navigation bar
+
+For choosing one of the four top-level views.
+
 #### Options menus
 
 From each of the four top-level screens, there is a list of options, each of which is a link external to the app. The venue's list options screen contains an extra option which opens the spam remover screen.
@@ -99,18 +103,20 @@ This screen shows a list of venues that might need removal. Each list item conta
 
 The dialog shows a title and summary of what is to be deleted, a password input field, and the confirm button.
 
+#### Delete confirmation
+
+A simple dialog for when the users selects the delete menu option.
+
 ## Bloc
 
-The view descriptions above roughly outline the data it contains and ways the user can interact with it. This section goes further and lists the platform agnostic input and output data a view's related bloc must have.
-
-### Blocs for primary views
-
-#### EventListBloc
-
-Inputs
-
-*
+The view descriptions above roughly outline the data each contains and ways the user can interact with it. This section goes further and lists the platform agnostic input and output data a view's related bloc must have, which omits things like links that change views as opposed to actions that modify the view's state.
 
 Bloc | Outputs to view | Inputs from view
 -|-|-
-`EventListBloc` | `List<Event>`
+Event list | upcoming events | event selected, refresh
+Venue list | sorted venues | venue selected, refresh, sort
+Event details |
+
+
+
+Finally the model contains a platform agnostic **route manager** and **layout provider** which detects screen size.
