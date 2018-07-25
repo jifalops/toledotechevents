@@ -85,6 +85,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1"
+  english_words:
+    dependency: transitive
+    description:
+      name: english_words
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -137,6 +144,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.3+1"
+  html_unescape:
+    dependency: transitive
+    description:
+      name: html_unescape
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1+1"
   http:
     dependency: transitive
     description:
@@ -270,6 +284,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.1"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.7"
   plugin:
     dependency: transitive
     description:
@@ -298,6 +319,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.29.0+1"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.18.1"
   shared_preferences:
     dependency: transitive
     description:
@@ -408,6 +436,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.41"
+  toledotechevents:
+    dependency: "direct main"
+    description:
+      path: "../toledotechevents"
+      relative: true
+    source: path
+    version: "0.0.1"
   typed_data:
     dependency: transitive
     description:
@@ -464,6 +499,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.8"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   yaml:
     dependency: transitive
     description:

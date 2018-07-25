@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'env.dart';
+import 'package:toledotechevents/env.dart';
 import 'app.dart';
 
 void main() {
-  BuildEnvironment.init(
+  AppConfig.init(
       flavor: BuildFlavor.development, baseUrl: 'http://dev.example.com');
-  assert(env != null);
+  assert(config != null);
   runApp(App());
 }
