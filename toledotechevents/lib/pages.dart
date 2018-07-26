@@ -45,10 +45,12 @@ bool debugAllRoutesDefined() {
 
 /// A platform-agnostic representation of a page that contains domain-specific
 /// data. Platform specific view logic uses this to show a page to the user.
-///
-/// This is basically a utility class, but cannot be extracted because it
-/// depends on classes defined at the business level.
 class PageData {
+  // This is basically a utility class, but cannot be extracted because it
+  // depends on classes defined at the business level. It is unlikely to need to
+  // modify this class, unless adding a new data type that page rendering relies
+  // on.
+
   final Page page;
   final Route route;
   final Display display;

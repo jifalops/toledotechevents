@@ -4,13 +4,6 @@ import '../pages.dart';
 
 export '../pages.dart';
 
-/// Passed to the [PageBloc] to signal for a new page that may require arguments.
-class PageRequest {
-  final Page page;
-  final PageArgs args;
-  PageRequest(this.page, [this.args]);
-}
-
 /// Listens for signals that may require the page to be redrawn and outputs a
 /// [Stream] of [PageData] that can be used to draw a page.
 class PageBloc {
@@ -60,4 +53,11 @@ class PageBloc {
 
   /// Platform-agnostic output stream for presenting pages to the user.
   Stream<PageData> get pageData => _pageData.stream;
+}
+
+/// Passed to the [PageBloc] to signal for a new page that may require arguments.
+class PageRequest {
+  final Page page;
+  final PageArgs args;
+  PageRequest(this.page, [this.args]);
 }
