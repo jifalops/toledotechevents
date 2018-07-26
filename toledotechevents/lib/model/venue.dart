@@ -1,6 +1,5 @@
 import 'dart:core';
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:network_resource/network_resource.dart';

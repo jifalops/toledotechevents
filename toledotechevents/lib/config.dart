@@ -1,19 +1,19 @@
-import 'package:meta/meta.dart';
+BuildConfig get config => BuildConfig.instance;
 
-enum BuildFlavor { production, development, staging }
+/// Configuration for the current flavor of the app
+/// (e.g. production, development, staging).
+class BuildConfig {
+  static BuildConfig instance;
 
-/// Configuration for the current flavor of the app (e.g. production, development, staging).
-AppConfig get config => _config;
-AppConfig _config;
-
-class AppConfig {
   /// The backend server.
   final String baseUrl;
   final BuildFlavor flavor;
 
-  AppConfig._init(this.flavor, this.baseUrl);
+  BuildConfig._init(this.flavor, this.baseUrl);
 
   /// Sets up the top-level [config] getter on the first call only.
   static void init(BuildFlavor flavor, String baseUrl) =>
-      _config ??= AppConfig._init(flavor, baseUrl);
+      instance ??= BuildConfig._init(flavor, baseUrl);
 }
+
+enum BuildFlavor { production, development, staging }

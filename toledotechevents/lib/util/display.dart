@@ -1,25 +1,6 @@
 import 'package:meta/meta.dart';
 
-enum NavbarPosition { hidden, top, left, bottom, right }
-
-class Layout {
-  final NavbarPosition navbarPosition;
-  final bool stickyHeader;
-  Layout(Display display) : navbarPosition = _getNavbarPosition(display), stickyHeader = _shouldStickyHeader(display);
-  }
-
-  _shouldStickyHeader(Display display) {
-}
-
-_getNavbarPosition(Display display) {
-  if (display.type == DisplayType.mobile) {
-    return NavbarPosition.bottom;
-  } else if (display.orientation)
-}
-
-
-
-/// Information about the app's media or render box, so it can decide how to
+/// Information about the app's screen/media/render box, so it can decide how to
 /// lay itself out.
 class Display {
   final double height;
@@ -34,11 +15,13 @@ class Display {
         orientation = orientation ?? (width / height) > 1
             ? Orientation.landscape
             : Orientation.portrait;
+
   @override
   operator ==(other) =>
       height == other.height &&
       width == other.width &&
       orientation == other.orientation;
+
   @override
   int get hashCode => '$height$width$orientation'.hashCode;
 }
