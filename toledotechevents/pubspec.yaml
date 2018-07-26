@@ -17,8 +17,9 @@ dependencies:
   html_unescape: ^1.0.0
   intl: any
   meta: any
-  angel_route: 2.0.7
+
 
 dev_dependencies:
   test: ^1.3.0
   mockito: ^3.0.0
+  collection: ^1.14.11

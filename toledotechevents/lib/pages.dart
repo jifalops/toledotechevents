@@ -1,14 +1,18 @@
 import 'dart:collection';
-import 'package:meta/meta.dart';
-import 'util/router.dart';
+
+import 'package:collection/collection.dart';
+
+import 'util/route.dart';
 import 'util/display.dart';
 import 'theme.dart';
+import 'layout.dart';
 
-export 'util/router.dart';
+export 'util/route.dart';
 export 'util/display.dart';
 export 'theme.dart';
+export 'layout.dart';
 
-/// The pages of the app.
+/// Domain-specific pages of the app.
 enum Page {
   eventList,
   eventDetails,
@@ -19,7 +23,7 @@ enum Page {
   spamRemover
 }
 
-/// Defines each [Page]'s [Route].
+/// Business logic for each page's route and parameters.
 final _routes = UnmodifiableMapView<Page, Route>({
   Page.eventList: Route('/events'),
   Page.eventDetails: Route('/event/:id'),
@@ -30,52 +34,38 @@ final _routes = UnmodifiableMapView<Page, Route>({
   Page.spamRemover: Route('/venues/spam'),
 });
 
-void debugAssertAllRoutesDefined() {
-  assert(Page.values.length == _routes.length);
+/// Checks for consistency between the [Page] enum and [_routes].
+bool debugAllRoutesDefined() {
+  if (Page.values.length != _routes.length) return false;
   Page.values.forEach((page) {
-    assert(_routes[page] != null);
+    if (_routes[page] == null) return false;
   });
+  return true;
 }
 
-/// Opinionated data for how a [Page] should be presented on screen.
-class RenderablePage {
+/// A platform-agnostic representation of a page that contains domain-specific
+/// data. Platform specific view logic uses this to show a page to the user.
+///
+/// This is basically a utility class, but cannot be extracted because it
+/// depends on classes defined at the business level.
+class PageData {
   final Page page;
   final Route route;
   final Display display;
-  final Layout layout;
   final Theme theme;
+  final PageArgs args;
+  Layout _layout;
 
-  RenderablePage(this.page, this.display, [Theme theme])
+  PageData(this.page, this.display, [Theme theme, Map<String, dynamic> args])
       : route = _routes[page],
-        layout = Layout(navbarPosition: _navbarPosition(page, display)),
-        theme = theme ?? Theme();
-}
-
-/// On mobile, only the four top-level pages show a nav bar; at the bottom
-/// of the page. For all other form factors, the nav bar is at the top of every
-/// page.
-NavbarPosition _navbarPosition(Page page, Display display) {
-  switch (display.type) {
-    case DisplayType.mobile:
-      switch (page) {
-        case Page.eventList:
-        case Page.venuesList:
-        case Page.createEvent:
-        case Page.about:
-          return NavbarPosition.bottom;
-        default:
-          return NavbarPosition.hidden;
-      }
-      break;
-    default:
-      return NavbarPosition.top;
+        theme = theme ?? Theme(),
+        args = PageArgs(args ?? {}) {
+    assert(IterableEquality().equals(args.keys, route.params));
   }
+
+  Layout get layout => _layout ??= Layout(page, route, display, theme, args);
 }
 
-enum NavbarPosition { hidden, top, bottom }
-
-/// Characteristics about a [Page]'s layout.
-class Layout {
-  final NavbarPosition navbarPosition;
-  Layout({@required this.navbarPosition});
+class PageArgs extends UnmodifiableMapView<String, dynamic> {
+  PageArgs(Map<String, dynamic> args) : super(args);
 }

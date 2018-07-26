@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 
-/// Information about the app's screen/media/render box, so it can decide how to
-/// lay itself out.
+/// Usually a device's screen.
 class Display {
   final double height;
   final double width;
