@@ -38,6 +38,10 @@ class Display {
 enum Orientation { portrait, landscape }
 
 /// An aggregated version of [SpecificDisplayType].
+///
+/// Extra-small window and small window are incorporated into mobile and
+/// tablet respectively. [DisplayType.window] is at least as large as a
+/// [SpecificDisplayType.mediumWindow].
 enum DisplayType { mobile, tablet, window }
 
 /// See https://material.io/design/layout/responsive-layout-grid.html#breakpoints
