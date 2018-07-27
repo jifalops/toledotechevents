@@ -4,7 +4,6 @@ Business logic and utilities for the Toledo Tech Events applications.
 
 This package's structure utilizes the `simple framework` for cross-platform apps, which combines a straightforward file structure and the BLoC (Business Logic Component) architecture pattern.
 
-
 ## Files
 
 ### Top level files

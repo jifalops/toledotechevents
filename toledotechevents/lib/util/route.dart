@@ -11,9 +11,3 @@ class Route {
   List<String> get params => _params ??=
       value.allMatches(r'/:([^/]+)').map((match) => match.group(0).toString());
 }
-
-// /// [Router] provides methods for managing a [Route] stack.
-// abstract class Router {
-//   void push(Route route);
-//   Route pop();
-// }
