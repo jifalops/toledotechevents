@@ -14,7 +14,7 @@ File | Purpose
 -|-
 `config.dart` | Contains build configuration such as build flavor and backend server URLs.
 `pages.dart` | Declares the app's `Page`s and corresponding `Route`s.
-`theme.dart` | Colors, font, and other theme data.
+`theme.dart` | Colors, fonts, and other theme data.
 `layout.dart` | Describes how pages are layed out, taking the `Page`, `Display`, and `Theme` into consideration.
 
 ### `BLoC files`
