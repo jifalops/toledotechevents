@@ -138,8 +138,8 @@ class Venue {
     showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-              title: Text('Confirm'),
-              content: Text('Delete venue $id?\nThis cannot be undone.'),
+              title: Font('Confirm'),
+              content: Font('Delete venue $id?\nThis cannot be undone.'),
               actions: <Widget>[
                 TertiaryButton('DELETE', () async {
                   Navigator.pop(ctx);

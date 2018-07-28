@@ -36,7 +36,7 @@ class PageBloc {
   }
 
   void _handleInput(PageRequest request, Display display, Theme theme) {
-    if (page != null && display != null) {
+    if (page != null && display != null && theme != null) {
       _pageData.add(PageData(request.page, display, theme, request.args));
     }
   }
