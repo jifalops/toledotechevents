@@ -1,7 +1,12 @@
 import 'pages.dart';
+import 'util/display.dart';
+import 'theme.dart';
+
+/// Domain-specific locations for the page navigation UI.
+enum MainNavigation { none, top, bottom }
 
 /// Business logic that defines the location of the main navigation UI.
-MainNavigation _placeMainNavigation(Page page, Display display) {
+MainNavigation _placeMainNavigation(Page page, Theme theme, Display display) {
   switch (display.type) {
     case DisplayType.mobile:
       switch (page) {
@@ -23,11 +28,6 @@ MainNavigation _placeMainNavigation(Page page, Display display) {
 class Layout {
   final MainNavigation mainNavigation;
 
-  Layout(Page page, Route route, Display display, Theme theme, PageArgs args)
-      : mainNavigation = _placeMainNavigation(page, display);
+  Layout(Page page, Theme theme, Display display)
+      : mainNavigation = _placeMainNavigation(page, theme, display);
 }
-
-/// Domain-specific locations for the page navigation UI.
-enum MainNavigation { none, top, bottom }
-
-

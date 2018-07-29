@@ -5,27 +5,29 @@ import 'package:meta/meta.dart';
 import 'util/colors.dart';
 import 'util/fonts.dart';
 
-/// The available [Theme]s.
-enum Themes { light, dark }
+/// The available [Theme]s. Used for showing the user their options.
+class Themes {
+
+}
 
 // Shared theme properties. This makes reusing them easier.
 
-// Colors
-const _primary = Color(0x0C4964);
-const _primaryLight = Color(0x437492);
-const _primaryDark = Color(0x00223A);
-const _secondary = Color(0x8DC641);
-const _secondaryLight = Color(0xC0F972);
-const _secondaryDark = Color(0x5B9502);
-const _error = Color(0xB00020);
+// Colors (ARGB, prefixed with an opacity byte)
+const _primary = Color(0xFF0C4964);
+const _primaryLight = Color(0xFF437492);
+const _primaryDark = Color(0xFF00223A);
+const _secondary = Color(0xFF8DC641);
+const _secondaryLight = Color(0xFFC0F972);
+const _secondaryDark = Color(0xFF5B9502);
+const _error = Color(0xFFB00020);
 // Colors on top of theme colors (usually text).
-const _onPrimary = Color(0xFFFFFF);
-const _onPrimaryLight = Color(0xFFFFFF);
-const _onPrimaryDark = Color(0xFFFFFF);
-const _onSecondary = Color(0x000000);
-const _onSecondaryLight = Color(0x000000);
-const _onSecondaryDark = Color(0x000000);
-const _onError = Color(0xFFFFFF);
+const _onPrimary = Colors.white;
+const _onPrimaryLight = Colors.white;
+const _onPrimaryDark = Colors.white;
+const _onSecondary = Colors.black;
+const _onSecondaryLight = Colors.black;
+const _onSecondaryDark = Colors.black;
+const _onError = Colors.white;
 // Other
 const _inputTheme = InputTheme.outline;
 const _buttonCornerRadius = 4.0;
@@ -40,7 +42,7 @@ const _onSecondaryButton = _onPrimary;
 /// Class properties can be modified according to business needs.
 class Theme {
   /// The business's light theme.
-  static const Theme light = Theme.custom(
+  static const Theme light = Theme._(
       brightness: Brightness.light,
       backgroundColor: Color(0xFEFEFE),
       onBackgroundColor: Colors.black87,
@@ -84,7 +86,7 @@ class Theme {
       buttonCornerRadius: _buttonCornerRadius);
 
   /// The business's dark theme.
-  static const Theme dark = Theme.custom(
+  static const Theme dark = Theme._(
       brightness: Brightness.dark,
       backgroundColor: Color(0x212121),
       onBackgroundColor: Colors.white,
@@ -182,7 +184,7 @@ class Theme {
   final InputTheme inputTheme;
   final double buttonCornerRadius;
 
-  const Theme.custom(
+  const Theme._(
       {@required this.brightness,
       // Colors
       @required this.primaryColor,

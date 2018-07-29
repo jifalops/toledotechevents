@@ -1,3 +1,4 @@
+/// Shorthand for [BuildConfig.instance].
 BuildConfig get config => BuildConfig.instance;
 
 /// Configuration for the current flavor of the app
@@ -9,7 +10,7 @@ class BuildConfig {
   final String baseUrl;
   final BuildFlavor flavor;
 
-  BuildConfig._init(this.flavor, this.baseUrl);
+  const BuildConfig._init(this.flavor, this.baseUrl);
 
   /// Sets up the top-level [config] getter on the first call only.
   static void init(BuildFlavor flavor, String baseUrl) =>
