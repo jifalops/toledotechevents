@@ -13,9 +13,9 @@ export '../theme.dart';
 export '../layout.dart';
 export '../util/display.dart';
 
-/// Represents data on disk such as a native I/O File, browser service-worker
-/// cache, or browser local storage.
-class LocalResource<T> {
+/// Represents data from the network or disk such as a native I/O File, browser
+/// service-worker cache, or browser local storage.
+class Resource<T> {
   Future<T> get({forceReload: false}) async => null;
   Future<void> save(T value) async => null;
 }
@@ -30,10 +30,9 @@ class PageBloc {
   // Output.
   final _pageData = BehaviorSubject<PageData>();
 
-  final _themeResource;
+  final Resource<String> _themeResource;
 
-  PageBloc(LocalResource<String> themeResource)
-      : _themeResource = themeResource {
+  PageBloc(Resource<String> themeResource) : _themeResource = themeResource {
     _pageController.stream.distinct().listen((page) async => _updatePage(
         page,
         await _displayController.stream.last,
@@ -53,6 +52,9 @@ class PageBloc {
     _themeResource.get().then((name) => theme.add(name == null
         ? Theme.values[0]
         : Theme.values.firstWhere((theme) => theme.name == name)));
+
+    // Request the first page.
+    request.add(PageRequest(Page.first));
   }
 
   void dispose() {
