@@ -58,9 +58,8 @@ class PageData {
   final PageArgs args;
   Layout _layout;
 
-  PageData(this.page, this.display, [Theme theme, Map<String, dynamic> args])
+  PageData(this.page, this.display, this.theme, [Map<String, dynamic> args])
       : route = _routes[page],
-        theme = theme ?? Theme(),
         args = PageArgs(args ?? {}) {
     assert(IterableEquality().equals(args.keys, route.params));
   }
