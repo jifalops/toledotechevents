@@ -5,11 +5,6 @@ import 'package:meta/meta.dart';
 import 'util/colors.dart';
 import 'util/fonts.dart';
 
-/// The available [Theme]s. Used for showing the user their options.
-class Themes {
-
-}
-
 // Shared theme properties. This makes reusing them easier.
 
 // Colors (ARGB, prefixed with an opacity byte)
@@ -41,14 +36,16 @@ const _onSecondaryButton = _onPrimary;
 ///
 /// Class properties can be modified according to business needs.
 class Theme {
+  /// The statically defined themes.
+  ///
+  /// For the default theme use `Theme.values[0]`.
+  static const values = [Theme.light, Theme.dark];
+
   /// The business's light theme.
   static const Theme light = Theme._(
-      brightness: Brightness.light,
-      backgroundColor: Color(0xFEFEFE),
-      onBackgroundColor: Colors.black87,
-      surfaceColor: Color(0xFEFEFE),
-      onSurfaceColor: Colors.black87,
-      dividerColor: Color(0xF1F1F1),
+      name: 'Light',
+      backgroundColor: Color(0xFFFEFEFE),
+      surfaceColor: Color(0xFFFEFEFE),
       // These fonts are based on the material [Fonts.*], but defined here
       // statically so this theme definition can be a `const`.
       headline: Font(size: 24.0, weight: 700, height: 2.5, family: 'Ubuntu'),
@@ -58,41 +55,17 @@ class Theme {
           Font(size: 18.0, weight: 600, color: _primary, family: 'Open Sans'),
       body1: Font(size: 16.0, height: 1.15, family: 'Open Sans'),
       caption: Font(size: 16.0, color: Colors.black54, family: 'Open Sans'),
-      button: Font(size: 14.0, weight: 500, family: 'Open Sans'),
-      display4: Fonts.display4Black,
-      display3: Fonts.display3Black,
-      display2: Fonts.display2Black,
-      display1: Fonts.display1Black,
-      // Theme independent
-      primaryColor: _primary,
-      primaryColorLight: _primaryLight,
-      primaryColorDark: _primaryDark,
-      secondaryColor: _secondary,
-      secondaryColorLight: _secondaryLight,
-      secondaryColorDark: _secondaryDark,
-      errorColor: _error,
-      primaryButtonColor: _primaryButton,
-      secondaryButtonColor: _secondaryButton,
-      onPrimaryColor: _onPrimary,
-      onPrimaryColorLight: _onPrimaryLight,
-      onPrimaryColorDark: _onPrimaryDark,
-      onSecondaryColor: _onSecondary,
-      onSecondaryColorLight: _onSecondaryLight,
-      onSecondaryColorDark: _onSecondaryDark,
-      onErrorColor: _onError,
-      onPrimaryButtonColor: _onPrimaryButton,
-      onSecondaryButtonColor: _onSecondaryButton,
-      inputTheme: _inputTheme,
-      buttonCornerRadius: _buttonCornerRadius);
+      button: Font(size: 14.0, weight: 500, family: 'Open Sans'));
 
   /// The business's dark theme.
   static const Theme dark = Theme._(
+      name: 'Dark',
       brightness: Brightness.dark,
-      backgroundColor: Color(0x212121),
+      backgroundColor: Color(0xFF212121),
       onBackgroundColor: Colors.white,
-      surfaceColor: Color(0x212121),
+      surfaceColor: Color(0xFF212121),
       onSurfaceColor: Colors.white,
-      dividerColor: Color(0x333333),
+      dividerColor: Color(0xFF333333),
       // These fonts are based on the material [Fonts.*], but defined here
       // statically so this theme definition can be a `const`.
       headline: Font(
@@ -119,29 +92,54 @@ class Theme {
       display4: Fonts.display4White,
       display3: Fonts.display3White,
       display2: Fonts.display2White,
-      display1: Fonts.display1White,
-      // Theme independent
-      primaryColor: _primary,
-      primaryColorLight: _primaryLight,
-      primaryColorDark: _primaryDark,
-      secondaryColor: _secondary,
-      secondaryColorLight: _secondaryLight,
-      secondaryColorDark: _secondaryDark,
-      errorColor: _error,
-      primaryButtonColor: _primaryButton,
-      secondaryButtonColor: _secondaryButton,
-      onPrimaryColor: _onPrimary,
-      onPrimaryColorLight: _onPrimaryLight,
-      onPrimaryColorDark: _onPrimaryDark,
-      onSecondaryColor: _onSecondary,
-      onSecondaryColorLight: _onSecondaryLight,
-      onSecondaryColorDark: _onSecondaryDark,
-      onErrorColor: _onError,
-      onPrimaryButtonColor: _onPrimaryButton,
-      onSecondaryButtonColor: _onSecondaryButton,
-      inputTheme: _inputTheme,
-      buttonCornerRadius: _buttonCornerRadius);
+      display1: Fonts.display1White);
 
+  const Theme._(
+      {this.name: 'Default',
+      this.brightness: Brightness.light,
+      // Colors (ARGB, prefixed with an opacity byte)
+      this.primaryColor: _primary,
+      this.primaryColorLight: _primaryLight,
+      this.primaryColorDark: _primaryDark,
+      this.secondaryColor: _secondary,
+      this.secondaryColorLight: _secondaryLight,
+      this.secondaryColorDark: _secondaryDark,
+      this.errorColor: _error,
+      this.primaryButtonColor: _primaryButton,
+      this.secondaryButtonColor: _secondaryButton,
+      // Color on top of theme colors (usually text).
+      this.onPrimaryColor: _onPrimary,
+      this.onPrimaryColorLight: _onPrimaryLight,
+      this.onPrimaryColorDark: _onPrimaryDark,
+      this.onSecondaryColor: _onSecondary,
+      this.onSecondaryColorLight: _onSecondaryLight,
+      this.onSecondaryColorDark: _onSecondaryDark,
+      this.onErrorColor: _onError,
+      this.onPrimaryButtonColor: _onPrimaryButton,
+      this.onSecondaryButtonColor: _onSecondaryButton,
+      // Other colors.
+      this.dividerColor: Colors.black12,
+      this.backgroundColor: Colors.white,
+      this.surfaceColor: Colors.white,
+      this.onBackgroundColor: Colors.black87,
+      this.onSurfaceColor: Colors.black87,
+      // Fonts
+      this.display4: Fonts.display4Black,
+      this.display3: Fonts.display3Black,
+      this.display2: Fonts.display2Black,
+      this.display1: Fonts.display1Black,
+      this.headline: Fonts.headlineBlack,
+      this.title: Fonts.titleBlack,
+      this.subhead: Fonts.subheadBlack,
+      this.body2: Fonts.body2Black,
+      this.body1: Fonts.body1Black,
+      this.caption: Fonts.captionBlack,
+      this.button: Fonts.buttonBlack,
+      // Other
+      this.inputTheme: _inputTheme,
+      this.buttonCornerRadius: _buttonCornerRadius});
+
+  final String name;
   final Brightness brightness;
   // Colors
   final Color primaryColor;
@@ -183,49 +181,6 @@ class Theme {
   // Other
   final InputTheme inputTheme;
   final double buttonCornerRadius;
-
-  const Theme._(
-      {@required this.brightness,
-      // Colors
-      @required this.primaryColor,
-      @required this.primaryColorLight,
-      @required this.primaryColorDark,
-      @required this.secondaryColor,
-      @required this.secondaryColorLight,
-      @required this.secondaryColorDark,
-      @required this.backgroundColor,
-      @required this.surfaceColor,
-      @required this.dividerColor,
-      @required this.errorColor,
-      @required this.primaryButtonColor,
-      @required this.secondaryButtonColor,
-      // Color on top of theme colors (usually text).
-      @required this.onPrimaryColor,
-      @required this.onPrimaryColorLight,
-      @required this.onPrimaryColorDark,
-      @required this.onSecondaryColor,
-      @required this.onSecondaryColorLight,
-      @required this.onSecondaryColorDark,
-      @required this.onBackgroundColor,
-      @required this.onSurfaceColor,
-      @required this.onErrorColor,
-      @required this.onPrimaryButtonColor,
-      @required this.onSecondaryButtonColor,
-      // Fonts
-      @required this.display4,
-      @required this.display3,
-      @required this.display2,
-      @required this.display1,
-      @required this.headline,
-      @required this.title,
-      @required this.subhead,
-      @required this.body2,
-      @required this.body1,
-      @required this.caption,
-      @required this.button,
-      // Other
-      @required this.inputTheme,
-      @required this.buttonCornerRadius});
 }
 
 enum Brightness { light, dark }
