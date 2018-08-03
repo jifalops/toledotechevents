@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:toledotechevents/env.dart';
+import 'package:toledotechevents/build_config.dart';
 import 'app.dart';
 
 void main() {
-  AppConfig.init(
-      flavor: BuildFlavor.development, baseUrl: 'http://dev.example.com');
+  BuildConfig.init(
+      flavor: BuildFlavor.development,
+      baseUrl: 'http://dev.toledotechevents.org',
+      cacheName: 'toledotechevents_dev');
   assert(config != null);
   runApp(App());
 }

@@ -2,10 +2,10 @@ import 'dart:core';
 import 'dart:async';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse, parseFragment;
-import 'package:network_resource/network_resource.dart';
+import 'package:async_resource/async_resource.dart';
 import 'package:english_words/english_words.dart' as words;
 import 'package:html_unescape/html_unescape.dart';
-import '../theme.dart';
+// import '../theme.dart';
 import '../internal/deleter.dart';
 
 /**
@@ -28,10 +28,9 @@ class Venue {
   final bool isClosed, hasWifi;
   final DateTime created, updated;
   _Address __addressComposed;
-  StringNetworkResource _detailsPage;
-  dom.Document _detailsDoc;
+  NetworkResource<dom.Document> detailsDoc;
   List<VenueEvent> _pastEvents, _futureEvents;
-  Venue(Map v)
+  Venue(Map v, this.detailsDoc)
       : title = v['title'] ?? '',
         description = v['description'] ?? '',
         _address = v['address'] ?? '',
@@ -71,18 +70,18 @@ class Venue {
   String get state => _addressComposed.state;
   String get zip => _addressComposed.zip;
 
-  StringNetworkResource get detailsPage {
-    return _detailsPage ??= StringNetworkResource(
-        url: url, filename: 'venue_$id.html', maxAge: Duration(hours: 24));
-  }
+  // StringNetworkResource get detailsPage {
+  //   return _detailsPage ??= StringNetworkResource(
+  //       url: url, filename: 'venue_$id.html', maxAge: Duration(hours: 24));
+  // }
 
-  Future<dom.Document> get detailsDoc async =>
-      _detailsDoc ??= parse(await detailsPage.get());
+  // Future<dom.Document> get detailsDoc async =>
+  //     _detailsDoc ??= parse(await detailsPage.get());
 
   Future<List<VenueEvent>> get pastEvents async {
     if (_pastEvents == null) {
       _pastEvents = List<VenueEvent>();
-      (await detailsDoc)
+      (await detailsDoc.get())
           .querySelector('#past_events')
           .querySelectorAll('tr')
           .forEach((tableRow) {
@@ -96,7 +95,7 @@ class Venue {
   Future<List<VenueEvent>> get futureEvents async {
     if (_futureEvents == null) {
       _futureEvents = List<VenueEvent>();
-      (await detailsDoc)
+      (await detailsDoc.get())
           .querySelector('#future_events')
           .querySelectorAll('tr')
           .forEach((tableRow) {
@@ -134,20 +133,20 @@ class Venue {
 ''';
   }
 
-  void delete(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: Font('Confirm'),
-              content: Font('Delete venue $id?\nThis cannot be undone.'),
-              actions: <Widget>[
-                TertiaryButton('DELETE', () async {
-                  Navigator.pop(ctx);
-                  Deleter.delete(venue: this, context: context);
-                }),
-              ],
-            ));
-  }
+  // void delete(BuildContext context) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (ctx) => AlertDialog(
+  //             title: Font('Confirm'),
+  //             content: Font('Delete venue $id?\nThis cannot be undone.'),
+  //             actions: <Widget>[
+  //               TertiaryButton('DELETE', () async {
+  //                 Navigator.pop(ctx);
+  //                 Deleter.delete(venue: this, context: context);
+  //               }),
+  //             ],
+  //           ));
+  // }
 
   static Venue findById(List<Venue> venues, int id) {
     try {

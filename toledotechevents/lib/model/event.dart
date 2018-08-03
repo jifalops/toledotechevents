@@ -5,7 +5,7 @@ import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:html/dom.dart' as dom;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
-import 'package:network_resource/network_resource.dart';
+import 'package:async_resource/async_resource.dart';
 // import 'package:flutter/material.dart';
 // import '../theme.dart';
 import '../internal/deleter.dart';
@@ -24,9 +24,8 @@ class Event {
   List<String> _tags;
   List<Link> _links;
   bool _isOneDay;
-  StringNetworkResource _detailsPage;
-  dom.Document _detailsDoc;
-  Event(xml.XmlElement e)
+  NetworkResource<dom.Document> detailsDoc;
+  Event(xml.XmlElement e, this.detailsDoc)
       : title = HtmlUnescape()
             .convert(e.findElements('title').first.firstChild.toString()),
         summary = HtmlUnescape()
@@ -107,7 +106,7 @@ class Event {
   String get iCalendarUrl => url + '.ics';
   Future<String> get googleCalendarUrl async {
     if (_googleCalendarUrl == null) {
-      var doc = await detailsDoc;
+      var doc = await detailsDoc.get();
       if (doc != null) {
         try {
           _googleCalendarUrl =
@@ -127,17 +126,22 @@ class Event {
   double get latitude => _coordinates[0];
   double get longitude => _coordinates[1];
 
-  StringNetworkResource get detailsPage {
-    return _detailsPage ??= StringNetworkResource(
-        url: url, filename: 'event_$id.html', maxAge: Duration(hours: 24));
-  }
+  // HttpNetworkResource<String> get detailsPage {
+  //   return _detailsPage ??= HttpNetworkResource<String>(
+  //       url: url,
+  //       cache: LocalResource(
 
-  Future<dom.Document> get detailsDoc async =>
-      _detailsDoc ??= parse(await detailsPage.get());
+  //         ('event_$id.html')),
+
+  //        filename: , maxAge: Duration(hours: 24));
+  // }
+
+  // Future<dom.Document> get detailsDoc async =>
+  //     _detailsDoc ??= parse(await detailsPage.get());
 
   Future<String> get rsvpUrl async {
     if (_rsvpUrl == null) {
-      var doc = await detailsDoc;
+      var doc = await detailsDoc.get();
       if (doc != null) {
         try {
           _rsvpUrl = doc.querySelector('.rsvp').attributes['href'];
@@ -191,19 +195,20 @@ $descriptionHtml
     return endTime.isAfter(startOfDay(day));
   }
 
-  void delete(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-                title: Text('Confirm'),
-                content: Text('Delete event $id?\nThis cannot be undone.'),
-                actions: <Widget>[
-                  TertiaryButton('DELETE', () async {
-                    Navigator.pop(ctx);
-                    Deleter.delete(event: this, context: context);
-                  })
-                ]));
-  }
+// TODO move elsewhere
+  // void delete(BuildContext context) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (ctx) => AlertDialog(
+  //               title: Text('Confirm'),
+  //               content: Text('Delete event $id?\nThis cannot be undone.'),
+  //               actions: <Widget>[
+  //                 TertiaryButton('DELETE', () async {
+  //                   Navigator.pop(ctx);
+  //                   Deleter.delete(event: this, context: context);
+  //                 })
+  //               ]));
+  // }
 
   static Event findById(List<Event> events, int id) {
     try {
