@@ -10,6 +10,8 @@ import 'package:async_resource/async_resource.dart';
 // import '../theme.dart';
 import '../internal/deleter.dart';
 
+typedef NetworkResource<dom.Document> DetailsFetcher(int id);
+
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
 class Event {
   // Directly parsed values
@@ -24,8 +26,9 @@ class Event {
   List<String> _tags;
   List<Link> _links;
   bool _isOneDay;
-  NetworkResource<dom.Document> detailsDoc;
-  Event(xml.XmlElement e, this.detailsDoc)
+  NetworkResource<dom.Document> _detailsDoc;
+  DetailsFetcher fetcher;
+  Event(xml.XmlElement e, this.fetcher)
       : title = HtmlUnescape()
             .convert(e.findElements('title').first.firstChild.toString()),
         summary = HtmlUnescape()
@@ -102,6 +105,10 @@ class Event {
   String get descriptionHtml => _descriptionHtml ??= HtmlUnescape().convert(
       parseFragment(contentHtml).querySelector('.description')?.innerHtml ??
           '');
+
+  NetworkResource<dom.Document> get detailsDoc =>  _detailsDoc ??=
+
+
 
   String get iCalendarUrl => url + '.ics';
   Future<String> get googleCalendarUrl async {

@@ -1,80 +1,69 @@
-// See the theme @material.io:
-// https://material.io/tools/color/#!/?view.left=1&view.right=1&primary.color=0C4964&secondary.color=8DC641&primary.text.color=ffffff
 import 'package:flutter/material.dart';
+import 'package:toledotechevents/theme.dart' as ref;
 
-const kPrimaryColor = Color(0xFF0c4964);
-const kPrimaryColorLight = Color(0xFF437492);
-const kPrimaryColorDark = Color(0xFF00223a);
-
-const kSecondaryColor = Color(0xFF8dc641);
-const kSecondaryColorLight = Color(0xFFc0f972);
-const kSecondaryColorDark = Color(0xFF5b9502);
-
-const kTextColorOnPrimary = Color(0xFFffffff);
-const kTextColorOnSecondary = Color(0xFF000000);
-
-const kBackgroundColor = Color(0xFFfefefe);
-const kDividerColor = Color(0xFFf1f1f1);
-const kFlatButtonColor = Color(0xFFfcfcfc);
-
-final kErrorColor = Colors.deepOrange[900];
-final kErrorBackgroundColor = Colors.deepOrange[50];
-
-final ThemeData kTheme = _buildTheme();
-
-ThemeData _buildTheme() {
-  final ThemeData base = ThemeData.light();
+ThemeData buildTheme(ref.Theme t) {
+  final base = t.brightness == ref.Brightness.light
+      ? ThemeData.light()
+      : ThemeData.dark();
   return base.copyWith(
-    accentColor: kSecondaryColor,
-    primaryColor: kPrimaryColor,
-    buttonColor: kSecondaryColor,
-    scaffoldBackgroundColor: kBackgroundColor,
-    cardColor: kBackgroundColor,
-    textSelectionColor: kPrimaryColorLight,
-    errorColor: kErrorColor,
-    dividerColor: kDividerColor,
-    backgroundColor: kBackgroundColor,
-    primaryColorDark: kPrimaryColorDark,
-    primaryColorLight: kPrimaryColorLight,
-    textSelectionHandleColor: kPrimaryColorDark,
+    accentColor: Color(t.secondaryColor.argb),
+    primaryColor: Color(t.primaryColor.argb),
+    buttonColor: Color(t.onPrimaryButtonColor.argb),
+    scaffoldBackgroundColor: Color(t.backgroundColor.argb),
+    cardColor: Color(t.surfaceColor.argb),
+    textSelectionColor: Color(t.primaryColorLight.argb),
+    errorColor: Color(t.errorColor.argb),
+    dividerColor: Color(t.dividerColor.argb),
+    backgroundColor: Color(t.backgroundColor.argb),
+    primaryColorDark: Color(t.primaryColorDark.argb),
+    primaryColorLight: Color(t.primaryColorLight.argb),
+    textSelectionHandleColor: Color(t.primaryColorDark.argb),
     buttonTheme: ButtonThemeData(
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4.0))),
+          borderRadius:
+              BorderRadius.all(Radius.circular(t.buttonCornerRadius))),
     ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(),
-    ),
-    textTheme: _buildTextTheme(base.textTheme),
-    primaryTextTheme: _buildTextTheme(base.primaryTextTheme),
-    accentTextTheme: _buildTextTheme(base.accentTextTheme),
+    inputDecorationTheme: t.inputTheme == ref.InputTheme.outline
+        ? InputDecorationTheme(border: OutlineInputBorder())
+        : base.inputDecorationTheme,
+    textTheme: _buildTextTheme(base.textTheme, t),
+    primaryTextTheme: _buildTextTheme(base.primaryTextTheme, t),
+    accentTextTheme: _buildTextTheme(base.accentTextTheme, t),
   );
 }
 
-TextTheme _buildTextTheme(TextTheme base) {
-  var theme = base
-      .copyWith(
-        body1: base.body1.copyWith(fontSize: 16.0, height: 1.15),
-        body2: base.body2.copyWith(
-            fontSize: 18.0,
-            // height: 1.25,
-            fontWeight: FontWeight.w600,
-            color: kPrimaryColor),
-        button: base.button.copyWith(fontSize: 14.0),
-        caption: base.caption.copyWith(fontSize: 16.0),
-      )
-      .apply(fontFamily: 'Open Sans');
-  return theme.copyWith(
-    title:
-        theme.title.copyWith(fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
-    headline: theme.headline.copyWith(
-        height: 2.5, fontWeight: FontWeight.w700, fontFamily: 'Ubuntu'),
-    subhead: base.subhead.copyWith(
-        fontSize: 18.0,
-        height: 1.75,
-        fontWeight: FontWeight.w300,
-        // color: kSecondaryColor,
-        fontFamily: 'Ubuntu'),
-  );
+TextTheme _buildTextTheme(TextTheme base, ref.Theme t) => base.copyWith(
+    display4: _makeStyle(base.display4, t.display4),
+    display3: _makeStyle(base.display3, t.display3),
+    display2: _makeStyle(base.display2, t.display2),
+    display1: _makeStyle(base.display1, t.display1),
+    headline: _makeStyle(base.headline, t.headline),
+    title: _makeStyle(base.title, t.title),
+    subhead: _makeStyle(base.subhead, t.subhead),
+    body2: _makeStyle(base.body2, t.body2),
+    body1: _makeStyle(base.body1, t.body1),
+    button: _makeStyle(base.button, t.button),
+    caption: _makeStyle(base.caption, t.caption));
+
+TextStyle _makeStyle(TextStyle base, ref.Font f) => base.copyWith(
+    fontFamily: f.family,
+    color: Color(f.color.argb),
+    fontWeight: _weight(f.weight),
+    fontStyle: f.italic ? FontStyle.italic : FontStyle.normal,
+    decoration: f.underline ? TextDecoration.underline : TextDecoration.none,
+    height: f.height,
+    fontSize: f.size);
+
+FontWeight _weight(int w) {
+  if (w < 200) return FontWeight.w100;
+  if (w < 300) return FontWeight.w200;
+  if (w < 400) return FontWeight.w300;
+  if (w < 500) return FontWeight.w400;
+  if (w < 600) return FontWeight.w500;
+  if (w < 700) return FontWeight.w600;
+  if (w < 800) return FontWeight.w700;
+  if (w < 900) return FontWeight.w800;
+  return FontWeight.w900;
 }
 
 class PrimaryButton extends RaisedButton {
@@ -86,8 +75,7 @@ class PrimaryButton extends RaisedButton {
             padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: Text(
               text,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .button
                   .copyWith(color: Colors.white, fontSize: 16.0),
@@ -103,8 +91,7 @@ class SecondaryButton extends FlatButton {
       : super(
             color: kPrimaryColorLight,
             child: Text(text,
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .textTheme
                     .button
                     .copyWith(color: kTextColorOnPrimary)),

@@ -1,79 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../model.dart';
-import '../theme.dart';
-import 'venue_list_spam.dart';
+import 'package:toledotechevents/bloc/layout_bloc.dart' hide Color;
+import 'menu_options.dart';
 
-AppBar getAppBar(BuildContext context, int selectedPage) {
-  return AppBar(
-    title: Row(
-      children: <Widget>[
-        Text('Toledo'),
-        SizedBox(width: 3.0),
-        Text(
-          'Tech Events',
-          style: TextStyle(color: kSecondaryColor),
-        ),
-      ],
-    ),
-    actions: <Widget>[
-      // overflow menu
-      new PopupMenuButton(
-        icon: Icon(Icons.more_vert),
-        onSelected: _overflowItemSelected,
-        itemBuilder: (context) {
-          return [
-            PopupMenuItem(
-              child: Text('See past events'),
-              value: {'context': context, 'url': pastEventsUrl()},
-            ),
-            PopupMenuItem(
-              child: Text('Subscribe to Google Calendar'),
-              value: {'context': context, 'url': kSubscribeGoogleCalenderUrl},
-            ),
-            PopupMenuItem(
-              child: Text('Subscribe via iCal'),
-              value: {'context': context, 'url': kSubscribeICalendarUrl},
-            ),
-            PopupMenuItem(
-              child: Text('Visit forum'),
-              value: {'context': context, 'url': kForumUrl},
-            ),
-            PopupMenuItem(
-              child: Text('Report an issue'),
-              value: {'context': context, 'url': kFileIssueUrl},
-            ),
-            selectedPage == 2
-                ? PopupMenuItem(
-                    child: Text('Remove spam'),
-                    value: {'context': context, 'url': 'showSpam'},
-                  )
-                : null
-          ];
-        },
-      ),
-    ],
-  );
-}
-
-void _overflowItemSelected(item) async {
-  if (item['url'] == 'showSpam') {
-    final venues = await getVenues();
-    Navigator.push(
-      item['context'],
-      FadePageRoute(builder: (context) => VenueSpamList(venues)),
-    );
-  } else if (await canLaunch(item['url'])) {
-    launch(item['url']);
-  } else {
-    final msg = item['url'].endsWith('ics')
-        ? 'No iCal apps installed.'
-        : 'Could not launch URL.';
-    Scaffold.of(item['context']).showSnackBar(
-          SnackBar(
-            content: Text(msg),
-            duration: Duration(seconds: 3),
+AppBar buildAppBar(BuildContext context, LayoutData data, LayoutBloc layoutBloc,
+    Function failHandler) {
+  Widget defaultTitle() => Row(
+        children: <Widget>[
+          Text('Toledo'),
+          SizedBox(width: 3.0),
+          Text(
+            'Tech Events',
+            style: TextStyle(color: Color(data.theme.secondaryColor.argb)),
           ),
-        );
-  }
+        ],
+      );
+  return AppBar(
+      title: data.page.title ?? defaultTitle(),
+      actions: [buildMenuOptions(context, data, layoutBloc, failHandler)]);
 }

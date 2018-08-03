@@ -5,6 +5,7 @@ import 'app.dart';
 void main() {
   BuildConfig.init(
       flavor: BuildFlavor.development,
+      title: 'Toledo Tech Events',
       baseUrl: 'http://dev.toledotechevents.org',
       cacheName: 'toledotechevents_dev');
   assert(config != null);

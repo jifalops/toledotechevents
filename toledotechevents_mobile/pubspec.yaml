@@ -15,10 +15,10 @@ dependencies:
   url_launcher: ^3.0.1
   datetime_picker_formfield: ^0.1.1
   simple_autocomplete_formfield: ^0.1.1
-  network_resource: ^0.2.4
+  async_resource: ^0.0.1
   toledotechevents:
     path: ../toledotechevents
-
+  shared_preferences: ^0.4.2
 
 dev_dependencies:
   flutter_test:

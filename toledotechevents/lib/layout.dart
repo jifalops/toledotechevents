@@ -1,8 +1,27 @@
 import 'util/display.dart';
 import 'pages.dart';
 import 'theme.dart';
+import 'build_config.dart';
 
 export 'util/display.dart';
+
+/// Domain-specific [Page] layout information.
+class Layout {
+  final MainNavigation mainNavigation;
+  final List<MenuOption> menuOptions;
+
+  Layout(Page page, Theme theme, Display display)
+      : mainNavigation = _placeMainNavigation(page, theme, display),
+        menuOptions = _getMenuOptions(page, theme, display);
+
+  @override
+  operator ==(other) =>
+      mainNavigation == other.mainNavigation &&
+      menuOptions == other.menuOptions;
+
+  @override
+  int get hashCode => '$mainNavigation$menuOptions'.hashCode;
+}
 
 /// Domain-specific locations for the page navigation UI.
 enum MainNavigation { none, top, bottom }
@@ -26,10 +45,68 @@ MainNavigation _placeMainNavigation(Page page, Theme theme, Display display) {
   }
 }
 
-/// Domain-specific [Page] layout information.
-class Layout {
-  final MainNavigation mainNavigation;
+List<MenuOption> _getMenuOptions(Page page, Theme theme, Display display) {
+  switch (page) {
+    case Page.eventDetails:
+      return _eventOptions;
+    case Page.venueDetails:
+      return _venueOptions;
+    case Page.venuesList:
+      return _venueListOptions;
+    default:
+      return _mainOptions;
+  }
+}
 
-  Layout(Page page, Theme theme, Display display)
-      : mainNavigation = _placeMainNavigation(page, theme, display);
+final _mainOptions = <MenuOption>[
+  MenuOption.pastEvents,
+  MenuOption.subscribeAllGoogle,
+  MenuOption.subscribeAllICal,
+  MenuOption.visitForum,
+  MenuOption.reportIssue
+];
+
+final _eventOptions = <MenuOption>[MenuOption.editEvent, MenuOption.cloneEvent];
+final _venueOptions = <MenuOption>[
+  MenuOption.pastVenueEvents,
+  MenuOption.subscribeVenueGoogle,
+  MenuOption.subscribeVenueICal,
+  MenuOption.editVenue
+];
+
+final _venueListOptions = List.from(_mainOptions)..add(MenuOption.removeSpam);
+
+class MenuOption {
+  // Main.
+  static final pastEvents =
+      MenuOption._('See past events', (_) => config.pastEventsUrl);
+  static final subscribeAllGoogle = MenuOption._('Subscribe to Google Calendar',
+      (_) => BuildConfig.subscribeGoogleCalenderUrl);
+  static final subscribeAllICal =
+      MenuOption._('Subscribe via iCal', (_) => config.subscribeICalendarUrl);
+  static final visitForum =
+      MenuOption._('Visit forum', (_) => BuildConfig.forumUrl);
+  static final reportIssue =
+      MenuOption._('Report an issue', (_) => BuildConfig.fileIssueUrl);
+  // Event details.
+  static final editEvent =
+      MenuOption._('Edit event', (id) => config.eventEditUrl(id));
+  static final cloneEvent =
+      MenuOption._('Clone event', (id) => config.eventCloneUrl(id));
+  // Venue details.
+  static final pastVenueEvents =
+      MenuOption._('See past venue events', (id) => config.venueUrl(id));
+  static final subscribeVenueGoogle = MenuOption._(
+      'Subscribe via Google', (id) => config.venueSubscribeUrl(id));
+  static final subscribeVenueICal =
+      MenuOption._('Subscribe via iCal', (id) => config.venueICalendarUrl(id));
+  static final editVenue =
+      MenuOption._('Edit venue', (id) => config.venueEditUrl(id));
+  // Venue list (plus main)
+  static final removeSpam = MenuOption._('Remove spam', (_) => 'removeSpam');
+
+  const MenuOption._(this.title, this.action);
+
+  final String title;
+  final String Function(dynamic arg) action;
 }
