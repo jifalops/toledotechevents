@@ -1,27 +1,34 @@
 import 'package:meta/meta.dart';
 
-/// Usually a device's screen.
+/// A [Display] represents device's screen or other container such as an iframe.
+///
+/// It includes lazy getters for some derivable properties such as the
+/// [Material breakpoints](https://material.io/design/layout/responsive-layout-grid.html#breakpoints)
+/// for screen type, columns, and default margins/gutters.
 class Display {
   final double height;
   final double width;
   final Orientation orientation;
 
   double _aspectRatio;
-  SpecificDisplayType _specificType;
+  MaterialDisplayType _specificType;
   DisplayType _type;
   int _columns;
   double _defaultMarginsAndGutters;
 
   Display(
-      {@required this.height,
-      @required this.width,
-      @required this.orientation});
+      {@required this.height, @required this.width, Orientation orientation})
+      : orientation = orientation ?? width > height
+            ? Orientation.landscape
+            : Orientation.portrait;
 
   double get aspectRatio => _aspectRatio ??= width / height;
-  SpecificDisplayType get specificType =>
-      _specificType ??= _calcSpecificType(height, width, orientation);
+  MaterialDisplayType get specificType =>
+      _specificType ??= _calcSpecificType(width, orientation);
   DisplayType get type => _type ??= _calcType(specificType);
+
   int get columns => _columns ??= _calcColumns(width);
+
   double get defaultMarginsAndGutters =>
       _defaultMarginsAndGutters ??= _calcMarginsAndGutters(width);
 
@@ -37,15 +44,13 @@ class Display {
 
 enum Orientation { portrait, landscape }
 
-/// An aggregated version of [SpecificDisplayType].
+/// An distilled version of [MaterialDisplayType].
 ///
-/// Extra-small window and small window are incorporated into mobile and
-/// tablet respectively. [DisplayType.window] is at least as large as a
-/// [SpecificDisplayType.mediumWindow].
+/// [DisplayType.mobile] includes [MaterialDisplayType.extraSmallWindow] and
+/// [DisplayType.tablet] includes [MaterialDisplayType.smallWindow].
 enum DisplayType { mobile, tablet, window }
 
-/// See https://material.io/design/layout/responsive-layout-grid.html#breakpoints
-enum SpecificDisplayType {
+enum MaterialDisplayType {
   smallHandset,
   mediumHandset,
   largeHandset,
@@ -58,68 +63,66 @@ enum SpecificDisplayType {
   extraLargeWindow
 }
 
-DisplayType _calcType(SpecificDisplayType type) {
+DisplayType _calcType(MaterialDisplayType type) {
   switch (type) {
-    case SpecificDisplayType.smallHandset:
-    case SpecificDisplayType.mediumHandset:
-    case SpecificDisplayType.largeHandset:
-    case SpecificDisplayType.extraSmallWindow:
+    case MaterialDisplayType.smallHandset:
+    case MaterialDisplayType.mediumHandset:
+    case MaterialDisplayType.largeHandset:
+    case MaterialDisplayType.extraSmallWindow:
       return DisplayType.mobile;
-    case SpecificDisplayType.smallTablet:
-    case SpecificDisplayType.largeTablet:
-    case SpecificDisplayType.smallWindow:
+    case MaterialDisplayType.smallTablet:
+    case MaterialDisplayType.largeTablet:
+    case MaterialDisplayType.smallWindow:
       return DisplayType.tablet;
     default:
       return DisplayType.window;
   }
 }
 
-SpecificDisplayType _calcSpecificType(
-    double height, double width, Orientation orientation) {
+MaterialDisplayType _calcSpecificType(double width, Orientation orientation) {
   switch (orientation) {
     case Orientation.portrait:
       if (width < 360)
-        return SpecificDisplayType.smallHandset;
+        return MaterialDisplayType.smallHandset;
       else if (width < 400)
-        return SpecificDisplayType.mediumHandset;
+        return MaterialDisplayType.mediumHandset;
       else if (width < 600)
-        return SpecificDisplayType.largeHandset;
+        return MaterialDisplayType.largeHandset;
       else if (width < 720)
-        return SpecificDisplayType.smallTablet;
+        return MaterialDisplayType.smallTablet;
       else if (width < 960)
-        return SpecificDisplayType.largeTablet;
+        return MaterialDisplayType.largeTablet;
       else if (width < 1024)
-        return SpecificDisplayType.smallWindow;
+        return MaterialDisplayType.smallWindow;
       else if (width < 1440)
-        return SpecificDisplayType.mediumWindow;
+        return MaterialDisplayType.mediumWindow;
       else if (width < 1920)
-        return SpecificDisplayType.largeWindow;
+        return MaterialDisplayType.largeWindow;
       else
-        return SpecificDisplayType.extraLargeWindow;
+        return MaterialDisplayType.extraLargeWindow;
       break;
     case Orientation.landscape:
     default:
       if (width < 480)
-        return SpecificDisplayType.extraSmallWindow;
+        return MaterialDisplayType.extraSmallWindow;
       else if (width < 600)
-        return SpecificDisplayType.smallHandset;
+        return MaterialDisplayType.smallHandset;
       else if (width < 720)
-        return SpecificDisplayType.mediumHandset;
+        return MaterialDisplayType.mediumHandset;
       else if (width < 960)
-        return SpecificDisplayType.largeHandset;
+        return MaterialDisplayType.largeHandset;
       else if (width < 1024)
-        return SpecificDisplayType.smallTablet;
+        return MaterialDisplayType.smallTablet;
       else if (width < 1440)
-        return SpecificDisplayType.largeTablet;
+        return MaterialDisplayType.largeTablet;
       else if (width < 1920)
-        return SpecificDisplayType.largeWindow;
+        return MaterialDisplayType.largeWindow;
       else
-        return SpecificDisplayType.extraLargeWindow;
+        return MaterialDisplayType.extraLargeWindow;
       break;
   }
 }
 
-/// See https://material.io/design/layout/responsive-layout-grid.html#breakpoints
 int _calcColumns(double width) {
   if (width < 600)
     return 4;
@@ -129,7 +132,6 @@ int _calcColumns(double width) {
     return 12;
 }
 
-/// See https://material.io/design/layout/responsive-layout-grid.html#breakpoints
 double _calcMarginsAndGutters(double width) {
   if (width < 720)
     return 16.0;

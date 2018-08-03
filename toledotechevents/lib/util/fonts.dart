@@ -11,6 +11,7 @@ class Font {
   final int weight;
   final bool italic;
   final bool underline;
+
   /// The line-height factor where 1.0 is the default line height.
   final double height;
   final TextAlign align;
@@ -23,6 +24,8 @@ class Font {
       this.italic: false,
       this.underline: false,
       this.align: TextAlign.start});
+
+  /// Returns a new [Font] with the desired changes to this [Font].
   Font copyWith(
           {double size,
           String family,

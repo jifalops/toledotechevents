@@ -9,11 +9,8 @@ class Color {
   /// ARGB format.
   const Color(this.argb);
 
-  const Color.from(
-      {@required int red,
-      @required int green,
-      @required int blue,
-      double alpha = 1.0})
+  /// Construct a [Color] from parts.
+  const Color.from({int red: 0, int green: 0, int blue: 0, double alpha = 1.0})
       : assert(red >= 0 && red <= 0xFF),
         assert(green >= 0 && green <= 0xFF),
         assert(blue >= 0 && blue <= 0xFF),

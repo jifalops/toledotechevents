@@ -1,6 +1,8 @@
-import 'pages.dart';
 import 'util/display.dart';
+import 'pages.dart';
 import 'theme.dart';
+
+export 'util/display.dart';
 
 /// Domain-specific locations for the page navigation UI.
 enum MainNavigation { none, top, bottom }

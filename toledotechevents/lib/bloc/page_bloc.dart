@@ -1,24 +1,14 @@
 import 'dart:async';
 import 'dart:collection';
-
 import 'package:rxdart/rxdart.dart';
-
+import 'package:async_resource/async_resource.dart';
 import '../pages.dart';
 import '../theme.dart';
 import '../layout.dart';
-import '../util/display.dart';
 
 export '../pages.dart';
 export '../theme.dart';
 export '../layout.dart';
-export '../util/display.dart';
-
-/// Represents data from the network or disk such as a native I/O File, browser
-/// service-worker cache, or browser local storage.
-class Resource<T> {
-  Future<T> get({forceReload: false}) async => null;
-  Future<void> save(T value) async => null;
-}
 
 /// Listens for signals that may require the page to be redrawn and outputs a
 /// [Stream] of [PageData] that can be used to draw a page.
@@ -30,9 +20,10 @@ class PageBloc {
   // Output.
   final _pageData = BehaviorSubject<PageData>();
 
-  final Resource<String> _themeResource;
+  final LocalResource<String> _themeResource;
 
-  PageBloc(Resource<String> themeResource) : _themeResource = themeResource {
+  PageBloc(LocalResource<String> themeResource)
+      : _themeResource = themeResource {
     _pageController.stream.distinct().listen((page) async => _updatePage(
         page,
         await _displayController.stream.last,
@@ -43,7 +34,7 @@ class PageBloc {
         await _themeController.stream.last));
     _themeController.stream.distinct().listen((theme) async {
       // Save the chosen theme to disk.
-      _themeResource.save(theme.name);
+      _themeResource.write(theme.name);
       _updatePage(await _pageController.stream.last,
           await _displayController.stream.last, theme);
     });

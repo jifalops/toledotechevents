@@ -1,11 +1,14 @@
-// See the theme @material.io:
+// See the theme at material.io (might have to copy/paste):
 // https://material.io/tools/color/#!/?view.left=1&view.right=1&primary.color=0C4964&secondary.color=8DC641&primary.text.color=ffffff
 
 import 'package:meta/meta.dart';
 import 'util/colors.dart';
 import 'util/fonts.dart';
 
-// Shared theme properties. This makes reusing them easier.
+export 'util/colors.dart';
+export 'util/fonts.dart';
+
+// Theme independent properties
 
 // Colors (ARGB, prefixed with an opacity byte)
 const _primary = Color(0xFF0C4964);
@@ -15,26 +18,23 @@ const _secondary = Color(0xFF8DC641);
 const _secondaryLight = Color(0xFFC0F972);
 const _secondaryDark = Color(0xFF5B9502);
 const _error = Color(0xFFB00020);
+const _primaryButton = _secondaryDark;
+const _secondaryButton = _primary;
 // Colors on top of theme colors (usually text).
 const _onPrimary = Colors.white;
-const _onPrimaryLight = Colors.white;
-const _onPrimaryDark = Colors.white;
+const _onPrimaryLight = _onPrimary;
+const _onPrimaryDark = _onPrimary;
 const _onSecondary = Colors.black;
-const _onSecondaryLight = Colors.black;
-const _onSecondaryDark = Colors.black;
+const _onSecondaryLight = _onSecondary;
+const _onSecondaryDark = _onSecondary;
 const _onError = Colors.white;
+const _onPrimaryButton = _onSecondaryDark;
+const _onSecondaryButton = _onPrimary;
 // Other
 const _inputTheme = InputTheme.outline;
 const _buttonCornerRadius = 4.0;
-// Derivative
-const _primaryButton = _secondaryDark;
-const _onPrimaryButton = _onSecondaryDark;
-const _secondaryButton = _primary;
-const _onSecondaryButton = _onPrimary;
 
 /// Platform independent theming information such as colors and fonts.
-///
-/// Class properties can be modified according to business needs.
 class Theme {
   /// The statically defined themes.
   ///
@@ -95,7 +95,7 @@ class Theme {
       display1: Fonts.display1White);
 
   const Theme._(
-      {this.name: 'Default',
+      {@required this.name,
       this.brightness: Brightness.light,
       // Colors (ARGB, prefixed with an opacity byte)
       this.primaryColor: _primary,
