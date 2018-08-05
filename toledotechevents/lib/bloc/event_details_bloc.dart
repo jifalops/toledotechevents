@@ -1,37 +1,47 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
-import '../model/event.dart';
+import 'package:async_resource/async_resource.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:toledotechevents/model/events.dart';
 
-export '../model/event.dart';
+export 'package:toledotechevents/model/events.dart';
 
 /// Selects an event from a list.
 class EventDetailsBloc {
-  final _eventsController = StreamController<List<Event>>();
-  final _idController = StreamController<int>();
-  final _event = BehaviorSubject<Event>();
+  final _requestController = StreamController<EventDetailsRequest>();
+  final _details = BehaviorSubject<EventDetails>();
 
   EventDetailsBloc() {
-    _eventsController.stream.listen((events) async =>
-        _updateEvent(events, await _idController.stream.last));
+    _requestController.stream.listen((request) async => _updateEvent(request));
   }
 
   void dispose() {
-    _eventsController.close();
-    _idController.close();
-    _event.close();
+    _requestController.close();
+    _details.close();
   }
 
-  void _updateEvent(List<Event> events, int id) {
-    if (events != null && id != null) {
-      _event.add(Event.findById(events, id));
+  void _updateEvent(EventDetailsRequest request) {
+    if (request != null && request.resource != null) {
+      if (request.event != null) {
+        _details.add(EventDetails(request.event, request.resource));
+      } else if (request.id != null) {
+        EventDetails.request(request.id, request.resource)
+            .then((details) => details == null ? null : _details.add(details));
+      }
     }
   }
 
   /// The input stream for signaling the output stream should be refreshed.
-  Sink<List<Event>> get events => _eventsController.sink;
-
-  Sink<int> get id => _idController.sink;
+  Sink<EventDetailsRequest> get request => _requestController.sink;
 
   /// Platform-agnostic output stream for presenting pages to the user.
-  Stream<Event> get event => _event.stream;
+  Stream<EventDetails> get details => _details.stream;
+}
+
+class EventDetailsRequest {
+  final ListEvent event;
+  final int id;
+  final NetworkResource<dom.Document> resource;
+  EventDetailsRequest.fromEvent(this.event, this.resource) : id = null;
+  EventDetailsRequest.fromId(this.id, this.resource) : event = null;
 }

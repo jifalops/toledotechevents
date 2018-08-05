@@ -18,6 +18,7 @@ import 'package:toledotechevents/bloc/event_details_bloc.dart';
 import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:html/dom.dart' as dom;
 import 'package:toledotechevents_mobile/resources.dart';
+import 'package:toledotechevents_mobile/view/layout.dart';
 
 class App extends StatefulWidget {
   @override
@@ -75,7 +76,7 @@ class PageNavigator extends StatefulWidget {
 class PageNavigatorState extends State<PageNavigator> {
   final LayoutBloc layoutBloc = LayoutBloc();
 
-  LayoutData previousPage;
+  PageLayout data, previous;
 
   PageNavigatorState() {
     widget.themeStream.listen(layoutBloc.display.add);
@@ -89,203 +90,56 @@ class PageNavigatorState extends State<PageNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutProvider(
-        layoutBloc: layoutBloc,
-        child: StreamBuilder<LayoutData>(
-            stream: layoutBloc.layoutData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                _handleLayout(context, snapshot.data, previousPage);
-                previousPage = snapshot.data;
-              } else if (snapshot.hasError) {
-                return new Text('${snapshot.error}');
-              }
-              return Center(child: CircularProgressIndicator());
-            }));
+    return WillPopScope(
+      onWillPop: _handleNavigatorPop,
+      child: LayoutProvider(
+          layoutBloc: layoutBloc,
+          child: StreamBuilder<PageLayout>(
+              stream: layoutBloc.layoutData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  data = snapshot.data;
+                  Widget page = _handleLayout(context);
+                  previous = data;
+                  return page;
+                } else if (snapshot.hasError) {
+                  return new Text('${snapshot.error}');
+                }
+                return Center(child: CircularProgressIndicator());
+              })),
+    );
   }
-}
 
-Widget _handleLayout(
-    BuildContext context, LayoutData data, LayoutData previous) {
-  // if (previous == null) {
-  //    // First page.
-  //   return _buildPage(context, data);
-  // } else if (data.page == previous.page) {
-  //   // Theme, display, or page args changed.
-  //   return _buildPage(context, data);
-  // } else if (data.layout.mainNavigation.items.contains(data.page) &&
-  // data.layout.mainNavigation.items.contains(previous.page)) {
-  //   // Changing among main screens, just rebuild the body.
-
-  // }
-
-  if (previous == null ||
-      data.page == previous.page ||
-      data.layout.mainNavigation.items.containsKey(data.page)) {
-    return _buildPage(context, data);
-  } else {
-    Navigator.of(context).push(
-        NoAnimationRoute(builder: (context) => _buildPage(context, data)));
-    return Container(height: 0.0, width: 0.0);
+  Widget _handleLayout(BuildContext context) {
+    if (previous == null ||
+        data.page == previous.page ||
+        data.layout.nav.contains(data.page)) {
+      return LayoutView(data, _buildBody);
+    } else {
+      Navigator.of(context).push(
+          NoAnimationRoute(builder: (context) => LayoutView(data, _buildBody)));
+      return NullWidget();
+    }
   }
-}
 
-Widget _buildPage(BuildContext context, LayoutData data) {
-  return Scaffold(
-    appBar: buildAppBar(context, data),
-    body: _buildBody(context, data),
-    bottomNavigationBar: data.layout.mainNavigation == MainNavigation.bottom
-        ? _buildBottomNav(context, data)
-        : null,
-  );
-}
+  Future<bool> _handleNavigatorPop() async {}
 
-Widget _buildBottomNav(BuildContext context, LayoutData data) {
-  Icon iconFor(Page page) {
-    switch (page) {
+  Widget _buildBody(BuildContext context) {
+    switch (data.page) {
       case Page.eventList:
-        return Icon(Icons.event);
-      case Page.createEvent:
-        return Icon(Icons.add_circle_outline);
+        break;
+      case Page.eventDetails:
+        break;
       case Page.venuesList:
-        return Icon(Icons.business);
+        break;
+      case Page.venueDetails:
+        break;
+      case Page.createEvent:
+        break;
       case Page.about:
-        return Icon(Icons.help);
-      default:
-        return null;
-    }
-  }
-
-  List<BottomNavigationBarItem> items;
-  data.layout.mainNavigation.items.forEach((page, title) => items.add(
-      BottomNavigationBarItem(
-          title: Text(title, style: Theme.of(context).textTheme.button),
-          icon: iconFor(page))));
-
-  return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex:
-          data.layout.mainNavigation.items.keys.toList().indexOf(data.page),
-      iconSize: 24.0,
-      onTap: (index) => LayoutProvider.of(context).page.add(
-          PageRequest(data.layout.mainNavigation.items.keys.toList()[index])),
-      items: items);
-}
-
-Widget _buildBody(BuildContext context, LayoutData data) {
-  switch (data.page) {
-    case Page.eventList:
-      break;
-    case Page.eventDetails:
-      break;
-    case Page.venuesList:
-      break;
-    case Page.venueDetails:
-      break;
-    case Page.createEvent:
-      break;
-    case Page.about:
-      break;
-    case Page.spamRemover:
-      break;
-  }
-}
-
-class EventListPage extends StatefulWidget {
-  final LayoutData layoutData;
-
-  EventListPage(this.layoutData);
-
-  @override
-  _EventListPageState createState() => new _EventListPageState();
-}
-
-class _EventListPageState extends State<EventListPage> {
-  final eventListBloc = EventListBloc(eventListResource);
-
-  @override
-  void dispose() {
-    eventListBloc.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: eventListBloc.events,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return EventListView(snapshot.data, eventListBloc.fetch);
-          } else if (snapshot.hasError) {
-            return new Text('${snapshot.error}');
-          }
-          return Center(child: CircularProgressIndicator());
-        });
-  }
-}
-
-
-
-  Widget _getBody() {
-    switch (_selectedPage) {
-      // Add new event
-      case 1:
-        // return CreateEventForm();
-        return FutureBuilder<String>(
-          future: getNewEventAuthToken(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return AnimatedPage(CreateEventForm(snapshot.data));
-            } else if (snapshot.hasError) {
-              return new Text('${snapshot.error}');
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        );
-      // Venues list
-      case 2:
-        return FutureBuilder<List<Venue>>(
-          future: getVenues(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return AnimatedPage(VenueList(snapshot.data));
-            } else if (snapshot.hasError) {
-              return new Text('${snapshot.error}');
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        );
-      // About page
-      case 3:
-        return FutureBuilder<String>(
-          future: getAboutSectionHtml(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return SingleChildScrollView(
-                child: AnimatedPage(HtmlView(data: snapshot.data)),
-              );
-            } else if (snapshot.hasError) {
-              return new Text('${snapshot.error}');
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        );
-      // Event list
-      case 0:
-      default:
-        return FutureBuilder<List<Event>>(
-          future: getEvents(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return AnimatedPage(EventList(snapshot.data));
-            } else if (snapshot.hasError) {
-              return new Text('${snapshot.error}');
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        );
+        break;
+      case Page.spamRemover:
+        break;
     }
   }
 }
-
-

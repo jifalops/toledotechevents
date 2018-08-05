@@ -7,20 +7,18 @@ export 'util/display.dart';
 
 /// Domain-specific [Page] layout information.
 class Layout {
-  final MainNavigation mainNavigation;
+  final MainNavigation nav;
   final List<MenuOption> menuOptions;
 
   Layout(Page page, Theme theme, Display display)
-      : mainNavigation = _placeMainNavigation(page, theme, display),
+      : nav = _placeMainNavigation(page, theme, display),
         menuOptions = _getMenuOptions(page, theme, display);
 
   @override
-  operator ==(other) =>
-      mainNavigation == other.mainNavigation &&
-      menuOptions == other.menuOptions;
+  operator ==(other) => nav == other.nav && menuOptions == other.menuOptions;
 
   @override
-  int get hashCode => '$mainNavigation$menuOptions'.hashCode;
+  int get hashCode => '$nav$menuOptions'.hashCode;
 }
 
 /// Domain-specific locations for the page navigation UI.
@@ -31,6 +29,8 @@ class MainNavigation {
 
   const MainNavigation._(this.items);
   final Map<Page, String> items;
+
+  bool contains(Page page) => items.containsKey(page);
 }
 
 const _navItems = <Page, String>{

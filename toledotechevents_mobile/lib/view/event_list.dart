@@ -1,31 +1,31 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
-import '../model.dart';
-import '../theme.dart';
-import 'event_listitem.dart';
-import 'event_details.dart';
+import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
 
 class EventListView extends StatefulWidget {
-  final List<Event> events;
   EventListView(this.events);
+  final EventList events;
   @override
   State<EventListView> createState() => _EventListState();
 }
 
 class _EventListState extends State<EventListView> {
-  Event _selectedEvent;
+  ListEvent selectedEvent;
 
-  Future<Null> refresh() async {
-    widget.events.clear();
-    widget.events.addAll(await getEvents(forceReload: true));
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    if (widget.events.selectedId != null) {
+      selectedEvent = widget.events.findById(widget.events.selectedId);
+      Future.delayed(Duration(milliseconds: 400))
+          .then((_) => setState(() => selectedEvent = null));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-        onRefresh: refresh,
+        onRefresh: () async => EventListProvider.of(context).fetch.add(true),
         child: ListView(children: _buildEventList(context)));
   }
 
@@ -34,10 +34,10 @@ class _EventListState extends State<EventListView> {
     var now = DateTime.now();
     var twoWeeks = now.add(Duration(days: 15)); // 15 intended.
 
-    var today = List<Event>();
-    var tomorrow = List<Event>();
-    var nextTwoWeeks = List<Event>();
-    var afterTwoWeeks = List<Event>();
+    var today = List<ListEvent>();
+    var tomorrow = List<ListEvent>();
+    var nextTwoWeeks = List<ListEvent>();
+    var afterTwoWeeks = List<ListEvent>();
 
     widget.events.forEach((e) {
       if (e.occursOnDay(now)) today.add(e);
@@ -47,7 +47,7 @@ class _EventListState extends State<EventListView> {
       if (e.occursOnOrAfterDay(twoWeeks)) afterTwoWeeks.add(e);
     });
 
-    void addItems(String name, List<Event> events) {
+    void addItems(String name, List<ListEvent> events) {
       if (events.length > 0) {
         items.add(
           Padding(
@@ -59,8 +59,10 @@ class _EventListState extends State<EventListView> {
           items.add(
             EventListItem(
               event,
-              color: i % 2 == 0 ? kDividerColor : kBackgroundColor,
-              elevation: _selectedEvent == event ? 8.0 : 0.0,
+              color: i % 2 == 0
+                  ? Theme.of(context).dividerColor
+                  : Theme.of(context).backgroundColor,
+              elevation: selectedEvent == event ? 8.0 : 0.0,
               onTap: () => _cardTapped(event, context),
             ),
           );
@@ -85,63 +87,111 @@ class _EventListState extends State<EventListView> {
     return items;
   }
 
-  void _cardTapped(Event event, BuildContext context) async {
-    // timeDilation = 10.0;
-    setState(() => _selectedEvent = _selectedEvent == event ? null : event);
-    if (_selectedEvent != null) {
-      // Navigator.of(context).widget.observers.add(IntermediateRouteObserver(() {
-      //   Navigator
-      //       .push(context,
-      //           DetailsRoute(builder: (context) => EventDetails(event)))
-      //       .then((_) => Navigator.pop(context));
-      // }));
+  void _cardTapped(ListEvent event, BuildContext context) async {
+    setState(() {
+      selectedEvent = selectedEvent == event ? null : event;
+      widget.events.selectedId =
+          selectedEvent == null ? null : selectedEvent.id;
+    });
+    if (selectedEvent != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      // Navigator.of(context).
-      await Navigator.push(
-        context,
-        FadePageRoute(builder: (context) => EventDetails(_selectedEvent)),
-        // IntermediateRoute(
-        //   builder: (context) => EventListItem(
-        //         _selectedEvent,
-        //         key: Key('event-intermediate-${event.id}'),
-        //         elevation: 8.0,
-        //         onTap: () {},
-        //       ),
-        // onComplete: (_) {
-        //
-        // }
-      );
-      await Future.delayed(Duration(milliseconds: 400));
-      setState(() => _selectedEvent = null);
+      LayoutProvider.of(context)
+          .page
+          .add(PageRequest(Page.eventDetails, {'id': selectedEvent.id}));
     }
   }
 }
 
-// class IntermediateRouteObserver extends NavigatorObserver {
-//   final onDidPush;
-//   IntermediateRouteObserver(this.onDidPush);
-//   @override
-//   void didPush(Route route, Route previousRoute) {
-//     if (route is IntermediateRoute) onDidPush();
-//     super.didPush(route, previousRoute);
-//   }
-// }
+class EventListItem extends StatelessWidget {
+  final ListEvent event;
+  final Color color;
+  final double elevation;
+  final Function onTap;
+  EventListItem(this.event,
+      {@required this.color,
+      this.elevation: 0.0,
+      @required this.onTap,
+      Key key})
+      : super(key: key);
 
-// class IntermediateRoute extends MaterialPageRoute {
-//   IntermediateRoute({@required WidgetBuilder builder})
-//       : super(builder: builder);
-//   @override
-//   Widget buildTransitions(BuildContext context, Animation<double> animation,
-//       Animation<double> secondaryAnimation, Widget child) {
-//     return child;
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+      tag: 'event-${event.id}',
+      child: Card(
+        elevation: elevation,
+        color: color,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Hero(
+                  tag: 'event-title-${event.id}',
+                  child: Text(
+                    event.title,
+                    style: Theme.of(context).textTheme.body2,
+                    maxLines: 2,
+                    overflow: TextOverflow.fade,
+                  ),
+                ),
+                Hero(
+                  tag: 'event-venue-title-${event.id}',
+                  child: Text(
+                    event.venue.title,
+                    style: Theme.of(context).textTheme.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                SizedBox(height: 4.0),
+                Hero(
+                  tag: 'event-times-${event.id}',
+                  child: _buildEventTimeRange(context),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-// class DetailsRoute extends MaterialPageRoute {
-//   DetailsRoute({@required WidgetBuilder builder}) : super(builder: builder);
-//   @override
-//   Widget buildTransitions(BuildContext context, Animation<double> animation,
-//       Animation<double> secondaryAnimation, Widget child) {
-//     return child;
-//   }
-// }
+  Widget _buildEventTimeRange(BuildContext context) {
+    final startDay = formatDay(event.startTime);
+    final startDate = formatDate(event.startTime);
+    final startTime = formatTime(event.startTime, ampm: !event.isOneDay);
+    final endTime = formatTime(event.endTime, ampm: true);
+
+    return event.isOneDay
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('$startDay, $startDate'),
+              Text('$startTime – $endTime',
+                  style: Theme.of(context).textTheme.caption),
+            ],
+          )
+        : Column(
+            children: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('$startDay, $startDate'),
+                    Text('$startTime',
+                        style: Theme.of(context).textTheme.caption),
+                  ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                      '${formatDay(event.endTime)}, ${formatDate(event.endTime)}'),
+                  Text('$endTime', style: Theme.of(context).textTheme.caption),
+                ],
+              ),
+            ],
+          );
+  }
+}

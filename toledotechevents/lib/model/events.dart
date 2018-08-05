@@ -10,19 +10,21 @@ import 'package:async_resource/async_resource.dart';
 import 'package:meta/meta.dart';
 import 'package:toledotechevents/internal/deleter.dart';
 
-class EventList extends UnmodifiableListView<EventListEvent> {
+class EventList extends UnmodifiableListView<ListEvent> {
   EventList(String xmlString)
       : super(xml
             .parse(xmlString)
             .findAllElements('entry')
-            .map((entry) => EventListEvent.fromXml(entry)));
+            .map((entry) => ListEvent.fromXml(entry)));
 
-  EventListEvent findById(int id) =>
+  int selectedId;
+
+  ListEvent findById(int id) =>
       firstWhere((e) => e.id == id, orElse: null);
 }
 
-class EventListEvent {
-  EventListEvent(
+class ListEvent {
+  ListEvent(
       {@required this.title,
       @required this.summary,
       @required this.url,
@@ -34,7 +36,7 @@ class EventListEvent {
       @required List<double> coordinates})
       : _coordinates = coordinates;
 
-  EventListEvent.clone(EventListEvent other)
+  ListEvent.clone(ListEvent other)
       : title = other.title,
         summary = other.summary,
         url = other.url,
@@ -45,7 +47,7 @@ class EventListEvent {
         endTime = other.endTime,
         _coordinates = other._coordinates;
 
-  EventListEvent.fromXml(xml.XmlElement e)
+  ListEvent.fromXml(xml.XmlElement e)
       : title = HtmlUnescape()
             .convert(e.findElements('title').first.firstChild.toString()),
         summary = HtmlUnescape()
@@ -187,8 +189,8 @@ List<double> _parseCoords(List<String> coords) {
 }
 
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
-class EventDetails extends EventListEvent {
-  EventDetails(EventListEvent from, this.resource) : super.clone(from);
+class EventDetails extends ListEvent {
+  EventDetails(ListEvent from, this.resource) : super.clone(from);
 
   final NetworkResource<dom.Document> resource;
   String _rsvpUrl, _googleCalendarUrl;
@@ -230,6 +232,12 @@ class EventDetails extends EventListEvent {
 $_rsvpUrl
 $_googleCalendarUrl
 ''';
+  }
+
+  static Future<EventDetails> request(
+      int id, NetworkResource<dom.Document> resource) async {
+    // TODO implement fetch by id.
+    return null;
   }
 }
 

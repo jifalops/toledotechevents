@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:async_resource/async_resource.dart';
-import '../model/event.dart';
+import 'package:toledotechevents/model/events.dart';
 
-export '../model/event.dart';
+export 'package:toledotechevents/model/events.dart';
 
 /// Listens for signals to get or refresh an [Event] list.
 class EventListBloc {
   final _fetchController = StreamController<bool>();
-  final _events = BehaviorSubject<List<Event>>();
+  final _events = BehaviorSubject<EventList>();
 
-  final NetworkResource<List<Event>> _eventsResource;
+  final NetworkResource<EventList> _eventsResource;
 
-  EventListBloc(NetworkResource<List<Event>> eventsResource)
+  EventListBloc(NetworkResource<EventList> eventsResource)
       : _eventsResource = eventsResource {
     _fetchController.stream.listen((refresh) async =>
         _updateEvents(await _eventsResource.get(forceReload: refresh)));
@@ -25,7 +25,7 @@ class EventListBloc {
     _events.close();
   }
 
-  void _updateEvents(List<Event> events) {
+  void _updateEvents(EventList events) {
     if (events != null) {
       _events.add(events);
     }
@@ -35,5 +35,5 @@ class EventListBloc {
   Sink<bool> get fetch => _fetchController.sink;
 
   /// Platform-agnostic output stream for presenting pages to the user.
-  Stream<List<Event>> get events => _events.stream;
+  Stream<EventList> get events => _events.stream;
 }

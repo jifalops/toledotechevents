@@ -11,13 +11,13 @@ export '../layout.dart';
 export 'theme_bloc.dart';
 
 /// Listens for signals that may require the page to be redrawn and outputs a
-/// [Stream] of [LayoutData] that can be used to draw a page.
+/// [Stream] of [PageLayout] that can be used to draw a page.
 class LayoutBloc {
   // Inputs.
   final _pageController = StreamController<PageRequest>();
   final _displayThemeController = StreamController<DisplayTheme>();
   // Output.
-  final _layoutData = BehaviorSubject<LayoutData>();
+  final _layoutData = BehaviorSubject<PageLayout>();
 
   LayoutBloc() {
     _pageController.stream.distinct().listen((page) async =>
@@ -37,7 +37,7 @@ class LayoutBloc {
   void _updatePage(PageRequest request, DisplayTheme displayTheme) {
     if (request != null && displayTheme != null) {
       _layoutData
-          .add(LayoutData(request, displayTheme.theme, displayTheme.display));
+          .add(PageLayout(request, displayTheme.theme, displayTheme.display));
     }
   }
 
@@ -49,7 +49,7 @@ class LayoutBloc {
   Sink<DisplayTheme> get display => _displayThemeController.sink;
 
   /// Platform-agnostic output stream for presenting pages to the user.
-  Stream<LayoutData> get layoutData => _layoutData.stream;
+  Stream<PageLayout> get layoutData => _layoutData.stream;
 }
 
 /// Passed to the [LayoutBloc] to signal for a new page that may require arguments.
@@ -67,14 +67,14 @@ class PageRequest {
 }
 
 /// Platform specific view logic uses this to show a page to the user.
-class LayoutData {
+class PageLayout {
   final Page page;
   final UnmodifiableMapView<String, dynamic> args;
   final Theme theme;
   final Display display;
   final Layout layout;
 
-  LayoutData(PageRequest request, this.theme, this.display)
+  PageLayout(PageRequest request, this.theme, this.display)
       : page = request.page,
         args = UnmodifiableMapView(request.args ?? {}),
         layout = Layout(request.page, theme, display);
