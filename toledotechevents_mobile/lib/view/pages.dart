@@ -5,6 +5,8 @@ import 'package:toledotechevents_mobile/view/event_list.dart';
 import 'package:toledotechevents_mobile/view/event_details.dart';
 
 class EventListPage extends StatefulWidget {
+  EventListPage(this.pageData);
+  final PageLayout pageData;
   @override
   _EventListPageState createState() => new _EventListPageState();
 }
@@ -22,10 +24,9 @@ class _EventListPageState extends State<EventListPage> {
   Widget build(BuildContext context) {
     return EventListProvider(
       bloc: bloc,
-      child: StreamBuilder(
+      child: StreamHandler<EventList>(
         stream: bloc.events,
-        builder: (context, snapshot) =>
-            _handleSnapshot(context, snapshot, (data) => EventListView(data)),
+        handler: (context, data) => EventListView(data),
       ),
     );
   }
@@ -51,23 +52,17 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   Widget build(BuildContext context) {
     return EventDetailsProvider(
       bloc: bloc,
-      child: StreamBuilder(
+      child: StreamHandler<EventDetails>(
         stream: bloc.details,
-        builder: (context, snapshot) =>
-            _handleSnapshot(context, snapshot, (data) => EventDetailsView(data, widget.data)),
+        handler: (context, data) => data.venue != null
+            ? VenueListProvider(
+                bloc: VenueListBloc(venueListResource),
+                child: EventDetailsView(data, widget.data),
+              )
+            : EventDetailsView(data, widget.data),
       ),
     );
   }
-}
-
-Widget _handleSnapshot(BuildContext context, AsyncSnapshot snapshot,
-    Widget Function(dynamic data) whenData) {
-  if (snapshot.hasData) {
-    return whenData(snapshot.data);
-  } else if (snapshot.hasError) {
-    return new Text('${snapshot.error}');
-  }
-  return Center(child: CircularProgressIndicator());
 }
 
 //   Widget _getBody() {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/provider/layout_provider.dart'
-    hide Theme, Color;
+import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
 import 'package:url_launcher/url_launcher.dart';
 
 class LayoutView extends StatelessWidget {
@@ -51,7 +50,7 @@ class LayoutView extends StatelessWidget {
 
     void _overflowItemSelected(String action) async {
       if (action == MenuOption.removeSpam.action(null)) {
-        LayoutProvider.of(context).page.add(PageRequest(Page.spamRemover));
+        LayoutProvider.of(context).request.add(PageRequest(Page.spamRemover));
       } else if (await canLaunch(action)) {
         launch(action);
       } else {
@@ -112,7 +111,7 @@ class LayoutView extends StatelessWidget {
         currentIndex: data.layout.nav.items.keys.toList().indexOf(data.page),
         iconSize: 24.0,
         onTap: (index) => LayoutProvider.of(context)
-            .page
+            .request
             .add(PageRequest(data.layout.nav.items.keys.toList()[index])),
         items: items);
   }

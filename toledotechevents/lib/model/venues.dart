@@ -9,18 +9,16 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:meta/meta.dart';
 import 'package:toledotechevents/build_config.dart';
 
-class VenueList extends UnmodifiableListView<VenueListVenue> {
+class VenueList extends UnmodifiableListView<VenueListItem> {
   VenueList(String jsonString)
-      : super(json
-            .decode(jsonString)
-            .map((dict) => VenueListVenue.fromMap(dict)));
+      : super(
+            json.decode(jsonString).map((dict) => VenueListItem.fromMap(dict)));
 
-  UnmodifiableListView<VenueListVenue> _spam;
+  UnmodifiableListView<VenueListItem> _spam;
 
-  VenueListVenue findById(int id) =>
-      firstWhere((e) => e.id == id, orElse: null);
+  VenueListItem findById(int id) => firstWhere((e) => e.id == id, orElse: null);
 
-  VenueListVenue findByTitle(String title) {
+  VenueListItem findByTitle(String title) {
     try {
       final results = where((v) => v.title == title).toList();
       results.sort((a, b) {
@@ -32,7 +30,7 @@ class VenueList extends UnmodifiableListView<VenueListVenue> {
     }
   }
 
-  List<VenueListVenue> findSpam() {
+  List<VenueListItem> findSpam() {
     if (_spam == null) {
       bool hasEnglishWord(String string) {
         bool found = false;
@@ -45,7 +43,7 @@ class VenueList extends UnmodifiableListView<VenueListVenue> {
         return found;
       }
 
-      final list = List<VenueListVenue>();
+      final list = List<VenueListItem>();
       forEach((venue) {
         if (!hasEnglishWord(venue.title)) list.add(venue);
       });
@@ -55,8 +53,8 @@ class VenueList extends UnmodifiableListView<VenueListVenue> {
   }
 }
 
-class VenueListVenue {
-  VenueListVenue(
+class VenueListItem {
+  VenueListItem(
       {@required this.title,
       @required this.description,
       @required this.homepage,
@@ -84,7 +82,7 @@ class VenueListVenue {
         _state = state,
         _zip = zip;
 
-  VenueListVenue.clone(VenueListVenue other)
+  VenueListItem.clone(VenueListItem other)
       : title = other.title,
         description = other.description,
         homepage = other.homepage,
@@ -107,7 +105,7 @@ class VenueListVenue {
         _state = other._state,
         _zip = other._zip;
 
-  VenueListVenue.fromMap(Map<String, dynamic> v)
+  VenueListItem.fromMap(Map<String, dynamic> v)
       : title = v['title'] ?? '',
         description = v['description'] ?? '',
         _address = v['address'] ?? '',
@@ -195,8 +193,8 @@ Wifi: $hasWifi
 }
 
 /// A ToledoTechEvents venue. See http://toledotechevents.org/venues.json.
-class VenueDetails extends VenueListVenue {
-  VenueDetails(VenueListVenue from, this.resource) : super.clone(from);
+class VenueDetails extends VenueListItem {
+  VenueDetails(VenueListItem from, this.resource) : super.clone(from);
 
   final NetworkResource<dom.Document> resource;
   List<VenueEvent> _pastEvents, _futureEvents;
@@ -244,6 +242,11 @@ class VenueDetails extends VenueListVenue {
   //           ));
   // }
 
+  static Future<VenueDetails> request(
+      int id, NetworkResource<dom.Document> resource) async {
+    // TODO implement fetch by id.
+    return null;
+  }
 }
 
 class _Address {

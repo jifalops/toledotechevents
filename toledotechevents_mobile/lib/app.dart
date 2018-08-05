@@ -1,24 +1,15 @@
 import 'dart:async';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
-import 'provider/theme_provider.dart' hide Theme;
-import 'provider/layout_provider.dart' hide Theme;
-import 'theme.dart';
-import 'view/event_list.dart';
-import 'view/venue_list.dart';
-import 'view/create_event.dart';
-import 'view/app_bar.dart';
-import 'view/animated_page.dart';
 import 'package:toledotechevents/build_config.dart';
-import 'package:toledotechevents/bloc/event_list_bloc.dart';
-import 'package:toledotechevents/bloc/event_details_bloc.dart';
-import 'package:html/parser.dart' show parse, parseFragment;
-import 'package:html/dom.dart' as dom;
+
+import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
+import 'package:toledotechevents_mobile/providers.dart' hide Color, Theme;
 import 'package:toledotechevents_mobile/view/layout.dart';
+import 'package:toledotechevents_mobile/view/pages.dart';
 
 class App extends StatefulWidget {
   @override
@@ -44,7 +35,7 @@ class AppState extends State<App> {
         .add(Display(height: media.size.height, width: media.size.width));
 
     return ThemeProvider(
-        themeBloc: themeBloc,
+        bloc: themeBloc,
         child: StreamBuilder<DisplayTheme>(
             stream: themeBloc.displayTheme,
             builder: (context, snapshot) {
@@ -74,17 +65,17 @@ class PageNavigator extends StatefulWidget {
 }
 
 class PageNavigatorState extends State<PageNavigator> {
-  final LayoutBloc layoutBloc = LayoutBloc();
+  final PageLayoutBloc bloc = PageLayoutBloc();
 
   PageLayout data, previous;
 
   PageNavigatorState() {
-    widget.themeStream.listen(layoutBloc.display.add);
+    widget.themeStream.listen(bloc.display.add);
   }
 
   @override
   void dispose() {
-    layoutBloc.dispose();
+    bloc.dispose();
     super.dispose();
   }
 
@@ -93,9 +84,9 @@ class PageNavigatorState extends State<PageNavigator> {
     return WillPopScope(
       onWillPop: _handleNavigatorPop,
       child: LayoutProvider(
-          layoutBloc: layoutBloc,
+          bloc: bloc,
           child: StreamBuilder<PageLayout>(
-              stream: layoutBloc.layoutData,
+              stream: bloc.pageLayout,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   data = snapshot.data;
@@ -127,19 +118,22 @@ class PageNavigatorState extends State<PageNavigator> {
   Widget _buildBody(BuildContext context) {
     switch (data.page) {
       case Page.eventList:
-        break;
+        return EventListPage(data);
       case Page.eventDetails:
-        break;
+        return EventDetailsPage(data);
       case Page.venuesList:
-        break;
+        return VenueListPage(data);
       case Page.venueDetails:
-        break;
+        return VenueDetailsPage(data);
       case Page.createEvent:
-        break;
+        return CreateEventPage(data);
       case Page.about:
-        break;
+        return AboutPage(data);
       case Page.spamRemover:
-        break;
+        return SpamRemoverPage(data);
+      default:
+        assert(false);
+        return NullWidget();
     }
   }
 }

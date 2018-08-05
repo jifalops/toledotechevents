@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/providers.dart'
     hide Theme, Color, TextAlign;
@@ -59,32 +60,18 @@ class EventDetailsView extends StatelessWidget {
                   ],
                 ),
               ),
-              FutureBuilder<Widget>(
+              FutureHandler<Widget>(
                 future: _buildRsvpWidget(context),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data;
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-                  return NullWidget();
-                },
+                handler: (context, data) => data,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 child:
                     // Text('Venue', style: Theme.of(context).textTheme.subhead),
                     event.venue != null
-                        ? FutureBuilder<List<Venue>>(
-                            future: getVenues(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return _buildVenue(snapshot.data, context);
-                              } else if (snapshot.hasError) {
-                                return Text('${snapshot.error}');
-                              }
-                              return _buildEventVenue(context);
-                            },
+                        ? StreamHandler<VenueList>(
+                            stream: VenueListProvider.of(context).venues,
+                            handler: _buildVenue,
                           )
                         : Text(
                             'Venue TBD',
@@ -113,44 +100,6 @@ class EventDetailsView extends StatelessWidget {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      // leading: IconButton(
-      //   icon: Icon(Icons.close),
-      //   onPressed: () => Navigator.pop(context),
-      // ),
-      title: Text('Event details'),
-      actions: <Widget>[
-        // overflow menu
-        PopupMenuButton(
-          icon: Icon(Icons.more_vert),
-          onSelected: (String url) {
-            if (url == 'delete')
-              event.delete(context);
-            else
-              launch(url);
-          },
-          itemBuilder: (context) {
-            return [
-              PopupMenuItem(
-                child: Text('Edit this event'),
-                value: event.editUrl,
-              ),
-              PopupMenuItem(
-                child: Text('Clone this event'),
-                value: event.cloneUrl,
-              ),
-              // PopupMenuItem(
-              //   child: Text('Delete this event'),
-              //   value: 'delete',
-              // ),
-            ];
-          },
-        ),
-      ],
-    );
-  }
-
   void _launchGoogleCalendarUrl() async {
     var url = await event.googleCalendarUrl ?? '';
     if (url.isNotEmpty) launch(url);
@@ -163,14 +112,14 @@ class EventDetailsView extends StatelessWidget {
         : Padding(
             padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
             child: Center(
-              child:
-                  PrimaryButton(context, 'RSVP / REGISTER', () => launch(url)),
+              child: PrimaryButton(
+                  context, 'RSVP / REGISTER', () => launch(url), page.theme),
             ),
           );
   }
 
-  Widget _buildVenue(List<Venue> venues, BuildContext context) {
-    Venue venue = Venue.findById(venues, event.venue.id);
+  Widget _buildVenue(BuildContext context, VenueList venues) {
+    VenueListItem venue = venues.findById(event.venue.id);
     if (venue != null) {
       return Hero(
         tag: 'venue-${venue.id}',
@@ -207,11 +156,8 @@ class EventDetailsView extends StatelessWidget {
                     ),
                     Hero(
                       tag: 'venue-map-${venue.id}',
-                      child: SecondaryButton(
-                        context,
-                        'MAP',
-                        () => launch(venue.mapUrl),
-                      ),
+                      child: SecondaryButton(context, 'MAP',
+                          () => launch(venue.mapUrl), page.theme),
                     ),
                   ],
                 ),
@@ -222,7 +168,8 @@ class EventDetailsView extends StatelessWidget {
                         tag: 'venue-wifi-${venue.id}',
                         child: Row(
                           children: <Widget>[
-                            Icon(Icons.wifi, color: kSecondaryColor),
+                            Icon(Icons.wifi,
+                                color: Theme.of(context).accentColor),
                             Text(' Public WiFi')
                           ],
                         ),
@@ -230,69 +177,11 @@ class EventDetailsView extends StatelessWidget {
                     : NullWidget()),
                 // SizedBox(width: 16.0),
                 TertiaryButton(
-                  'VENUE DETAILS',
-                  () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => VenueDetails(venue))),
-                ),
+                    'VENUE DETAILS',
+                    () => LayoutProvider.of(context)
+                        .request
+                        .add(PageRequest(Page.venueDetails, {'id': venue.id}))),
               ])
-            ],
-          ),
-        ),
-      );
-    } else {
-      return NullWidget(); // _buildEventVenue(context);
-    }
-  }
-
-  Widget _buildEventVenue(BuildContext context) {
-    if (event.venue != null && event.venue.id > 0) {
-      return Hero(
-        tag: 'venue-${event.venue.id}',
-        child: Card(
-          elevation: 0.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Hero(
-                tag: 'event-venue-title-${event.id}',
-                child: Hero(
-                  tag: 'venue-title-${event.venue.id}',
-                  child: Text(event.venue.title,
-                      style: Theme.of(context).textTheme.body2),
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Hero(
-                              tag: 'venue-street-${event.venue.id}',
-                              child: Text(event.venue.street)),
-                          Hero(
-                            tag: 'venue-city-${event.venue.id}',
-                            child: Text(
-                                '${event.venue.city}, ${event.venue.state} ${event.venue.zip}'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Hero(
-                    tag: 'venue-map-${event.venue.id}',
-                    child: SecondaryButton(
-                      context,
-                      'MAP',
-                      () => launch(event.venue.mapUrl),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -305,7 +194,7 @@ class EventDetailsView extends StatelessWidget {
   List<Widget> _buildTags() {
     var chips = List<Widget>();
     event.tags?.forEach((tag) => chips.add(GestureDetector(
-          onTap: () => launch(Event.getTagUrl(tag)),
+          onTap: () => launch(config.tagUrl(tag)),
           child: Chip(
             label: Text(tag),
           ),

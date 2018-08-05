@@ -10,7 +10,7 @@ class EventListView extends StatefulWidget {
 }
 
 class _EventListState extends State<EventListView> {
-  ListEvent selectedEvent;
+  EventListItem selectedEvent;
 
   @override
   void initState() {
@@ -34,10 +34,10 @@ class _EventListState extends State<EventListView> {
     var now = DateTime.now();
     var twoWeeks = now.add(Duration(days: 15)); // 15 intended.
 
-    var today = List<ListEvent>();
-    var tomorrow = List<ListEvent>();
-    var nextTwoWeeks = List<ListEvent>();
-    var afterTwoWeeks = List<ListEvent>();
+    var today = List<EventListItem>();
+    var tomorrow = List<EventListItem>();
+    var nextTwoWeeks = List<EventListItem>();
+    var afterTwoWeeks = List<EventListItem>();
 
     widget.events.forEach((e) {
       if (e.occursOnDay(now)) today.add(e);
@@ -47,7 +47,7 @@ class _EventListState extends State<EventListView> {
       if (e.occursOnOrAfterDay(twoWeeks)) afterTwoWeeks.add(e);
     });
 
-    void addItems(String name, List<ListEvent> events) {
+    void addItems(String name, List<EventListItem> events) {
       if (events.length > 0) {
         items.add(
           Padding(
@@ -57,7 +57,7 @@ class _EventListState extends State<EventListView> {
         );
         events.asMap().forEach((i, event) {
           items.add(
-            EventListItem(
+            EventListItemView(
               event,
               color: i % 2 == 0
                   ? Theme.of(context).dividerColor
@@ -87,7 +87,7 @@ class _EventListState extends State<EventListView> {
     return items;
   }
 
-  void _cardTapped(ListEvent event, BuildContext context) async {
+  void _cardTapped(EventListItem event, BuildContext context) async {
     setState(() {
       selectedEvent = selectedEvent == event ? null : event;
       widget.events.selectedId =
@@ -96,18 +96,18 @@ class _EventListState extends State<EventListView> {
     if (selectedEvent != null) {
       await Future.delayed(Duration(milliseconds: 250));
       LayoutProvider.of(context)
-          .page
+          .request
           .add(PageRequest(Page.eventDetails, {'id': selectedEvent.id}));
     }
   }
 }
 
-class EventListItem extends StatelessWidget {
-  final ListEvent event;
+class EventListItemView extends StatelessWidget {
+  final EventListItem event;
   final Color color;
   final double elevation;
   final Function onTap;
-  EventListItem(this.event,
+  EventListItemView(this.event,
       {@required this.color,
       this.elevation: 0.0,
       @required this.onTap,

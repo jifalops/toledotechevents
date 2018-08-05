@@ -39,7 +39,7 @@ class EventDetailsBloc {
 }
 
 class EventDetailsRequest {
-  final ListEvent event;
+  final EventListItem event;
   final int id;
   final NetworkResource<dom.Document> resource;
   EventDetailsRequest.fromEvent(this.event, this.resource) : id = null;

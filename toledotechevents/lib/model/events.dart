@@ -10,21 +10,21 @@ import 'package:async_resource/async_resource.dart';
 import 'package:meta/meta.dart';
 import 'package:toledotechevents/internal/deleter.dart';
 
-class EventList extends UnmodifiableListView<ListEvent> {
+class EventList extends UnmodifiableListView<EventListItem> {
   EventList(String xmlString)
       : super(xml
             .parse(xmlString)
             .findAllElements('entry')
-            .map((entry) => ListEvent.fromXml(entry)));
+            .map((entry) => EventListItem.fromXml(entry)));
 
   int selectedId;
 
-  ListEvent findById(int id) =>
+  EventListItem findById(int id) =>
       firstWhere((e) => e.id == id, orElse: null);
 }
 
-class ListEvent {
-  ListEvent(
+class EventListItem {
+  EventListItem(
       {@required this.title,
       @required this.summary,
       @required this.url,
@@ -36,7 +36,7 @@ class ListEvent {
       @required List<double> coordinates})
       : _coordinates = coordinates;
 
-  ListEvent.clone(ListEvent other)
+  EventListItem.clone(EventListItem other)
       : title = other.title,
         summary = other.summary,
         url = other.url,
@@ -47,7 +47,7 @@ class ListEvent {
         endTime = other.endTime,
         _coordinates = other._coordinates;
 
-  ListEvent.fromXml(xml.XmlElement e)
+  EventListItem.fromXml(xml.XmlElement e)
       : title = HtmlUnescape()
             .convert(e.findElements('title').first.firstChild.toString()),
         summary = HtmlUnescape()
@@ -189,8 +189,8 @@ List<double> _parseCoords(List<String> coords) {
 }
 
 /// A ToledoTechEvents event. See http://toledotechevents.org/events.atom.
-class EventDetails extends ListEvent {
-  EventDetails(ListEvent from, this.resource) : super.clone(from);
+class EventDetails extends EventListItem {
+  EventDetails(EventListItem from, this.resource) : super.clone(from);
 
   final NetworkResource<dom.Document> resource;
   String _rsvpUrl, _googleCalendarUrl;
