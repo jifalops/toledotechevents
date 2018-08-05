@@ -67,45 +67,53 @@ FontWeight _weight(int w) {
 }
 
 class PrimaryButton extends RaisedButton {
-  PrimaryButton(BuildContext context, String text, onPressed,
-      {color: kSecondaryColorDark})
+  PrimaryButton(BuildContext context, String text, void Function() onPressed,
+      ref.Theme theme,
+      {Color color, Color textColor})
       : super(
           elevation: 8.0,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: Text(
               text,
-              style: Theme.of(context)
-                  .textTheme
-                  .button
-                  .copyWith(color: Colors.white, fontSize: 16.0),
+              style: Theme.of(context).textTheme.button.copyWith(
+                  color: textColor ?? Color(theme.onPrimaryButtonColor.argb),
+                  fontSize: 16.0),
             ),
           ),
-          color: color,
+          color: color ?? Color(theme.primaryButtonColor.argb),
           onPressed: onPressed,
         );
 }
 
 class SecondaryButton extends FlatButton {
-  SecondaryButton(BuildContext context, String text, onPressed)
+  SecondaryButton(BuildContext context, String text, void Function() onPressed,
+      ref.Theme theme)
       : super(
-            color: kPrimaryColorLight,
+            color: Color(theme.secondaryButtonColor.argb),
             child: Text(text,
                 style: Theme.of(context)
                     .textTheme
                     .button
-                    .copyWith(color: kTextColorOnPrimary)),
+                    .copyWith(color: Color(theme.onSecondaryButtonColor.argb))),
             onPressed: onPressed);
 }
 
 class TertiaryButton extends FlatButton {
   TertiaryButton(String text, onPressed)
       : super(
-            color: kFlatButtonColor,
-            textColor: kPrimaryColor,
             child: Text(text),
             onPressed: onPressed,
             padding: EdgeInsets.all(2.0));
+}
+
+class NoAnimationRoute extends MaterialPageRoute {
+  NoAnimationRoute({@required WidgetBuilder builder}) : super(builder: builder);
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation, Widget child) =>
+      child;
 }
 
 class FadePageRoute extends MaterialPageRoute {
@@ -123,4 +131,8 @@ class FadePageRoute extends MaterialPageRoute {
     return FadeTransition(opacity: animation, child: child);
     // return child;
   }
+}
+
+class NullWidget extends Container {
+  NullWidget() : super(width: 0.0, height: 0.0);
 }

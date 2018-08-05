@@ -24,7 +24,21 @@ class Layout {
 }
 
 /// Domain-specific locations for the page navigation UI.
-enum MainNavigation { none, top, bottom }
+class MainNavigation {
+  static const MainNavigation none = MainNavigation._({});
+  static const MainNavigation top = MainNavigation._(_navItems);
+  static const MainNavigation bottom = MainNavigation._(_navItems);
+
+  const MainNavigation._(this.items);
+  final Map<Page, String> items;
+}
+
+const _navItems = <Page, String>{
+  Page.eventList: 'Events',
+  Page.createEvent: 'New',
+  Page.venuesList: 'Venues',
+  Page.about: 'About'
+};
 
 /// Business logic that defines the location of the main navigation UI.
 MainNavigation _placeMainNavigation(Page page, Theme theme, Display display) {

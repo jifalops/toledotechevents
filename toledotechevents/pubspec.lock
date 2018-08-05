@@ -28,7 +28,7 @@ packages:
       name: async_resource
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -408,4 +408,4 @@ packages:
     source: hosted
     version: "2.1.15"
 sdks:
-  dart: ">=2.0.0-dev.62.0 <=2.0.0-dev.63.0.flutter-4c9689c1d2"
+  dart: ">=2.0.0-dev.62.0 <=2.0.0-dev.69.4"

@@ -3,15 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
-import 'package:async_resource/async_resource.dart';
-import 'package:async_resource/file_resource.dart';
 
-import 'package:xml/xml.dart' as xml;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'provider/theme_provider.dart';
-import 'provider/layout_provider.dart';
+import 'provider/theme_provider.dart' hide Theme;
+import 'provider/layout_provider.dart' hide Theme;
 import 'theme.dart';
-import 'model.dart';
 import 'view/event_list.dart';
 import 'view/venue_list.dart';
 import 'view/create_event.dart';
@@ -22,6 +17,7 @@ import 'package:toledotechevents/bloc/event_list_bloc.dart';
 import 'package:toledotechevents/bloc/event_details_bloc.dart';
 import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:html/dom.dart' as dom;
+import 'package:toledotechevents_mobile/resources.dart';
 
 class App extends StatefulWidget {
   @override
@@ -31,13 +27,13 @@ class App extends StatefulWidget {
 }
 
 class AppState extends State<App> {
-  final ThemeBloc themeBloc = ThemeBloc(ThemeResource());
+  final ThemeBloc themeBloc = ThemeBloc(themeResource);
 
   @override
-    void dispose() {
-      themeBloc.dispose();
-      super.dispose();
-    }
+  void dispose() {
+    themeBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +82,10 @@ class PageNavigatorState extends State<PageNavigator> {
   }
 
   @override
-    void dispose() {
-      layoutBloc.dispose();
-      super.dispose();
-    }
+  void dispose() {
+    layoutBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +107,21 @@ class PageNavigatorState extends State<PageNavigator> {
 
 Widget _handleLayout(
     BuildContext context, LayoutData data, LayoutData previous) {
-  if (previous == null || data.page == previous.page) {
+  // if (previous == null) {
+  //    // First page.
+  //   return _buildPage(context, data);
+  // } else if (data.page == previous.page) {
+  //   // Theme, display, or page args changed.
+  //   return _buildPage(context, data);
+  // } else if (data.layout.mainNavigation.items.contains(data.page) &&
+  // data.layout.mainNavigation.items.contains(previous.page)) {
+  //   // Changing among main screens, just rebuild the body.
+
+  // }
+
+  if (previous == null ||
+      data.page == previous.page ||
+      data.layout.mainNavigation.items.containsKey(data.page)) {
     return _buildPage(context, data);
   } else {
     Navigator.of(context).push(
@@ -121,44 +131,51 @@ Widget _handleLayout(
 }
 
 Widget _buildPage(BuildContext context, LayoutData data) {
-
+  return Scaffold(
+    appBar: buildAppBar(context, data),
+    body: _buildBody(context, data),
+    bottomNavigationBar: data.layout.mainNavigation == MainNavigation.bottom
+        ? _buildBottomNav(context, data)
+        : null,
+  );
 }
-
-Widget _getAppBar(BuildContext context, LayoutData data) {}
-
-Widget _getTopNav(BuildContext context, LayoutData data) {}
 
 Widget _buildBottomNav(BuildContext context, LayoutData data) {
-  BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedPage,
-        iconSize: 24.0,
-        onTap: (index) => setState(() => _selectedPage = index),
-        items: [
-          BottomNavigationBarItem(
-            title: Text('Events', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.event),
-          ),
-          BottomNavigationBarItem(
-            title: Text('New', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.add_circle_outline),
-          ),
-          BottomNavigationBarItem(
-            title: Text('Venues', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.business),
-          ),
-          BottomNavigationBarItem(
-            title: Text('About', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.help),
-          ),
-        ],
-      ),
+  Icon iconFor(Page page) {
+    switch (page) {
+      case Page.eventList:
+        return Icon(Icons.event);
+      case Page.createEvent:
+        return Icon(Icons.add_circle_outline);
+      case Page.venuesList:
+        return Icon(Icons.business);
+      case Page.about:
+        return Icon(Icons.help);
+      default:
+        return null;
+    }
+  }
+
+  List<BottomNavigationBarItem> items;
+  data.layout.mainNavigation.items.forEach((page, title) => items.add(
+      BottomNavigationBarItem(
+          title: Text(title, style: Theme.of(context).textTheme.button),
+          icon: iconFor(page))));
+
+  return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex:
+          data.layout.mainNavigation.items.keys.toList().indexOf(data.page),
+      iconSize: 24.0,
+      onTap: (index) => LayoutProvider.of(context).page.add(
+          PageRequest(data.layout.mainNavigation.items.keys.toList()[index])),
+      items: items);
 }
 
-Widget _getBody(BuildContext context, LayoutData data) {
+Widget _buildBody(BuildContext context, LayoutData data) {
   switch (data.page) {
     case Page.eventList:
-      return stful
+      break;
     case Page.eventDetails:
       break;
     case Page.venuesList:
@@ -174,93 +191,40 @@ Widget _getBody(BuildContext context, LayoutData data) {
   }
 }
 
-
 class EventListPage extends StatefulWidget {
   final LayoutData layoutData;
 
-EventListPage(this.layoutData);
+  EventListPage(this.layoutData);
 
   @override
   _EventListPageState createState() => new _EventListPageState();
 }
 
 class _EventListPageState extends State<EventListPage> {
-  final eventListBloc = EventListBloc(EventListResource());
-
+  final eventListBloc = EventListBloc(eventListResource);
 
   @override
-    void dispose() {
-      eventListBloc.dispose();
-      super.dispose();
-    }
+  void dispose() {
+    eventListBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
+    return StreamBuilder(
+        stream: eventListBloc.events,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return EventListView(snapshot.data, eventListBloc.fetch);
+          } else if (snapshot.hasError) {
+            return new Text('${snapshot.error}');
+          }
+          return Center(child: CircularProgressIndicator());
+        });
   }
-
-}
-
-class EventListResource extends HttpNetworkResource<List<Event>> {
-  EventListResource(): super(url: config.baseUrl + '/events.atom',
-
-  cache: FileResource(File('events.atom'), parser: (contents) {
-  final events = List<Event>();
-    if (contents != null && contents.isNotEmpty) {
-      xml
-          .parse(contents)
-          .findAllElements('entry')
-          .forEach((entry) => events.add(Event(entry, (id) => EventDetailsResource(id))));
-}}));}
-
-class EventDetailsResource extends HttpNetworkResource<dom.Document> {
-  EventDetailsResource(int id) : super(url: config.baseUrl + '/event/$id',
-  cache: FileResource(File('event_$id.html'), parser: (contents) => parse(contents)
-  ),
-  maxAge: Duration(hours: 24),
-  strategy: CacheStrategy.cacheFirst);
-}
-
-Widget _buildAppBar(BuildContext context, LayoutData data) {
-
 }
 
 
-class MainPageState extends State<MainPage> {
-  int _selectedPage = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    // timeDilation = 10.0;
-    return Scaffold(
-      appBar: getAppBar(context, _selectedPage),
-      body: _getBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedPage,
-        iconSize: 24.0,
-        onTap: (index) => setState(() => _selectedPage = index),
-        items: [
-          BottomNavigationBarItem(
-            title: Text('Events', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.event),
-          ),
-          BottomNavigationBarItem(
-            title: Text('New', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.add_circle_outline),
-          ),
-          BottomNavigationBarItem(
-            title: Text('Venues', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.business),
-          ),
-          BottomNavigationBarItem(
-            title: Text('About', style: Theme.of(context).textTheme.button),
-            icon: Icon(Icons.help),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _getBody() {
     switch (_selectedPage) {
@@ -324,30 +288,4 @@ class MainPageState extends State<MainPage> {
   }
 }
 
-class ThemeResource extends LocalResource<String> {
-  Future<SharedPreferences> get prefs async => SharedPreferences.getInstance();
 
-  Future<String> get value async => (await prefs).getString('theme');
-
-  @override
-  Future<bool> get exists async => (await value) != null;
-
-  @override
-  Future fetchContents() => value;
-
-  @override
-  Future<DateTime> get lastModified => null;
-
-  @override
-  Future<void> write(contents) async =>
-      (await prefs).setString('theme', contents);
-}
-
-class NoAnimationRoute extends MaterialPageRoute {
-  NoAnimationRoute({@required WidgetBuilder builder}) : super(builder: builder);
-
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-          Animation<double> secondaryAnimation, Widget child) =>
-      child;
-}

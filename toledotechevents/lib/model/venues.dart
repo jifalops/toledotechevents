@@ -1,36 +1,113 @@
 import 'dart:core';
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart' show parse, parseFragment;
 import 'package:async_resource/async_resource.dart';
 import 'package:english_words/english_words.dart' as words;
 import 'package:html_unescape/html_unescape.dart';
-// import '../theme.dart';
-import '../internal/deleter.dart';
+import 'package:meta/meta.dart';
+import 'package:toledotechevents/build_config.dart';
 
-/**
- * A ToledoTechEvents venue. See http://toledotechevents.org/venues.json.
- */
-class Venue {
-  final String title,
-      description,
-      _address,
-      _street,
-      _city,
-      _state,
-      _zip,
-      homepage,
-      email,
-      phone,
-      accessNotes;
-  final int id, eventCount, sourceId, duplicateOfId;
-  final double latitude, longitude;
-  final bool isClosed, hasWifi;
-  final DateTime created, updated;
-  _Address __addressComposed;
-  NetworkResource<dom.Document> detailsDoc;
-  List<VenueEvent> _pastEvents, _futureEvents;
-  Venue(Map v, this.detailsDoc)
+class VenueList extends UnmodifiableListView<VenueListVenue> {
+  VenueList(String jsonString)
+      : super(json
+            .decode(jsonString)
+            .map((dict) => VenueListVenue.fromMap(dict)));
+
+  UnmodifiableListView<VenueListVenue> _spam;
+
+  VenueListVenue findById(int id) =>
+      firstWhere((e) => e.id == id, orElse: null);
+
+  VenueListVenue findByTitle(String title) {
+    try {
+      final results = where((v) => v.title == title).toList();
+      results.sort((a, b) {
+        return b.eventCount - a.eventCount;
+      });
+      return results.first;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  List<VenueListVenue> findSpam() {
+    if (_spam == null) {
+      bool hasEnglishWord(String string) {
+        bool found = false;
+        string.split(' ').forEach((word) {
+          if (words.all.contains(word.toLowerCase())) {
+            found = true;
+            return;
+          }
+        });
+        return found;
+      }
+
+      final list = List<VenueListVenue>();
+      forEach((venue) {
+        if (!hasEnglishWord(venue.title)) list.add(venue);
+      });
+      _spam = UnmodifiableListView(list);
+    }
+    return _spam;
+  }
+}
+
+class VenueListVenue {
+  VenueListVenue(
+      {@required this.title,
+      @required this.description,
+      @required this.homepage,
+      @required this.email,
+      @required this.phone,
+      @required this.accessNotes,
+      @required this.id,
+      @required this.eventCount,
+      @required this.sourceId,
+      @required this.duplicateOfId,
+      @required this.latitude,
+      @required this.longitude,
+      @required this.isClosed,
+      @required this.hasWifi,
+      @required this.created,
+      @required this.updated,
+      @required String address,
+      @required String street,
+      @required String city,
+      @required String state,
+      @required String zip})
+      : _address = address,
+        _street = street,
+        _city = city,
+        _state = state,
+        _zip = zip;
+
+  VenueListVenue.clone(VenueListVenue other)
+      : title = other.title,
+        description = other.description,
+        homepage = other.homepage,
+        email = other.email,
+        phone = other.phone,
+        accessNotes = other.accessNotes,
+        id = other.id,
+        eventCount = other.eventCount,
+        sourceId = other.sourceId,
+        duplicateOfId = other.duplicateOfId,
+        latitude = other.latitude,
+        longitude = other.longitude,
+        isClosed = other.isClosed,
+        hasWifi = other.hasWifi,
+        created = other.created,
+        updated = other.updated,
+        _address = other._address,
+        _street = other._street,
+        _city = other._city,
+        _state = other._state,
+        _zip = other._zip;
+
+  VenueListVenue.fromMap(Map<String, dynamic> v)
       : title = v['title'] ?? '',
         description = v['description'] ?? '',
         _address = v['address'] ?? '',
@@ -53,10 +130,29 @@ class Venue {
         created = DateTime.parse(v['created_at'] ?? '').toLocal(),
         updated = DateTime.parse(v['updated_at'] ?? '').toLocal();
 
-  String get url => 'http://toledotechevents.org/venues/$id';
-  String get iCalendarUrl => url + '.ics';
-  String get subscribeUrl => iCalendarUrl.replaceAll('http://', 'webcal://');
-  String get editUrl => url + '/edit';
+  // Directly parsed values
+  final String title,
+      description,
+      _address,
+      _street,
+      _city,
+      _state,
+      _zip,
+      homepage,
+      email,
+      phone,
+      accessNotes;
+  final int id, eventCount, sourceId, duplicateOfId;
+  final double latitude, longitude;
+  final bool isClosed, hasWifi;
+  final DateTime created, updated;
+  // Derivative values.
+  _Address __addressComposed;
+
+  String get url => config.venueUrl(id);
+  String get iCalendarUrl => config.venueICalendarUrl(id);
+  String get subscribeUrl => config.venueSubscribeUrl(id);
+  String get editUrl => config.venueEditUrl(id);
   String get mapUrl => 'http://maps.google.com/maps?q=$address';
   String get phoneUrl => 'tel://$phone';
   String get emailUrl => 'mailto:$email';
@@ -70,18 +166,45 @@ class Venue {
   String get state => _addressComposed.state;
   String get zip => _addressComposed.zip;
 
-  // StringNetworkResource get detailsPage {
-  //   return _detailsPage ??= StringNetworkResource(
-  //       url: url, filename: 'venue_$id.html', maxAge: Duration(hours: 24));
-  // }
+  @override
+  String toString() => '${super.toString()} id: $id';
 
-  // Future<dom.Document> get detailsDoc async =>
-  //     _detailsDoc ??= parse(await detailsPage.get());
+  String toStringDeep() => '''
+${toString()}
+$title
+events: $eventCount
+$description
+$address
+$street
+$city
+$state
+$zip
+$homepage
+$url
+$email
+$phone
+$accessNotes
+$sourceId
+$duplicateOfId
+[$latitude, $longitude]
+created: $created
+updated: $updated
+Closed: $isClosed
+Wifi: $hasWifi
+''';
+}
+
+/// A ToledoTechEvents venue. See http://toledotechevents.org/venues.json.
+class VenueDetails extends VenueListVenue {
+  VenueDetails(VenueListVenue from, this.resource) : super.clone(from);
+
+  final NetworkResource<dom.Document> resource;
+  List<VenueEvent> _pastEvents, _futureEvents;
 
   Future<List<VenueEvent>> get pastEvents async {
     if (_pastEvents == null) {
       _pastEvents = List<VenueEvent>();
-      (await detailsDoc.get())
+      (await resource.get())
           .querySelector('#past_events')
           .querySelectorAll('tr')
           .forEach((tableRow) {
@@ -95,7 +218,7 @@ class Venue {
   Future<List<VenueEvent>> get futureEvents async {
     if (_futureEvents == null) {
       _futureEvents = List<VenueEvent>();
-      (await detailsDoc.get())
+      (await resource.get())
           .querySelector('#future_events')
           .querySelectorAll('tr')
           .forEach((tableRow) {
@@ -104,33 +227,6 @@ class Venue {
       });
     }
     return _futureEvents;
-  }
-
-  @override
-  String toString() {
-    return '''
-  Venue $id:
-  $title
-  events: $eventCount
-  $description
-  $address
-  $street
-  $city
-  $state
-  $zip
-  $homepage
-  $url
-  $email
-  $phone
-  $accessNotes
-  $sourceId
-  $duplicateOfId
-  [$latitude, $longitude]
-  created: $created
-  updated: $updated
-  Closed: $isClosed
-  Wifi: $hasWifi
-''';
   }
 
   // void delete(BuildContext context) {
@@ -148,45 +244,6 @@ class Venue {
   //           ));
   // }
 
-  static Venue findById(List<Venue> venues, int id) {
-    try {
-      return venues.firstWhere((v) => v.id == id, orElse: null);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static Venue findByTitle(List<Venue> venues, String title) {
-    try {
-      final results = venues.where((v) => v.title == title).toList();
-      results.sort((a, b) {
-        return b.eventCount - a.eventCount;
-      });
-      return results.first;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static List<Venue> findSpam(List<Venue> venues) {
-    final spam = List<Venue>();
-
-    bool hasEnglishWord(String string) {
-      bool found = false;
-      string.split(' ').forEach((word) {
-        if (words.all.contains(word.toLowerCase())) {
-          found = true;
-          return;
-        }
-      });
-      return found;
-    }
-
-    venues.forEach((venue) {
-      if (!hasEnglishWord(venue.title)) spam.add(venue);
-    });
-    return spam;
-  }
 }
 
 class _Address {
@@ -232,8 +289,6 @@ class _Address {
 }
 
 class VenueEvent {
-  final String url, title;
-  int _id;
   VenueEvent(dom.Element tableRow)
       :
         // .querySelectorAll()
@@ -244,33 +299,9 @@ class VenueEvent {
             tableRow.querySelector('.summary.p-name.u-url').attributes['href'],
         title = HtmlUnescape()
             .convert(tableRow.querySelector('.summary.p-name.u-url').text);
+
+  final String url, title;
+  int _id;
+
   int get id => _id ??= int.parse(url.split('/').last);
 }
-
-/*
-Example venue JSON:
-  {
-    "id": 82,
-    "title": "Seed Coworking",
-    "description": "",
-    "address": "25 South Saint Clair Street, Toledo, OH 43604",
-    "url": "http://seedcoworking.com/",
-    "created_at": "2012-04-18T22:58:30.000-04:00",
-    "updated_at": "2012-04-18T22:59:32.000-04:00",
-    "street_address": "25 South Saint Clair Street",
-    "locality": "Toledo",
-    "region": "OH",
-    "postal_code": "43604",
-    "country": "US",
-    "latitude": "41.6467",
-    "longitude": "-83.5385",
-    "email": "",
-    "telephone": "",
-    "source_id": null,
-    "duplicate_of_id": null,
-    "closed": false,
-    "wifi": false,
-    "access_notes": "",
-    "events_count": 204
-  },
-  */

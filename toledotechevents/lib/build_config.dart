@@ -56,15 +56,18 @@ class BuildConfig {
         '&time%5Bstart%5D=&time%5Bend%5D=&commit=Filter';
   }
 
-  String eventUrl(int id) => baseUrl + '/events/$id';
+  String eventUrl(int id) => '$baseUrl/events/$id';
   String eventEditUrl(int id) => eventUrl(id) + '/edit';
   String eventCloneUrl(int id) => eventUrl(id) + '/clone';
-  String venueUrl(int id) => baseUrl + '/venues/$id';
+  String venueUrl(int id) => '$baseUrl/venues/$id';
   String venueEditUrl(int id) => venueUrl(id) + '/edit';
   String venueCloneUrl(int id) => venueUrl(id) + '/clone';
   String venueICalendarUrl(int id) => venueUrl(id) + '.ics';
   String venueSubscribeUrl(int id) =>
       venueICalendarUrl(id).replaceAll('https?://', 'webcal://');
+
+  String tagUrl(String tag) =>
+      '$baseUrl/events/tag/${Uri.encodeComponent(tag)}';
 }
 
 enum BuildFlavor { production, development, staging }

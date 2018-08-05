@@ -6,14 +6,14 @@ import '../theme.dart';
 import 'event_listitem.dart';
 import 'event_details.dart';
 
-class EventList extends StatefulWidget {
+class EventListView extends StatefulWidget {
   final List<Event> events;
-  EventList(this.events);
+  EventListView(this.events);
   @override
-  State<EventList> createState() => _EventListState();
+  State<EventListView> createState() => _EventListState();
 }
 
-class _EventListState extends State<EventList> {
+class _EventListState extends State<EventListView> {
   Event _selectedEvent;
 
   Future<Null> refresh() async {
