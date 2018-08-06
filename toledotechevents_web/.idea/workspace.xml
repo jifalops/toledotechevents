@@ -6,7 +6,7 @@
       <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/web/pwa.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/bloc/page_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/bloc/page_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/bloc/page_layout_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/bloc/page_layout_bloc.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/layout.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/theme.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/util/color.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/util/color.dart" afterDir="false" />
@@ -104,7 +104,7 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../toledotechevents/lib/bloc/page_bloc.dart">
+        <entry file="file://$PROJECT_DIR$/../toledotechevents/lib/bloc/page_layout_bloc.dart">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="180">
               <caret line="21" column="12" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="12" />
@@ -364,7 +364,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../toledotechevents/lib/bloc/page_bloc.dart">
+    <entry file="file://$PROJECT_DIR$/../toledotechevents/lib/bloc/page_layout_bloc.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="21" column="12" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="12" />

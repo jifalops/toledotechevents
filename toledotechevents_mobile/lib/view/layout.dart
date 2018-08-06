@@ -3,7 +3,7 @@ import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
 import 'package:url_launcher/url_launcher.dart';
 
 class LayoutView extends StatelessWidget {
-  final PageLayout data;
+  final PageLayoutData data;
   final WidgetBuilder bodyBuilder;
 
   LayoutView(this.data, this.bodyBuilder);
@@ -50,7 +50,7 @@ class LayoutView extends StatelessWidget {
 
     void _overflowItemSelected(String action) async {
       if (action == MenuOption.removeSpam.action(null)) {
-        LayoutProvider.of(context).request.add(PageRequest(Page.spamRemover));
+        PageLayoutProvider.of(context).request.add(PageRequest(Page.spamRemover));
       } else if (await canLaunch(action)) {
         launch(action);
       } else {
@@ -110,7 +110,7 @@ class LayoutView extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         currentIndex: data.layout.nav.items.keys.toList().indexOf(data.page),
         iconSize: 24.0,
-        onTap: (index) => LayoutProvider.of(context)
+        onTap: (index) => PageLayoutProvider.of(context)
             .request
             .add(PageRequest(data.layout.nav.items.keys.toList()[index])),
         items: items);

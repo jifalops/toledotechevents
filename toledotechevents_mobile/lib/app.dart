@@ -67,7 +67,7 @@ class PageNavigator extends StatefulWidget {
 class PageNavigatorState extends State<PageNavigator> {
   final PageLayoutBloc bloc = PageLayoutBloc();
 
-  PageLayout data, previous;
+  PageLayoutData data, previous;
 
   PageNavigatorState() {
     widget.themeStream.listen(bloc.display.add);
@@ -83,9 +83,9 @@ class PageNavigatorState extends State<PageNavigator> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _handleNavigatorPop,
-      child: LayoutProvider(
+      child: PageLayoutProvider(
           bloc: bloc,
-          child: StreamBuilder<PageLayout>(
+          child: StreamBuilder<PageLayoutData>(
               stream: bloc.pageLayout,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -113,7 +113,7 @@ class PageNavigatorState extends State<PageNavigator> {
     }
   }
 
-  Future<bool> _handleNavigatorPop() async {}
+  Future<bool> _handleNavigatorPop() async => true;
 
   Widget _buildBody(BuildContext context) {
     switch (data.page) {

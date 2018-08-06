@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
 
 class EventListView extends StatefulWidget {
-  EventListView(this.events);
+  EventListView(this.events, this.pageData);
   final EventList events;
+  final PageLayoutData pageData;
   @override
   State<EventListView> createState() => _EventListState();
 }
@@ -95,7 +96,7 @@ class _EventListState extends State<EventListView> {
     });
     if (selectedEvent != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      LayoutProvider.of(context)
+      PageLayoutProvider.of(context)
           .request
           .add(PageRequest(Page.eventDetails, {'id': selectedEvent.id}));
     }

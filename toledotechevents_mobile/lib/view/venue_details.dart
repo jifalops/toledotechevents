@@ -1,18 +1,22 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart';
-import '../model.dart';
-import '../theme.dart';
+import 'package:toledotechevents_mobile/theme.dart';
+import 'package:toledotechevents_mobile/providers.dart'
+    hide Theme, Color, TextAlign;
 
-class VenueDetails extends StatelessWidget {
+class VenueDetailsView extends StatelessWidget {
+  VenueDetailsView(this.venue, this.pageData);
+
+  final VenueDetails venue;
+  final PageLayoutData pageData;
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final Venue venue;
+
   final format = DateFormat(' MMMM yyyy');
 
-  VenueDetails(this.venue);
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +152,7 @@ class VenueDetails extends StatelessWidget {
                         context,
                         'MAP',
                         () => launch(venue.mapUrl),
+
                       ),
                     ),
                   ],

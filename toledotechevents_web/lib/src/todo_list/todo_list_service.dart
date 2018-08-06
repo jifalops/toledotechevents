@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:angular/core.dart';
-//import 'package:toledotechevents/bloc/page_bloc.dart';
+//import 'package:toledotechevents/bloc/page_layout_bloc.dart';
 
 /// Mock service emulating access to a to-do list stored on a server.
 @Injectable()

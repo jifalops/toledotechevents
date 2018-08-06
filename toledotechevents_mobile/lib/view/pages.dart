@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:toledotechevents_mobile/view/animated_page.dart';
 import 'package:toledotechevents_mobile/providers.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/view/event_list.dart';
 import 'package:toledotechevents_mobile/view/event_details.dart';
+import 'package:toledotechevents_mobile/view/venue_list.dart';
+import 'package:toledotechevents_mobile/view/venue_details.dart';
 
+/// Creates the [EventListProvider] and listens to its stream, passing new data
+/// to the [EventListView] that actually displays the list.
 class EventListPage extends StatefulWidget {
   EventListPage(this.pageData);
-  final PageLayout pageData;
+  final PageLayoutData pageData;
   @override
   _EventListPageState createState() => new _EventListPageState();
 }
@@ -26,15 +31,18 @@ class _EventListPageState extends State<EventListPage> {
       bloc: bloc,
       child: StreamHandler<EventList>(
         stream: bloc.events,
-        handler: (context, data) => EventListView(data),
+        handler: (context, events) =>
+            AnimatedPage(EventListView(events, widget.pageData)),
       ),
     );
   }
 }
 
+/// Creates the [EventDetailsProvider] and listens to its stream, passing new
+/// data to the [EventDetailsView] that actually displays the event.
 class EventDetailsPage extends StatefulWidget {
-  EventDetailsPage(this.data);
-  final PageLayout data;
+  EventDetailsPage(this.pageData);
+  final PageLayoutData pageData;
   @override
   _EventDetailsPageState createState() => new _EventDetailsPageState();
 }
@@ -54,75 +62,74 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
       bloc: bloc,
       child: StreamHandler<EventDetails>(
         stream: bloc.details,
-        handler: (context, data) => data.venue != null
+        handler: (context, event) => event.venue != null
             ? VenueListProvider(
                 bloc: VenueListBloc(venueListResource),
-                child: EventDetailsView(data, widget.data),
+                child: EventDetailsView(event, widget.pageData),
               )
-            : EventDetailsView(data, widget.data),
+            : EventDetailsView(event, widget.pageData),
       ),
     );
   }
 }
 
-//   Widget _getBody() {
-//     switch (_selectedPage) {
-//       // Add new event
-//       case 1:
-//         // return CreateEventForm();
-//         return FutureBuilder<String>(
-//           future: getNewEventAuthToken(),
-//           builder: (context, snapshot) {
-//             if (snapshot.hasData) {
-//               return AnimatedPage(CreateEventForm(snapshot.data));
-//             } else if (snapshot.hasError) {
-//               return new Text('${snapshot.error}');
-//             }
-//             return Center(child: CircularProgressIndicator());
-//           },
-//         );
-//       // Venues list
-//       case 2:
-//         return FutureBuilder<List<Venue>>(
-//           future: getVenues(),
-//           builder: (context, snapshot) {
-//             if (snapshot.hasData) {
-//               return AnimatedPage(VenueList(snapshot.data));
-//             } else if (snapshot.hasError) {
-//               return new Text('${snapshot.error}');
-//             }
-//             return Center(child: CircularProgressIndicator());
-//           },
-//         );
-//       // About page
-//       case 3:
-//         return FutureBuilder<String>(
-//           future: getAboutSectionHtml(),
-//           builder: (context, snapshot) {
-//             if (snapshot.hasData) {
-//               return SingleChildScrollView(
-//                 child: AnimatedPage(HtmlView(data: snapshot.data)),
-//               );
-//             } else if (snapshot.hasError) {
-//               return new Text('${snapshot.error}');
-//             }
-//             return Center(child: CircularProgressIndicator());
-//           },
-//         );
-//       // Event list
-//       case 0:
-//       default:
-//         return FutureBuilder<List<Event>>(
-//           future: getEvents(),
-//           builder: (context, snapshot) {
-//             if (snapshot.hasData) {
-//               return AnimatedPage(EventList(snapshot.data));
-//             } else if (snapshot.hasError) {
-//               return new Text('${snapshot.error}');
-//             }
-//             return Center(child: CircularProgressIndicator());
-//           },
-//         );
-//     }
-//   }
-// }
+/// Creates the [VenueListProvider] and listens to its stream, passing new data
+/// to the [VenueListView] that actually displays the list.
+class VenueListPage extends StatefulWidget {
+  VenueListPage(this.pageData);
+  final PageLayoutData pageData;
+  @override
+  _VenueListPageState createState() => new _VenueListPageState();
+}
+
+class _VenueListPageState extends State<VenueListPage> {
+  final bloc = VenueListBloc(venueListResource);
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VenueListProvider(
+      bloc: bloc,
+      child: StreamHandler<VenueList>(
+        stream: bloc.venues,
+        handler: (context, venues) =>
+            AnimatedPage(VenueListView(venues, widget.pageData)),
+      ),
+    );
+  }
+}
+
+/// Creates the [VenueDetailsProvider] and listens to its stream, passing new
+/// data to the [VenueDetailsView] that actually displays the venue.
+class VenueDetailsPage extends StatefulWidget {
+  VenueDetailsPage(this.pageData);
+  final PageLayoutData pageData;
+  @override
+  _VenueDetailsPageState createState() => new _VenueDetailsPageState();
+}
+
+class _VenueDetailsPageState extends State<VenueDetailsPage> {
+  final bloc = VenueDetailsBloc();
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VenueDetailsProvider(
+      bloc: bloc,
+      child: StreamHandler<VenueDetails>(
+        stream: bloc.details,
+        handler: (context, venue) => VenueDetailsView(venue, widget.pageData),
+      ),
+    );
+  }
+}

@@ -1,28 +1,27 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:intl/intl.dart';
-import '../model.dart';
-import '../theme.dart';
-import 'venue_details.dart';
+import 'package:toledotechevents_mobile/theme.dart';
+import 'package:toledotechevents_mobile/providers.dart';
 
 enum VenuesOrder {
   popular,
   newest,
   hot
-  // Can't do recent without list of _past_ events
+  // Can't do recent without list of *past* events
 }
 
-class VenueList extends StatefulWidget {
-  final List<Venue> venues;
+class VenueListView extends StatefulWidget {
+  final VenueList venues;
+  final PageLayoutData pageData;
   final DateFormat format = DateFormat('yyyy-MM-dd');
-  VenueList(this.venues);
+  VenueListView(this.venues, this.pageData);
   @override
   _VenueListState createState() => new _VenueListState();
 }
 
-class _VenueListState extends State<VenueList> {
-  Venue _selectedVenue;
+class _VenueListState extends State<VenueListView> {
+  VenueListItem _selectedVenue;
   VenuesOrder sortOrder = VenuesOrder.popular;
   bool sortReverse = false;
 
@@ -136,7 +135,7 @@ class _VenueListState extends State<VenueList> {
     return items;
   }
 
-  void _cardTapped(Venue venue, BuildContext context) async {
+  void _cardTapped(VenueListItem venue, BuildContext context) async {
     // timeDilation = 10.0;
     setState(() => _selectedVenue = _selectedVenue == venue ? null : venue);
     if (_selectedVenue != null) {
@@ -164,7 +163,7 @@ class _VenueListState extends State<VenueList> {
         break;
       case VenuesOrder.hot:
         final now = DateTime.now();
-        double hotness(Venue v) {
+        double hotness(VenueListItem v) {
           return v.eventCount /
               (now.millisecondsSinceEpoch - v.created.millisecondsSinceEpoch);
         }

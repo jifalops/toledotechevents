@@ -10,7 +10,7 @@ import 'package:toledotechevents_mobile/providers.dart'
 class EventDetailsView extends StatelessWidget {
   EventDetailsView(this.event, this.page);
   final EventDetails event;
-  final PageLayout page;
+  final PageLayoutData page;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +178,7 @@ class EventDetailsView extends StatelessWidget {
                 // SizedBox(width: 16.0),
                 TertiaryButton(
                     'VENUE DETAILS',
-                    () => LayoutProvider.of(context)
+                    () => PageLayoutProvider.of(context)
                         .request
                         .add(PageRequest(Page.venueDetails, {'id': venue.id}))),
               ])
