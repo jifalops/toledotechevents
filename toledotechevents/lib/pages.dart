@@ -1,9 +1,13 @@
 // The app's pages.
 class Page {
   static const eventList = Page._(null, '/events');
-  static const eventDetails = Page._('Event details', '/event/:id');
+
+  /// The `event` argument can be an [EventListItem] or [int].
+  static const eventDetails = Page._('Event details', '/event/:event');
   static const venuesList = Page._(null, '/venues');
-  static const venueDetails = Page._('Venue details', '/venue/:id');
+
+  /// The `venue` argument can be a [VenueListItem] or [int].
+  static const venueDetails = Page._('Venue details', '/venue/:venue');
   static const createEvent = Page._(null, '/events/new');
   static const about = Page._(null, '/about');
   static const spamRemover = Page._(null, '/venues/spam');

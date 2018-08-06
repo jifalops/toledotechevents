@@ -8,129 +8,135 @@ import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/providers.dart' hide Color, Theme;
-import 'package:toledotechevents_mobile/view/layout.dart';
+import 'package:toledotechevents_mobile/view/page_layout.dart';
 import 'package:toledotechevents_mobile/view/pages.dart';
 
 class App extends StatefulWidget {
   @override
-  AppState createState() {
-    return new AppState();
-  }
+  _AppState createState() => _AppState();
 }
 
-class AppState extends State<App> {
-  final ThemeBloc themeBloc = ThemeBloc(themeResource);
+class _AppState extends State<App> {
+  ThemeBloc themeBloc;
+  PageLayoutBloc pageBloc;
+  EventListBloc eventsBloc;
+  VenueListBloc venuesBloc;
+
+  /// Page layout is dependent on the theme. The connection between their blocs
+  /// must be setup and torn down with the widget's state.
+  StreamSubscription themeSubscription;
+  bool checkDisplayMedia;
+
+  @override
+  Widget build(BuildContext context) {
+    if (checkDisplayMedia) {
+      final media = MediaQuery.of(context);
+      themeBloc.display
+          .add(Display(height: media.size.height, width: media.size.width));
+      checkDisplayMedia = false;
+    }
+    return AppDataProvider(
+      themeBloc: themeBloc,
+      pageBloc: pageBloc,
+      eventsBloc: eventsBloc,
+      venuesBloc: venuesBloc,
+      child: StreamHandler<DisplayTheme>(
+        stream: themeBloc.displayTheme,
+        handler: (context, displayTheme) => MaterialApp(
+              title: config.title,
+              theme: buildTheme(displayTheme.theme),
+              home: PageNavigator(),
+            ),
+      ),
+    );
+  }
+
+  void initBloc() {
+    themeBloc = ThemeBloc(themeResource);
+    pageBloc = PageLayoutBloc();
+    themeSubscription = themeBloc.displayTheme.listen(pageBloc.display.add);
+    eventsBloc = EventListBloc(eventListResource);
+    venuesBloc = VenueListBloc(venueListResource);
+  }
+
+  void disposeBloc() {
+    themeBloc.dispose();
+    themeSubscription.cancel();
+    pageBloc.dispose();
+    eventsBloc.dispose();
+    venuesBloc.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initBloc();
+    checkDisplayMedia = true;
+  }
 
   @override
   void dispose() {
-    themeBloc.dispose();
+    disposeBloc();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-
-    themeBloc.display
-        .add(Display(height: media.size.height, width: media.size.width));
-
-    return ThemeProvider(
-        bloc: themeBloc,
-        child: StreamBuilder<DisplayTheme>(
-            stream: themeBloc.displayTheme,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return MaterialApp(
-                  title: config.title,
-                  theme: buildTheme(snapshot.data.theme),
-                  home: PageNavigator(themeBloc.displayTheme),
-                );
-              } else if (snapshot.hasError) {
-                return new Text('${snapshot.error}');
-              }
-              return Center(child: CircularProgressIndicator());
-            }));
+  void didUpdateWidget(App oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    disposeBloc();
+    initBloc();
   }
 }
 
 class PageNavigator extends StatefulWidget {
-  final Stream<DisplayTheme> themeStream;
-
-  PageNavigator(this.themeStream);
-
   @override
-  PageNavigatorState createState() {
-    return new PageNavigatorState();
-  }
+  _PageNavigatorState createState() => _PageNavigatorState();
 }
 
-class PageNavigatorState extends State<PageNavigator> {
-  final PageLayoutBloc bloc = PageLayoutBloc();
-
-  PageLayoutData data, previous;
-
-  PageNavigatorState() {
-    widget.themeStream.listen(bloc.display.add);
-  }
-
-  @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
-  }
+class _PageNavigatorState extends State<PageNavigator> {
+  PageLayoutData pageData, prevPageData;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _handleNavigatorPop,
-      child: PageLayoutProvider(
-          bloc: bloc,
-          child: StreamBuilder<PageLayoutData>(
-              stream: bloc.pageLayout,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  data = snapshot.data;
-                  Widget page = _handleLayout(context);
-                  previous = data;
-                  return page;
-                } else if (snapshot.hasError) {
-                  return new Text('${snapshot.error}');
-                }
-                return Center(child: CircularProgressIndicator());
-              })),
-    );
+    return StreamHandler<PageLayoutData>(
+        stream: AppDataProvider.of(context).pageBloc.pageLayout,
+        handler: (context, data) {
+          pageData = data;
+          Widget page = _handleLayout(context);
+          prevPageData = pageData;
+          return page;
+        });
   }
 
   Widget _handleLayout(BuildContext context) {
-    if (previous == null ||
-        data.page == previous.page ||
-        data.layout.nav.contains(data.page)) {
-      return LayoutView(data, _buildBody);
+    if (prevPageData == null ||
+        pageData.page == prevPageData.page ||
+        pageData.layout.nav.contains(pageData.page)) {
+      return PageLayoutView(pageData, _buildBody);
     } else {
-      Navigator.of(context).push(
-          NoAnimationRoute(builder: (context) => LayoutView(data, _buildBody)));
+      Navigator.of(context).push(NoAnimationRoute(
+        builder: (context) => PageLayoutView(pageData, _buildBody),
+      ));
       return NullWidget();
     }
   }
 
-  Future<bool> _handleNavigatorPop() async => true;
-
   Widget _buildBody(BuildContext context) {
-    switch (data.page) {
+    switch (pageData.page) {
       case Page.eventList:
-        return EventListPage(data);
+        return EventListPage(pageData);
       case Page.eventDetails:
-        return EventDetailsPage(data);
+        return EventDetailsPage(pageData);
       case Page.venuesList:
-        return VenueListPage(data);
+        return VenueListPage(pageData);
       case Page.venueDetails:
-        return VenueDetailsPage(data);
+        return VenueDetailsPage(pageData);
       case Page.createEvent:
-        return CreateEventPage(data);
+        return CreateEventPage(pageData);
       case Page.about:
-        return AboutPage(data);
+        return AboutPage(pageData);
       case Page.spamRemover:
-        return SpamRemoverPage(data);
+        return SpamRemoverPage(pageData);
       default:
         assert(false);
         return NullWidget();

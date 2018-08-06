@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:async_resource/async_resource.dart';
 import 'package:html/dom.dart' as dom;
@@ -42,6 +43,7 @@ class EventDetailsRequest {
   final EventListItem event;
   final int id;
   final NetworkResource<dom.Document> resource;
-  EventDetailsRequest.fromEvent(this.event, this.resource) : id = null;
-  EventDetailsRequest.fromId(this.id, this.resource) : event = null;
+
+  /// Either [event] or [id] must be specified.
+  EventDetailsRequest({this.event, @required this.resource, this.id});
 }

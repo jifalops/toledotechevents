@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
+import 'package:toledotechevents_mobile/resources.dart';
 
 class EventListView extends StatefulWidget {
   EventListView(this.events, this.pageData);
@@ -96,9 +97,11 @@ class _EventListState extends State<EventListView> {
     });
     if (selectedEvent != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      PageLayoutProvider.of(context)
-          .request
-          .add(PageRequest(Page.eventDetails, {'id': selectedEvent.id}));
+      PageLayoutProvider.of(context).request.add(PageRequest(
+              Page.eventDetails, {
+            'event': selectedEvent,
+            'resource': EventDetailsResource(selectedEvent.id)
+          }));
     }
   }
 }

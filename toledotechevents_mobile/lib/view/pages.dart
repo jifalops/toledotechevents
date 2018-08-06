@@ -50,6 +50,24 @@ class EventDetailsPage extends StatefulWidget {
 class _EventDetailsPageState extends State<EventDetailsPage> {
   final bloc = EventDetailsBloc();
 
+  void initBloc() {
+    // TODO manage bloc state correctly.
+
+    // TODO move to bloc
+    final event = widget.pageData.args['event'];
+    if (event is EventListItem) {
+      bloc.request.add(EventDetailsRequest(
+        event: event,
+        resource: EventDetailsResource(event.id),
+      ));
+    } else if (event is int) {
+      bloc.request.add(EventDetailsRequest(
+        id: event,
+        resource: EventDetailsResource(event),
+      ));
+    }
+  }
+
   @override
   void dispose() {
     bloc.dispose();

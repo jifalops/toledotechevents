@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
 import 'package:url_launcher/url_launcher.dart';
 
-class LayoutView extends StatelessWidget {
+class PageLayoutView extends StatelessWidget {
   final PageLayoutData data;
   final WidgetBuilder bodyBuilder;
 
-  LayoutView(this.data, this.bodyBuilder);
+  PageLayoutView(this.data, this.bodyBuilder);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,9 @@ class LayoutView extends StatelessWidget {
 
     void _overflowItemSelected(String action) async {
       if (action == MenuOption.removeSpam.action(null)) {
-        PageLayoutProvider.of(context).request.add(PageRequest(Page.spamRemover));
+        PageLayoutProvider.of(context)
+            .request
+            .add(PageRequest(Page.spamRemover));
       } else if (await canLaunch(action)) {
         launch(action);
       } else {
