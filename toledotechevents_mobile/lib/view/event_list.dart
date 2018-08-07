@@ -97,7 +97,7 @@ class _EventListState extends State<EventListView> {
     });
     if (selectedEvent != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      PageLayoutProvider.of(context).request.add(PageRequest(
+      PageLayoutProvider.of(context).page.add(PageRequest(
               Page.eventDetails, {
             'event': selectedEvent,
             'resource': EventDetailsResource(selectedEvent.id)

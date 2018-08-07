@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart' show timeDilation;
 
 import 'package:toledotechevents/build_config.dart';
 
+import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/providers.dart' hide Color, Theme;
@@ -16,16 +17,24 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App> {
+class _AppState extends BlocState<App> {
   ThemeBloc themeBloc;
   PageLayoutBloc pageBloc;
   EventListBloc eventsBloc;
   VenueListBloc venuesBloc;
 
-  /// Page layout is dependent on the theme. The connection between their blocs
-  /// must be setup and torn down with the widget's state.
+  /// The connection between their blocs must be setup and torn down with the
+  /// widget's state.
+  ///
+  /// Page layout is dependent on the theme.
   StreamSubscription themeSubscription;
   bool checkDisplayMedia;
+
+  @override
+  void initState() {
+    super.initState();
+    checkDisplayMedia = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,26 +74,6 @@ class _AppState extends State<App> {
     pageBloc.dispose();
     eventsBloc.dispose();
     venuesBloc.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initBloc();
-    checkDisplayMedia = true;
-  }
-
-  @override
-  void dispose() {
-    disposeBloc();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(App oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    disposeBloc();
-    initBloc();
   }
 }
 

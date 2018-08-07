@@ -12,9 +12,6 @@ class Page {
   static const about = Page._(null, '/about');
   static const spamRemover = Page._(null, '/venues/spam');
 
-  static Page get home => eventList;
-  static Page get first => eventList;
-
   static const values = [
     eventList,
     eventDetails,

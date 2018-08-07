@@ -179,7 +179,7 @@ class EventDetailsView extends StatelessWidget {
                 TertiaryButton(
                     'VENUE DETAILS',
                     () => PageLayoutProvider.of(context)
-                        .request
+                        .page
                         .add(PageRequest(Page.venueDetails, {'id': venue.id}))),
               ])
             ],

@@ -51,7 +51,7 @@ class PageLayoutView extends StatelessWidget {
     void _overflowItemSelected(String action) async {
       if (action == MenuOption.removeSpam.action(null)) {
         PageLayoutProvider.of(context)
-            .request
+            .page
             .add(PageRequest(Page.spamRemover));
       } else if (await canLaunch(action)) {
         launch(action);
@@ -113,7 +113,7 @@ class PageLayoutView extends StatelessWidget {
         currentIndex: data.layout.nav.items.keys.toList().indexOf(data.page),
         iconSize: 24.0,
         onTap: (index) => PageLayoutProvider.of(context)
-            .request
+            .page
             .add(PageRequest(data.layout.nav.items.keys.toList()[index])),
         items: items);
   }
