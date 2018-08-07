@@ -7,13 +7,13 @@ import 'package:async_resource/async_resource.dart';
 
 import 'package:toledotechevents/theme.dart';
 import 'package:toledotechevents/pages.dart';
-import 'package:toledotechevents/layout.dart';
+import 'package:toledotechevents/layouts.dart';
 import 'package:toledotechevents/model/events.dart';
 import 'package:toledotechevents/model/venues.dart';
 
 // export 'package:toledotechevents/theme.dart';
 export 'package:toledotechevents/pages.dart';
-export 'package:toledotechevents/layout.dart';
+export 'package:toledotechevents/layouts.dart';
 export 'package:toledotechevents/model/events.dart';
 export 'package:toledotechevents/model/venues.dart';
 
