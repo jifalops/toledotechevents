@@ -45,11 +45,11 @@ final aboutPageResource = HttpNetworkResource<AboutSection>(
   strategy: CacheStrategy.cacheFirst,
 );
 
-final newEventPageResource = HttpNetworkResource<AuthToken>(
+final newEventPageResource = HttpNetworkResource<NewEvent>(
   url: config.baseUrl + '/events/new.html',
   cache: FileResource(
     File('new_event.html'),
-    parser: (contents) => AuthToken(contents),
+    parser: (contents) => NewEvent(contents),
   ),
   maxAge: Duration(hours: 24),
   strategy: CacheStrategy.cacheFirst,

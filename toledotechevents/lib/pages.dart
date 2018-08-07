@@ -2,12 +2,16 @@
 class Page {
   static const eventList = Page._(null, '/events');
 
-  /// The `event` argument can be an [EventListItem] or [int].
-  static const eventDetails = Page._('Event details', '/event/:event');
+  /// `resource` is an [EventDetailsResource]. `event` is an optional
+  /// [EventListItem].
+  static const eventDetails =
+      Page._('Event details', '/event/:resource/:event');
   static const venuesList = Page._(null, '/venues');
 
-  /// The `venue` argument can be a [VenueListItem] or [int].
-  static const venueDetails = Page._('Venue details', '/venue/:venue');
+  /// `resource` is a [VenueDetailsResource]. `venue` is an optional
+  /// [VenueListItem].
+  static const venueDetails =
+      Page._('Venue details', '/venue/:resource/:venue');
   static const createEvent = Page._(null, '/events/new');
   static const about = Page._(null, '/about');
   static const spamRemover = Page._(null, '/venues/spam');

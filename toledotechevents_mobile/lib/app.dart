@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
 import 'package:toledotechevents/build_config.dart';
+import 'package:toledotechevents/theme.dart' as base;
 
 import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
-import 'package:toledotechevents_mobile/providers.dart' hide Color, Theme;
+import 'package:toledotechevents_mobile/providers.dart';
 import 'package:toledotechevents_mobile/view/page_layout.dart';
 import 'package:toledotechevents_mobile/view/pages.dart';
 
@@ -18,62 +19,42 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends BlocState<App> {
-  ThemeBloc themeBloc;
-  PageLayoutBloc pageBloc;
-  EventListBloc eventsBloc;
-  VenueListBloc venuesBloc;
-
-  /// The connection between their blocs must be setup and torn down with the
-  /// widget's state.
-  ///
-  /// Page layout is dependent on the theme.
-  StreamSubscription themeSubscription;
+  AppBloc bloc;
   bool checkDisplayMedia;
-
-  @override
-  void initState() {
-    super.initState();
-    checkDisplayMedia = true;
-  }
 
   @override
   Widget build(BuildContext context) {
     if (checkDisplayMedia) {
       final media = MediaQuery.of(context);
-      themeBloc.display
+      bloc.displayRequest
           .add(Display(height: media.size.height, width: media.size.width));
       checkDisplayMedia = false;
     }
     return AppDataProvider(
-      themeBloc: themeBloc,
-      pageBloc: pageBloc,
-      eventsBloc: eventsBloc,
-      venuesBloc: venuesBloc,
-      child: StreamHandler<DisplayTheme>(
-        stream: themeBloc.displayTheme,
-        handler: (context, displayTheme) => MaterialApp(
+      bloc: bloc,
+      child: StreamHandler<base.Theme>(
+        stream: bloc.theme,
+        handler: (context, theme) => MaterialApp(
               title: config.title,
-              theme: buildTheme(displayTheme.theme),
+              theme: buildTheme(theme),
               home: PageNavigator(),
             ),
       ),
     );
   }
 
+  @override
   void initBloc() {
-    themeBloc = ThemeBloc(themeResource);
-    pageBloc = PageLayoutBloc();
-    themeSubscription = themeBloc.displayTheme.listen(pageBloc.display.add);
-    eventsBloc = EventListBloc(eventListResource);
-    venuesBloc = VenueListBloc(venueListResource);
+    bloc = AppBloc(
+        themeResource: themeResource,
+        eventsResource: eventListResource,
+        venuesResource: venueListResource);
+    checkDisplayMedia = true;
   }
 
+  @override
   void disposeBloc() {
-    themeBloc.dispose();
-    themeSubscription.cancel();
-    pageBloc.dispose();
-    eventsBloc.dispose();
-    venuesBloc.dispose();
+    bloc.dispose();
   }
 }
 
@@ -83,12 +64,12 @@ class PageNavigator extends StatefulWidget {
 }
 
 class _PageNavigatorState extends State<PageNavigator> {
-  PageLayoutData pageData, prevPageData;
+  PageData pageData, prevPageData;
 
   @override
   Widget build(BuildContext context) {
-    return StreamHandler<PageLayoutData>(
-        stream: AppDataProvider.of(context).pageBloc.pageLayout,
+    return StreamHandler<PageData>(
+        stream: AppDataProvider.of(context).page,
         handler: (context, data) {
           pageData = data;
           Widget page = _handleLayout(context);

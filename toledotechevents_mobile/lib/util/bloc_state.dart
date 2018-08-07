@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-abstract class BlocState<T> extends State<StatefulWidget> {
+abstract class BlocState<T extends StatefulWidget> extends State<T> {
   /// Create *BLoC*s and setup [StreamSubscription]s.
   void initBloc();
 

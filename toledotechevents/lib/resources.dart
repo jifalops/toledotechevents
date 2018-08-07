@@ -24,7 +24,7 @@ abstract class Resources {
   final NetworkResource<EventList> eventList;
   final NetworkResource<VenueList> venueList;
   final NetworkResource<AboutSection> aboutPage;
-  final NetworkResource<AuthToken> newEvent;
+  final NetworkResource<NewEvent> newEvent;
 }
 
 NetworkResource<dom.Document>
@@ -87,11 +87,11 @@ final aboutPageResource = HttpNetworkResource<AboutSection>(
   strategy: CacheStrategy.cacheFirst,
 );
 
-final newEventPageResource = HttpNetworkResource<AuthToken>(
+final newEventPageResource = HttpNetworkResource<NewEvent>(
   url: config.baseUrl + '/events/new.html',
   cache: FileResource(
     File('new_event.html'),
-    parser: (contents) => AuthToken(contents),
+    parser: (contents) => NewEvent(contents),
   ),
   maxAge: Duration(hours: 24),
   strategy: CacheStrategy.cacheFirst,

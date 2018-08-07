@@ -243,7 +243,7 @@ class VenueDetails extends VenueListItem {
   // }
 
   static Future<VenueDetails> request(
-      int id, NetworkResource<dom.Document> resource) async {
+      NetworkResource<dom.Document> resource) async {
     // TODO implement fetch by id.
     return null;
   }

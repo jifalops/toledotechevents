@@ -9,7 +9,7 @@ export 'package:toledotechevents/model/events.dart';
 
 /// Selects an event from a list.
 class EventDetailsBloc {
-  final _requestController = StreamController<EventDetailsRequest>();
+  final _requestController = StreamController<Map<String, dynamic>>();
   final _details = BehaviorSubject<EventDetails>();
 
   EventDetailsBloc() {
@@ -21,29 +21,20 @@ class EventDetailsBloc {
     _details.close();
   }
 
-  void _updateEvent(EventDetailsRequest request) {
-    if (request != null && request.resource != null) {
-      if (request.event != null) {
-        _details.add(EventDetails(request.event, request.resource));
-      } else if (request.id != null) {
-        EventDetails.request(request.id, request.resource)
+  void _updateEvent(Map<String, dynamic> args) {
+    if (args != null && args['resource'] is NetworkResource<dom.Document>) {
+      if (args['event'] is EventListItem) {
+        _details.add(EventDetails(args['event'], args['resource']));
+      } else {
+        EventDetails.request(args['resource'])
             .then((details) => details == null ? null : _details.add(details));
       }
     }
   }
 
   /// The input stream for signaling the output stream should be refreshed.
-  Sink<EventDetailsRequest> get request => _requestController.sink;
+  Sink<Map<String, dynamic>> get args => _requestController.sink;
 
   /// Platform-agnostic output stream for presenting pages to the user.
   Stream<EventDetails> get details => _details.stream;
-}
-
-class EventDetailsRequest {
-  final EventListItem event;
-  final int id;
-  final NetworkResource<dom.Document> resource;
-
-  /// Either [event] or [id] must be specified.
-  EventDetailsRequest({this.event, @required this.resource, this.id});
 }

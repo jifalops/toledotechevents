@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/providers.dart' as ref;
+import 'package:toledotechevents/theme.dart' as ref;
 
 ThemeData buildTheme(ref.Theme t) {
   final base = t.brightness == ref.Brightness.light

@@ -11,7 +11,7 @@ import 'package:toledotechevents/layout.dart';
 import 'package:toledotechevents/model/events.dart';
 import 'package:toledotechevents/model/venues.dart';
 
-export 'package:toledotechevents/theme.dart';
+// export 'package:toledotechevents/theme.dart';
 export 'package:toledotechevents/pages.dart';
 export 'package:toledotechevents/layout.dart';
 export 'package:toledotechevents/model/events.dart';
@@ -71,9 +71,6 @@ class AppBloc {
 
     // Start fetching events.
     eventsRequest.add(false);
-
-    // Start fetching venues.
-    venuesRequest.add(false);
   }
 
   void setupInputs() {
@@ -115,11 +112,7 @@ class AppBloc {
     _venues.close();
   }
 
-  void _updateTheme(Theme theme) {
-    if (theme != null) {
-      _theme.add(theme);
-    }
-  }
+  void _updateTheme(Theme theme) => _theme.add(theme);
 
   void _updatePage({PageRequest request, Display display, Theme theme}) async {
     request ??= await _pageController.stream.last;
@@ -127,6 +120,14 @@ class AppBloc {
     display ??= await _displayController.stream.last;
     if (request != null && theme != null && display != null) {
       _page.add(PageData(request, theme, display));
+
+      /// Ensure the venue list has been requested for pages that depend on it.
+      if (request.page != Page.eventList &&
+          request.page != Page.about &&
+          await _venuesController.stream.last == null) {
+        // Start fetching venues.
+        venuesRequest.add(false);
+      }
     }
   }
 

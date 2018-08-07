@@ -19,8 +19,7 @@ class EventList extends UnmodifiableListView<EventListItem> {
 
   int selectedId;
 
-  EventListItem findById(int id) =>
-      firstWhere((e) => e.id == id, orElse: null);
+  EventListItem findById(int id) => firstWhere((e) => e.id == id, orElse: null);
 }
 
 class EventListItem {
@@ -235,7 +234,7 @@ $_googleCalendarUrl
   }
 
   static Future<EventDetails> request(
-      int id, NetworkResource<dom.Document> resource) async {
+      NetworkResource<dom.Document> resource) async {
     // TODO implement fetch by id.
     return null;
   }

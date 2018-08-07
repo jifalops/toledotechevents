@@ -19,24 +19,6 @@ class CreateEventForm extends StatefulWidget {
   }
 }
 
-class EventData {
-  String name, venueTitle, rsvpUrl, websiteUrl, description, venueDetails, tags;
-  Venue venue;
-  DateTime startTime, endTime;
-  @override
-  String toString() => '''
-$name
-$venueTitle
-$venue
-$rsvpUrl
-$websiteUrl
-$description
-$venueDetails
-$startTime
-$endTime
-$tags
-''';
-}
 
 class _CreateEventFormState extends State<CreateEventForm> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
