@@ -22,7 +22,6 @@ class EventFormView extends StatefulWidget {
 class _EventFormViewState extends State<EventFormView> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final eventData = EventData();
-  final format = DateFormat("MMMM d, yyyy 'at' h:mma");
   final venueController = TextEditingController();
   // final venuFocusNode = FocusNode();
   final startTimeController = TextEditingController();

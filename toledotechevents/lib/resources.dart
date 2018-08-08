@@ -45,7 +45,15 @@ abstract class Resources {
   NetworkResource<dom.Document> eventDetails(int id);
   NetworkResource<dom.Document> venueDetails(int id);
 
-  @protected
-  EventList parseEvents(contents) =>
+  static EventList parseEvents(contents) =>
       contents == null ? null : EventList(contents);
+
+  static VenueList parseVenues(contents) =>
+      contents == null ? null : VenueList(contents);
+
+  static AboutSection parseAboutSection(contents) =>
+      contents == null ? null : AboutSection(contents);
+
+  static AuthToken parseAuthToken(contents) =>
+      contents == null ? null : AuthToken(contents);
 }

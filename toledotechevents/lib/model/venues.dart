@@ -69,7 +69,7 @@ class VenueList extends ExtendableList<VenueListItem> {
 
   VenuesOrder get sortOrder => _sortOrder;
 
-  void setOrder(VenuesOrder value) {
+  void setOrder(VenuesOrder order) {
     if (_sortOrder == order)
       _sortReverse = !_sortReverse;
     else {

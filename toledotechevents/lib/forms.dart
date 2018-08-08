@@ -1,9 +1,32 @@
+import 'package:intl/intl.dart';
 import 'package:toledotechevents/util/form.dart';
 
 final eventForm = EventForm._();
 
 class EventForm extends Form {
   EventForm._() : super(EventFormInput.values);
+
+  static final date = DateFormat("MMMM d, yyyy 'at' h:mma");
+  static final serverDate = DateFormat('yyyy-MM-dd');
+  static final serverTime = DateFormat('h:mm a');
+
+  //   final response =
+  //     await http.post('http://toledotechevents.org/events', body: {
+  //   'utf8': '✓',
+  //   'authenticity_token': widget.authToken,
+  //   'event[title]': eventData.name,
+  //   'venue_name': eventData.venueTitle,
+  //   'event[venue_id]': '${eventData.venue?.id ?? ''}',
+  //   'start_date': DateFormat('yyyy-MM-dd').format(eventData.startTime),
+  //   'start_time': DateFormat('h:mm a').format(eventData.startTime),
+  //   'end_date': DateFormat('yyyy-MM-dd').format(eventData.endTime),
+  //   'end_time': DateFormat('h:mm a').format(eventData.endTime),
+  //   'event[url]': eventData.websiteUrl,
+  //   'event[rsvp_url]': eventData.rsvpUrl,
+  //   'event[description]': eventData.description,
+  //   'event[venue_details]': eventData.venueDetails,
+  //   'event[tag_list]': eventData.tags,
+  // });
 
   @override
   List<String> validate() {

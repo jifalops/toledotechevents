@@ -17,8 +17,7 @@ class MobileResources extends Resources {
               url: config.baseUrl + '/events.atom',
               cache: FileResource(
                 File('events.atom'),
-                parser: (contents) =>
-                    contents == null ? null : EventList(contents),
+                parser: Resources.parseEvents,
               ),
               maxAge: Duration(minutes: 60),
               strategy: CacheStrategy.cacheFirst,
@@ -27,8 +26,7 @@ class MobileResources extends Resources {
               url: config.baseUrl + '/venues.json',
               cache: FileResource(
                 File('venues.json'),
-                parser: (contents) =>
-                    contents == null ? null : VenueList(contents),
+                parser: Resources.parseVenues,
               ),
               maxAge: Duration(minutes: 60),
               strategy: CacheStrategy.cacheFirst,
@@ -37,7 +35,7 @@ class MobileResources extends Resources {
               url: config.baseUrl + '/about.html',
               cache: FileResource(
                 File('about.html'),
-                parser: (contents) => AboutSection(contents),
+                parser: Resources.parseAboutSection,
               ),
               maxAge: Duration(hours: 24),
               strategy: CacheStrategy.cacheFirst,
@@ -46,7 +44,7 @@ class MobileResources extends Resources {
               url: config.baseUrl + '/events/new.html',
               cache: FileResource(
                 File('new_event.html'),
-                parser: (contents) => AuthToken(contents),
+                parser: Resources.parseAuthToken,
               ),
               maxAge: Duration(hours: 24),
               strategy: CacheStrategy.cacheFirst,
