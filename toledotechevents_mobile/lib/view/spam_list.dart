@@ -1,46 +1,46 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:crypto/crypto.dart';
-import 'package:intl/intl.dart';
-import '../model.dart';
-import '../theme.dart';
-import 'venue_details.dart';
-import 'app_bar.dart';
-import '../internal/deleter.dart';
+import 'package:toledotechevents/internal/deleter.dart';
+import 'package:toledotechevents_mobile/resources.dart';
+import 'package:toledotechevents_mobile/providers.dart';
+import 'package:toledotechevents_mobile/theme.dart';
 
-class VenueSpamList extends StatefulWidget {
-  final List<Venue> venues;
-  final DateFormat format = DateFormat('yyyy-MM-dd');
-  VenueSpamList(List<Venue> venues) : venues = Venue.findSpam(venues);
+class SpamListView extends StatefulWidget {
+  SpamListView(this.venues, this.pageData) {
+    if (venues.sortOrder != VenuesOrder.newest) {
+      venues.setOrder(VenuesOrder.newest);
+    }
+  }
+  final VenueList venues;
+  final PageData pageData;
   @override
-  _VenueSpamListState createState() => new _VenueSpamListState(venues);
+  _VenueSpamListState createState() => new _VenueSpamListState();
 }
 
-class _VenueSpamListState extends State<VenueSpamList> {
-  var venues = List<Venue>();
-  Venue _selectedVenue;
-  final _selectedVenues = List<Venue>();
+class _VenueSpamListState extends State<SpamListView> {
+  final _selectedVenues = List<VenueListItem>();
   bool _isDeleting = false;
 
-  _VenueSpamListState(this.venues) {
-    _sort();
+  Future<Null> refresh() async {
+    AppDataProvider.of(context).venuesRequest.add(true);
+    _isDeleting = false;
   }
 
-  void _sort() => venues.sort((a, b) => b.created.compareTo(a.created));
-
-  Future<Null> refresh() async {
-    venues = Venue.findSpam(await getVenues(forceReload: true));
-    _sort();
-    _isDeleting = false;
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    if (widget.venues.selectedItem != null) {
+      Future
+          .delayed(Duration(milliseconds: 400))
+          .then((_) => setState(() => widget.venues.selectedItem = null));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(context, 0),
       body: RefreshIndicator(
         onRefresh: refresh,
         child: ListView(children: _buildVenueList(context)),
@@ -79,18 +79,22 @@ class _VenueSpamListState extends State<VenueSpamList> {
                                 setState(() => _isDeleting = true);
                                 for (var venue in _selectedVenues) {
                                   // Safeguards
-                                  if (venue.eventCount < 10 &&
-                                      (await venue.futureEvents).isEmpty) {
-                                    for (var event in await venue.pastEvents) {
-                                      await Deleter.delete(eventId: event.id);
-                                    }
-                                    if (await Deleter.delete(venue: venue)) {
-                                      print(
-                                          'Venue ${venue.id} and ${venue.eventCount} events deleted.');
+                                  if (venue.eventCount < 10) {
+                                    final details = VenueDetails(venue,
+                                        resources.venueDetails(venue.id));
+                                    if ((await details.futureEvents).isEmpty) {
+                                      for (var event
+                                          in await details.pastEvents) {
+                                        await Deleter.delete(eventId: event.id);
+                                      }
+                                      if (await Deleter.delete(venue: venue)) {
+                                        print(
+                                            'Venue ${venue.id} and ${venue.eventCount} events deleted.');
+                                      }
                                     }
                                   }
                                 }
-                                Navigator.pop(context);
+                                // Navigator.pop(context);
                                 _selectedVenues.clear();
                                 refresh();
                               }
@@ -122,12 +126,14 @@ class _VenueSpamListState extends State<VenueSpamList> {
       )),
     );
 
-    venues.asMap().forEach((i, venue) {
+    widget.venues.asMap().forEach((i, venue) {
       items.add(Hero(
         tag: 'venue-${venue.id}',
         child: Card(
-          elevation: _selectedVenue == venue ? 8.0 : 0.0,
-          color: i % 2 == 0 ? kDividerColor : kBackgroundColor,
+          elevation: widget.venues.selectedItem == venue ? 8.0 : 0.0,
+          color: i % 2 == 0
+              ? Theme.of(context).dividerColor
+              : Theme.of(context).backgroundColor,
           child: InkWell(
             onTap: () => _cardTapped(venue, context),
             child: Padding(
@@ -168,7 +174,8 @@ class _VenueSpamListState extends State<VenueSpamList> {
                             ),
                             Hero(
                               tag: 'venue-created-${venue.id}',
-                              child: Text(widget.format.format(venue.created),
+                              child: Text(
+                                  VenueListItem.formatter.format(venue.created),
                                   style: Theme.of(context).textTheme.caption),
                             ),
                           ],
@@ -186,17 +193,19 @@ class _VenueSpamListState extends State<VenueSpamList> {
     return items;
   }
 
-  void _cardTapped(Venue venue, BuildContext context) async {
+  void _cardTapped(VenueListItem venue, BuildContext context) async {
     // timeDilation = 10.0;
-    setState(() => _selectedVenue = _selectedVenue == venue ? null : venue);
-    if (_selectedVenue != null) {
+    setState(() => widget.venues.selectedItem =
+        widget.venues.selectedItem == venue ? null : venue);
+    if (widget.venues.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      await Navigator.push(
-        context,
-        FadePageRoute(builder: (context) => VenueDetails(_selectedVenue)),
-      );
-      await Future.delayed(Duration(milliseconds: 400));
-      setState(() => _selectedVenue = null);
+      AppDataProvider
+          .of(context)
+          .pageRequest
+          .add(PageRequest(Page.venueDetails, {
+            'venue': widget.venues.selectedItem,
+            'resource': resources.venueDetails(widget.venues.selectedItem.id),
+          }));
     }
   }
 }

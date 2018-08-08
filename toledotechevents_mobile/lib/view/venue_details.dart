@@ -1,87 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart';
 import 'package:toledotechevents_mobile/theme.dart';
-import 'package:toledotechevents_mobile/providers.dart'
-    hide Theme, Color, TextAlign;
+import 'package:toledotechevents_mobile/providers.dart';
 
 class VenueDetailsView extends StatelessWidget {
   VenueDetailsView(this.venue, this.pageData);
-
   final VenueDetails venue;
-  final PageLayoutData pageData;
-
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  final format = DateFormat(' MMMM yyyy');
-
-
+  final PageData pageData;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: _buildAppBar(context),
-      body: _buildVenue(context),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      // leading: IconButton(
-      //   icon: Icon(Icons.close),
-      //   onPressed: () => Navigator.pop(context),
-      // ),
-      title: Text('Venue details'),
-      actions: <Widget>[
-        // overflow menu
-        PopupMenuButton(
-          icon: Icon(Icons.more_vert),
-          onSelected: (url) async {
-            if (url == 'delete') {
-              venue.delete(context);
-            } else if (await canLaunch(url))
-              launch(url);
-            else {
-              _scaffoldKey.currentState.showSnackBar(SnackBar(
-                content: Text('Could not launch URL.'),
-                duration: Duration(seconds: 3),
-              ));
-            }
-          },
-          itemBuilder: (context) {
-            return [
-              PopupMenuItem(
-                child: Text('See past venue events'),
-                value: venue.url,
-              ),
-              PopupMenuItem(
-                child: Text('Subscribe via iCal'),
-                value: venue.iCalendarUrl,
-              ),
-              PopupMenuItem(
-                child: Text('Subscribe via web'),
-                value: venue.subscribeUrl,
-              ),
-              PopupMenuItem(
-                child: Text('Edit this venue'),
-                value: venue.editUrl,
-              ),
-              venue.eventCount <= 0
-                  ? PopupMenuItem(
-                      child: Text('Delete this venue'),
-                      value: 'delete',
-                    )
-                  : null,
-            ];
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVenue(BuildContext context) {
     return SingleChildScrollView(
       child: Hero(
         tag: 'venue-${venue.id}',
@@ -118,7 +47,7 @@ class VenueDetailsView extends StatelessWidget {
                     Text(' since ', style: Theme.of(context).textTheme.caption),
                     Hero(
                       tag: 'venue-created-${venue.id}',
-                      child: Text(format.format(venue.created),
+                      child: Text(VenueDetails.formatter.format(venue.created),
                           style: Theme.of(context).textTheme.caption),
                     ),
                   ],
@@ -148,12 +77,8 @@ class VenueDetailsView extends StatelessWidget {
                     ),
                     Hero(
                       tag: 'venue-map-${venue.id}',
-                      child: SecondaryButton(
-                        context,
-                        'MAP',
-                        () => launch(venue.mapUrl),
-
-                      ),
+                      child: SecondaryButton(context, 'MAP',
+                          () => launch(venue.mapUrl), pageData.theme),
                     ),
                   ],
                 ),
@@ -164,7 +89,8 @@ class VenueDetailsView extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(Icons.wifi, color: kSecondaryColor),
+                            Icon(Icons.wifi,
+                                color: Theme.of(context).accentColor),
                             Text(' Public WiFi')
                           ],
                         ),

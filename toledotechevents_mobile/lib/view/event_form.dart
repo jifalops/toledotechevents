@@ -5,22 +5,21 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
-import '../model.dart';
-import '../theme.dart';
-import 'event_details.dart';
+import 'package:toledotechevents/forms.dart';
+import 'package:toledotechevents_mobile/providers.dart';
 
-class CreateEventForm extends StatefulWidget {
+class EventFormView extends StatefulWidget {
+  EventFormView(this.authToken, this.pageData);
   final String authToken;
-  CreateEventForm(this.authToken);
+  final PageData pageData;
 
   @override
-  _CreateEventFormState createState() {
-    return _CreateEventFormState();
+  _EventFormViewState createState() {
+    return _EventFormViewState();
   }
 }
 
-
-class _CreateEventFormState extends State<CreateEventForm> {
+class _EventFormViewState extends State<EventFormView> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final eventData = EventData();
   final format = DateFormat("MMMM d, yyyy 'at' h:mma");

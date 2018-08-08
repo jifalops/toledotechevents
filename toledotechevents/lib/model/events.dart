@@ -17,7 +17,7 @@ class EventList extends UnmodifiableListView<EventListItem> {
             .findAllElements('entry')
             .map((entry) => EventListItem.fromXml(entry)));
 
-  int selectedId;
+  EventListItem selectedItem;
 
   EventListItem findById(int id) => firstWhere((e) => e.id == id, orElse: null);
 }

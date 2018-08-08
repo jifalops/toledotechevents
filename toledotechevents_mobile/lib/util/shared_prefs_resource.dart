@@ -22,8 +22,8 @@ abstract class SharedPrefsResource<T> extends LocalResource<T> {
   Future<DateTime> get lastModified async {
     if (saveLastModified) {
       try {
-        return DateTime.fromMillisecondsSinceEpoch(
-            (await prefs).getInt(_lastModifiedKey));
+        return DateTime
+            .fromMillisecondsSinceEpoch((await prefs).getInt(modifiedKey));
       } catch (e) {}
     }
     return null;
@@ -31,15 +31,21 @@ abstract class SharedPrefsResource<T> extends LocalResource<T> {
 
   Future<T> get value;
 
-  String get _lastModifiedKey => '${key}_modified';
+  String get modifiedKey => '${key}_modified';
 
   void _handleLastModified(SharedPreferences p, contents, bool written) {
     if (saveLastModified && written) {
       if (contents == null)
-        p.remove(_lastModifiedKey);
+        p.remove(modifiedKey);
       else
-        p.setInt(_lastModifiedKey, DateTime.now().millisecondsSinceEpoch);
+        p.setInt(modifiedKey, DateTime.now().millisecondsSinceEpoch);
     }
+  }
+
+  @override
+  Future<void> delete() async {
+    await (await prefs).remove(key);
+    return super.delete();
   }
 }
 

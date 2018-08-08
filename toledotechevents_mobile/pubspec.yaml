@@ -15,7 +15,7 @@ dependencies:
   url_launcher: ^3.0.1
   datetime_picker_formfield: ^0.1.1
   simple_autocomplete_formfield: ^0.1.1
-  async_resource: ^0.0.2
+  async_resource: ^0.0.3
   toledotechevents:
     path: ../toledotechevents
   shared_preferences: ^0.4.2

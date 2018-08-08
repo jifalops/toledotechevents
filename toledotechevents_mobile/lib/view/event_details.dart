@@ -4,13 +4,12 @@ import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents_mobile/theme.dart';
-import 'package:toledotechevents_mobile/providers.dart'
-    hide Theme, Color, TextAlign;
+import 'package:toledotechevents_mobile/providers.dart';
 
 class EventDetailsView extends StatelessWidget {
   EventDetailsView(this.event, this.page);
   final EventDetails event;
-  final PageLayoutData page;
+  final PageData page;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +69,7 @@ class EventDetailsView extends StatelessWidget {
                     // Text('Venue', style: Theme.of(context).textTheme.subhead),
                     event.venue != null
                         ? StreamHandler<VenueList>(
-                            stream: VenueListProvider.of(context).venues,
+                            stream: AppDataProvider.of(context).venues,
                             handler: _buildVenue,
                           )
                         : Text(
@@ -178,8 +177,9 @@ class EventDetailsView extends StatelessWidget {
                 // SizedBox(width: 16.0),
                 TertiaryButton(
                     'VENUE DETAILS',
-                    () => PageLayoutProvider.of(context)
-                        .page
+                    () => AppDataProvider
+                        .of(context)
+                        .pageRequest
                         .add(PageRequest(Page.venueDetails, {'id': venue.id}))),
               ])
             ],

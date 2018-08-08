@@ -1,81 +1,87 @@
 import 'package:toledotechevents/util/form.dart';
 
-// class EventFormData {
-//   String name, venueTitle, rsvpUrl, websiteUrl, description, venueDetails, tags;
-//   VenueListItem _tappedVenue;
-//   DateTime startTime, endTime;
+final eventForm = EventForm._();
 
-//   VenueListItem get tappedVenue => _tappedVenue;
-//   void set tappedVenue(VenueListItem value) {
-//     _tappedVenue = value;
-//     venueTitle = value?.title;
-//   }
+class EventForm extends Form {
+  EventForm._() : super(EventFormInput.values);
 
-//   /// Validate relationships between [EventFormInput]s.
-//   ///
-//   /// Returns a list of error descriptions.
-//   List<String> validate() {
-//     final errors = List<String>();
-//     if (!(endTime?.isAfter(startTime) ?? false)) {
-//       errors.add('Event must end after it starts.');
-//     }
-//     return errors;
-//   }
-
-//   String toStringDeep() => '''
-// $name
-// $venueTitle
-// $rsvpUrl
-// $websiteUrl
-// $description
-// $venueDetails
-// $startTime
-// $endTime
-// $tags
-// $tappedVenue
-// ''';
-// }
-
-// class EventFormInput2 {
-//   const EventFormInput2._(this.label, this.validator);
-
-//   final String label;
-//   final String Function(dynamic value) validator;
-
-//   static final name = EventFormInput._(
-//       '',
-//
-
-//   static final startTime = EventFormInput._(
-//       'Start time', (value) => value == null ? 'Invalid start time.' : null);
-
-//   static final endTime = EventFormInput._(
-//       'End time', (value) => value == null ? 'Invalid start time.' : null);
-
-//   static final rsvpRegister = EventFormInput._(
-//       'RSVP / Register URL',
-//       (value) => (value == null || Uri.tryParse(value.trim()) == null)
-//           ? 'Invalid URL'
-//           : null);
-
-//   static final website = EventFormInput._(
-//       'Website / More Info URL',
-//       (value) => (value == null || Uri.tryParse(value.trim()) == null)
-//           ? 'Invalid URL'
-//           : null);
-// }
-
-class EventFormInput<T> {
-  const EventFormInput._(this.name, this.input);
-  // final String name;
-  final FormInput<T> input;
-
-  static final name = EventFormInput._('name',
-  FormInput<String>(label: 'Event name',
-   validator: (value) => (value == null || value.trim().length < 3)
-          ? 'The event name is required.'
-          : null)));
+  @override
+  List<String> validate() {
+    final errors = super.validate();
+    if (errors.isEmpty) {
+      DateTime startTime = getValue(EventFormInput.startTime);
+      DateTime endTime = getValue(EventFormInput.endTime);
+      if (!endTime.isAfter(startTime)) {
+        errors.add('Event must end after it starts.');
+      }
+    }
+    return errors;
+  }
 }
-enum X {}
 
-final eventForm = Form(UnmodifiableListView(X.val));
+class EventFormInput<T> extends FormInput<T> {
+  EventFormInput._(FormInput<T> input) : super.clone(input);
+
+  static final name = EventFormInput._(FormInput<String>(
+    label: 'Event name',
+    validator: (value) => (value == null || value.trim().length < 3)
+        ? 'The event name is required.'
+        : null,
+  ));
+
+  static final venue = EventFormInput._(FormInput<String>(label: 'Venue'));
+
+  static final startTime = EventFormInput._(FormInput<DateTime>(
+    label: 'Start time',
+    validator: (value) => value == null ? 'Invalid start time.' : null,
+  ));
+
+  static final endTime = EventFormInput._(FormInput<DateTime>(
+    label: 'End time',
+    validator: (value) => value == null ? 'Invalid end time.' : null,
+  ));
+
+  static final rsvp = EventFormInput._(FormInput<String>(
+    label: 'RSVP / register URL',
+    validator: (value) => (value == null || Uri.tryParse(value.trim()) == null)
+        ? 'Invalid URL'
+        : null,
+  ));
+
+  static final website = EventFormInput._(FormInput<String>(
+    label: 'Website / more Info URL',
+    validator: (value) => (value == null || Uri.tryParse(value.trim()) == null)
+        ? 'Invalid URL'
+        : null,
+  ));
+
+  static final description = EventFormInput._(FormInput<String>(
+    label: 'Description',
+    helperText: 'Markdown and some HTML supported.',
+  ));
+
+  static final venueDetails = EventFormInput._(FormInput<String>(
+    label: 'Venue details',
+    helperText: 'Event-specific details like the room number.',
+  ));
+
+  static final tags = EventFormInput._(FormInput<String>(
+    label: 'Tags',
+    helperText: 'Comma-separated keywords.',
+  ));
+
+  static final authToken = EventFormInput._(FormInput<String>(hidden: true));
+
+  static final values = <EventFormInput>[
+    name,
+    venue,
+    startTime,
+    endTime,
+    rsvp,
+    website,
+    description,
+    venueDetails,
+    tags,
+    authToken
+  ];
+}

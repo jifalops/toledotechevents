@@ -1,48 +1,41 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/providers.dart';
-
-enum VenuesOrder {
-  popular,
-  newest,
-  hot
-  // Can't do recent without list of *past* events
-}
+import 'package:toledotechevents_mobile/resources.dart';
 
 class VenueListView extends StatefulWidget {
-  final VenueList venues;
-  final PageLayoutData pageData;
-  final DateFormat format = DateFormat('yyyy-MM-dd');
   VenueListView(this.venues, this.pageData);
+  final VenueList venues;
+  final PageData pageData;
   @override
   _VenueListState createState() => new _VenueListState();
 }
 
 class _VenueListState extends State<VenueListView> {
-  VenueListItem _selectedVenue;
-  VenuesOrder sortOrder = VenuesOrder.popular;
-  bool sortReverse = false;
-
-  Future<Null> refresh() async {
-    widget.venues.clear();
-    widget.venues.addAll(await getVenues(forceReload: true));
-    _sort();
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    if (widget.venues.selectedItem != null) {
+      Future
+          .delayed(Duration(milliseconds: 400))
+          .then((_) => setState(() => widget.venues.selectedItem = null));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: refresh,
+      onRefresh: () async {
+        AppDataProvider.of(context).venuesRequest.add(true);
+      },
       child: ListView(children: _buildVenueList(context)),
     );
   }
 
   List<Widget> _buildVenueList(BuildContext context) {
     final items = List<Widget>();
-    _sort();
+    widget.venues.sort();
 
     items.add(
       Center(
@@ -52,38 +45,17 @@ class _VenueListState extends State<VenueListView> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TertiaryButton(
-          'POPULAR${sortIndicator(VenuesOrder.popular)}',
-          () => setState(() {
-                if (sortOrder == VenuesOrder.popular)
-                  sortReverse = !sortReverse;
-                else {
-                  sortOrder = VenuesOrder.popular;
-                  sortReverse = false;
-                }
-              }),
+          'POPULAR${widget.venues.indicatorFor(VenuesOrder.popular)}',
+          () => setState(() => widget.venues.setOrder(VenuesOrder.popular)),
         ),
         SizedBox(width: 8.0),
         TertiaryButton(
-          'NEWEST${sortIndicator(VenuesOrder.newest)}',
-          () => setState(() {
-                if (sortOrder == VenuesOrder.newest)
-                  sortReverse = !sortReverse;
-                else {
-                  sortOrder = VenuesOrder.newest;
-                  sortReverse = false;
-                }
-              }),
+          'NEWEST${widget.venues.indicatorFor(VenuesOrder.newest)}',
+          () => setState(() => widget.venues.setOrder(VenuesOrder.newest)),
         ),
         TertiaryButton(
-          'HOT${sortIndicator(VenuesOrder.hot)}',
-          () => setState(() {
-                if (sortOrder == VenuesOrder.hot)
-                  sortReverse = !sortReverse;
-                else {
-                  sortOrder = VenuesOrder.hot;
-                  sortReverse = false;
-                }
-              }),
+          'HOT${widget.venues.indicatorFor(VenuesOrder.hot)}',
+          () => setState(() => widget.venues.setOrder(VenuesOrder.hot)),
         ),
       ],
     ));
@@ -92,8 +64,10 @@ class _VenueListState extends State<VenueListView> {
       items.add(Hero(
         tag: 'venue-${venue.id}',
         child: Card(
-          elevation: _selectedVenue == venue ? 8.0 : 0.0,
-          color: i % 2 == 0 ? kDividerColor : kBackgroundColor,
+          elevation: widget.venues.selectedItem == venue ? 8.0 : 0.0,
+          color: i % 2 == 0
+              ? Theme.of(context).dividerColor
+              : Theme.of(context).backgroundColor,
           child: InkWell(
             onTap: () => _cardTapped(venue, context),
             child: Padding(
@@ -120,7 +94,8 @@ class _VenueListState extends State<VenueListView> {
                       ),
                       Hero(
                         tag: 'venue-created-${venue.id}',
-                        child: Text(widget.format.format(venue.created),
+                        child: Text(
+                            VenueListItem.formatter.format(venue.created),
                             style: Theme.of(context).textTheme.caption),
                       ),
                     ],
@@ -137,44 +112,17 @@ class _VenueListState extends State<VenueListView> {
 
   void _cardTapped(VenueListItem venue, BuildContext context) async {
     // timeDilation = 10.0;
-    setState(() => _selectedVenue = _selectedVenue == venue ? null : venue);
-    if (_selectedVenue != null) {
+    setState(() => widget.venues.selectedItem =
+        widget.venues.selectedItem == venue ? null : venue);
+    if (widget.venues.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      await Navigator.push(
-        context,
-        FadePageRoute(builder: (context) => VenueDetails(_selectedVenue)),
-      );
-      await Future.delayed(Duration(milliseconds: 400));
-      setState(() => _selectedVenue = null);
+      AppDataProvider
+          .of(context)
+          .pageRequest
+          .add(PageRequest(Page.venueDetails, {
+            'venue': widget.venues.selectedItem,
+            'resource': resources.venueDetails(widget.venues.selectedItem.id),
+          }));
     }
-  }
-
-  void _sort() {
-    switch (sortOrder) {
-      case VenuesOrder.popular:
-        sortReverse
-            ? widget.venues.sort((a, b) => a.eventCount - b.eventCount)
-            : widget.venues.sort((a, b) => b.eventCount - a.eventCount);
-        break;
-      case VenuesOrder.newest:
-        sortReverse
-            ? widget.venues.sort((a, b) => a.created.compareTo(b.created))
-            : widget.venues.sort((a, b) => b.created.compareTo(a.created));
-        break;
-      case VenuesOrder.hot:
-        final now = DateTime.now();
-        double hotness(VenueListItem v) {
-          return v.eventCount /
-              (now.millisecondsSinceEpoch - v.created.millisecondsSinceEpoch);
-        }
-        sortReverse
-            ? widget.venues.sort((a, b) => hotness(a).compareTo(hotness(b)))
-            : widget.venues.sort((a, b) => hotness(b).compareTo(hotness(a)));
-        break;
-    }
-  }
-
-  String sortIndicator(VenuesOrder order) {
-    return sortOrder == order ? (sortReverse ? ' ↑' : ' ↓') : '';
   }
 }

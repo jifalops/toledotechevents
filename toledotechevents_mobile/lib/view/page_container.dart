@@ -2,37 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
 import 'package:url_launcher/url_launcher.dart';
 
-class PageLayoutView extends StatelessWidget {
-  final PageLayoutData data;
+class PageContainerView extends StatelessWidget {
+  final PageData pageData;
   final WidgetBuilder bodyBuilder;
 
-  PageLayoutView(this.data, this.bodyBuilder);
+  PageContainerView(this.pageData, this.bodyBuilder);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: buildAppBar(context, pageData),
       body: bodyBuilder(context),
-      bottomNavigationBar: data.layout.nav == MainNavigation.bottom
-          ? _buildBottomNav(context)
+      bottomNavigationBar: pageData.layout.nav == MainNavigation.bottom
+          ? buildBottomNav(context, pageData)
           : null,
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
+  AppBar buildAppBar(BuildContext context, PageData pageData) {
     Widget defaultTitle = Row(
       children: <Widget>[
         Text('Toledo'),
         SizedBox(width: 3.0),
         Text(
           'Tech Events',
-          style: TextStyle(color: Color(data.theme.secondaryColor.argb)),
+          style: TextStyle(color: Color(pageData.theme.secondaryColor.argb)),
         ),
       ],
     );
     return AppBar(
-      title: data.page.title ?? defaultTitle,
-      actions: [_buildOverflowMenu(context)],
+      title: pageData.page.title ?? defaultTitle,
+      actions: [buildOverflowMenu(context, pageData)],
       // bottom: data.layout.nav == MainNavigation.top
       // ? TabBar(tabs: data.layout.nav.items.map((page, label) =>
       // ),)
@@ -40,23 +40,26 @@ class PageLayoutView extends StatelessWidget {
     );
   }
 
-  Widget _buildOverflowMenu(BuildContext context) {
+  Widget buildOverflowMenu(BuildContext context, PageData pageData) {
     final options = List<PopupMenuEntry<String>>();
 
-    void tryAdd(MenuOption opt, arg) => data.layout.menuOptions.contains(opt)
-        ? options
-            .add(PopupMenuItem(child: Text(opt.title), value: opt.action(arg)))
-        : null;
+    void tryAdd(MenuOption opt, arg) =>
+        pageData.layout.menuOptions.contains(opt)
+            ? options.add(
+                PopupMenuItem(child: Text(opt.title), value: opt.action(arg)))
+            : null;
 
     void _overflowItemSelected(String action) async {
       if (action == MenuOption.removeSpam.action(null)) {
-        PageLayoutProvider.of(context)
-            .page
+        AppDataProvider
+            .of(context)
+            .pageRequest
             .add(PageRequest(Page.spamRemover));
       } else if (await canLaunch(action)) {
         launch(action);
       } else {
-        Scaffold.of(context)
+        Scaffold
+            .of(context)
             .showSnackBar(SnackBar(content: Text('Unable to launch URL.')));
       }
     }
@@ -72,13 +75,13 @@ class PageLayoutView extends StatelessWidget {
           tryAdd(MenuOption.visitForum, null);
           tryAdd(MenuOption.reportIssue, null);
           // Event.
-          tryAdd(MenuOption.editEvent, data.args['id']);
-          tryAdd(MenuOption.cloneEvent, data.args['id']);
+          tryAdd(MenuOption.editEvent, pageData.args['id']);
+          tryAdd(MenuOption.cloneEvent, pageData.args['id']);
           // Venue.
-          tryAdd(MenuOption.pastVenueEvents, data.args['id']);
-          tryAdd(MenuOption.subscribeVenueGoogle, data.args['id']);
-          tryAdd(MenuOption.subscribeVenueICal, data.args['id']);
-          tryAdd(MenuOption.editVenue, data.args['id']);
+          tryAdd(MenuOption.pastVenueEvents, pageData.args['id']);
+          tryAdd(MenuOption.subscribeVenueGoogle, pageData.args['id']);
+          tryAdd(MenuOption.subscribeVenueICal, pageData.args['id']);
+          tryAdd(MenuOption.editVenue, pageData.args['id']);
           // Venue list extra option.
           tryAdd(MenuOption.removeSpam, null);
 
@@ -86,7 +89,7 @@ class PageLayoutView extends StatelessWidget {
         });
   }
 
-  Widget _buildBottomNav(BuildContext context) {
+  Widget buildBottomNav(BuildContext context, PageData pageData) {
     Icon iconFor(Page page) {
       switch (page) {
         case Page.eventList:
@@ -103,18 +106,20 @@ class PageLayoutView extends StatelessWidget {
     }
 
     List<BottomNavigationBarItem> items;
-    data.layout.nav.items.forEach((page, title) => items.add(
+    pageData.layout.nav.items.forEach((page, title) => items.add(
         BottomNavigationBarItem(
             title: Text(title, style: Theme.of(context).textTheme.button),
             icon: iconFor(page))));
 
     return BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        currentIndex: data.layout.nav.items.keys.toList().indexOf(data.page),
+        currentIndex:
+            pageData.layout.nav.items.keys.toList().indexOf(pageData.page),
         iconSize: 24.0,
-        onTap: (index) => PageLayoutProvider.of(context)
-            .page
-            .add(PageRequest(data.layout.nav.items.keys.toList()[index])),
+        onTap: (index) => AppDataProvider
+            .of(context)
+            .pageRequest
+            .add(PageRequest(pageData.layout.nav.items.keys.toList()[index])),
         items: items);
   }
 }

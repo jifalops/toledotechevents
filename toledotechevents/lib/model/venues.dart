@@ -2,19 +2,29 @@ import 'dart:core';
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:async_resource/async_resource.dart';
 import 'package:english_words/english_words.dart' as words;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:meta/meta.dart';
 import 'package:toledotechevents/build_config.dart';
+import 'package:toledotechevents/util/extendable_list.dart';
 
-class VenueList extends UnmodifiableListView<VenueListItem> {
+class VenueList extends ExtendableList<VenueListItem> {
   VenueList(String jsonString)
-      : super(
-            json.decode(jsonString).map((dict) => VenueListItem.fromMap(dict)));
+      : super.from(
+            json.decode(jsonString).map((dict) => VenueListItem.fromMap(dict)),
+            growable: false);
 
-  UnmodifiableListView<VenueListItem> _spam;
+  VenueList.from(Iterable<VenueListItem> elements)
+      : super.from(elements, growable: false);
+
+  VenueListItem selectedItem;
+  VenuesOrder _sortOrder = VenuesOrder.popular;
+  bool _sortReverse = false;
+
+  VenueList _spam;
 
   VenueListItem findById(int id) => firstWhere((e) => e.id == id, orElse: null);
 
@@ -30,7 +40,7 @@ class VenueList extends UnmodifiableListView<VenueListItem> {
     }
   }
 
-  List<VenueListItem> findSpam() {
+  VenueList findSpam() {
     if (_spam == null) {
       bool hasEnglishWord(String string) {
         bool found = false;
@@ -47,10 +57,60 @@ class VenueList extends UnmodifiableListView<VenueListItem> {
       forEach((venue) {
         if (!hasEnglishWord(venue.title)) list.add(venue);
       });
-      _spam = UnmodifiableListView(list);
+      _spam = VenueList.from(list);
     }
     return _spam;
   }
+
+  String indicatorFor(VenuesOrder order) =>
+      _sortOrder == order ? (_sortReverse ? ' ↑' : ' ↓') : '';
+
+  bool get isReversed => _sortReverse;
+
+  VenuesOrder get sortOrder => _sortOrder;
+
+  void setOrder(VenuesOrder value) {
+    if (_sortOrder == order)
+      _sortReverse = !_sortReverse;
+    else {
+      _sortOrder = order;
+      _sortReverse = false;
+    }
+    sort();
+  }
+
+  @override
+  sort([int Function(VenueListItem a, VenueListItem b) ignored]) {
+    switch (_sortOrder) {
+      case VenuesOrder.popular:
+        _sortReverse
+            ? super.sort((a, b) => a.eventCount.compareTo(b.eventCount))
+            : super.sort((a, b) => b.eventCount.compareTo(a.eventCount));
+        break;
+      case VenuesOrder.newest:
+        _sortReverse
+            ? super.sort((a, b) => a.created.compareTo(b.created))
+            : super.sort((a, b) => b.created.compareTo(a.created));
+        break;
+      case VenuesOrder.hot:
+        final now = DateTime.now();
+        double hotness(VenueListItem v) {
+          return v.eventCount /
+              (now.millisecondsSinceEpoch - v.created.millisecondsSinceEpoch);
+        }
+        _sortReverse
+            ? super.sort((a, b) => hotness(a).compareTo(hotness(b)))
+            : super.sort((a, b) => hotness(b).compareTo(hotness(a)));
+        break;
+    }
+  }
+}
+
+enum VenuesOrder {
+  popular,
+  newest,
+  hot
+  // Can't do recent without list of *past* events
 }
 
 class VenueListItem {
@@ -190,6 +250,8 @@ updated: $updated
 Closed: $isClosed
 Wifi: $hasWifi
 ''';
+
+  static final formatter = DateFormat('MMM yyyy');
 }
 
 /// A ToledoTechEvents venue. See http://toledotechevents.org/venues.json.
@@ -247,6 +309,8 @@ class VenueDetails extends VenueListItem {
     // TODO implement fetch by id.
     return null;
   }
+
+  static final formatter = DateFormat(' MMMM dd, yyyy');
 }
 
 class _Address {

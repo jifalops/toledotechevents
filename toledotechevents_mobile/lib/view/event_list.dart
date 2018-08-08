@@ -1,34 +1,35 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
+import 'package:toledotechevents_mobile/providers.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 
 class EventListView extends StatefulWidget {
   EventListView(this.events, this.pageData);
   final EventList events;
-  final PageLayoutData pageData;
+  final PageData pageData;
   @override
   State<EventListView> createState() => _EventListState();
 }
 
 class _EventListState extends State<EventListView> {
-  EventListItem selectedEvent;
-
   @override
   void initState() {
     super.initState();
-    if (widget.events.selectedId != null) {
-      selectedEvent = widget.events.findById(widget.events.selectedId);
-      Future.delayed(Duration(milliseconds: 400))
-          .then((_) => setState(() => selectedEvent = null));
+    if (widget.events.selectedItem != null) {
+      Future
+          .delayed(Duration(milliseconds: 400))
+          .then((_) => setState(() => widget.events.selectedItem = null));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-        onRefresh: () async => EventListProvider.of(context).fetch.add(true),
-        child: ListView(children: _buildEventList(context)));
+      onRefresh: () async {
+        AppDataProvider.of(context).eventsRequest.add(true);
+      },
+      child: ListView(children: _buildEventList(context)),
+    );
   }
 
   List<Widget> _buildEventList(BuildContext context) {
@@ -64,7 +65,7 @@ class _EventListState extends State<EventListView> {
               color: i % 2 == 0
                   ? Theme.of(context).dividerColor
                   : Theme.of(context).backgroundColor,
-              elevation: selectedEvent == event ? 8.0 : 0.0,
+              elevation: widget.events.selectedItem == event ? 8.0 : 0.0,
               onTap: () => _cardTapped(event, context),
             ),
           );
@@ -91,16 +92,17 @@ class _EventListState extends State<EventListView> {
 
   void _cardTapped(EventListItem event, BuildContext context) async {
     setState(() {
-      selectedEvent = selectedEvent == event ? null : event;
-      widget.events.selectedId =
-          selectedEvent == null ? null : selectedEvent.id;
+      widget.events.selectedItem =
+          widget.events.selectedItem == event ? null : event;
     });
-    if (selectedEvent != null) {
+    if (widget.events.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      PageLayoutProvider.of(context).page.add(PageRequest(
-              Page.eventDetails, {
-            'event': selectedEvent,
-            'resource': EventDetailsResource(selectedEvent.id)
+      AppDataProvider
+          .of(context)
+          .pageRequest
+          .add(PageRequest(Page.eventDetails, {
+            'event': widget.events.selectedItem,
+            'resource': resources.eventDetails(widget.events.selectedItem.id)
           }));
     }
   }

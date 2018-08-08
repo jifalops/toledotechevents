@@ -1,13 +1,13 @@
-import 'dart:collection' show UnmodifiableListView;
 import 'package:meta/meta.dart';
 
-export 'dart:collection' show UnmodifiableListView;
-
 class Form {
-  Form(this.inputs);
-  final UnmodifiableListView<FormInput> inputs;
+  const Form(this.inputs);
+  final List<FormInput> inputs;
 
-  List<dynamic> get values => inputs.map((input) => input.value);
+  dynamic getValue(FormInput input) => inputs[inputs.indexOf(input)];
+
+  Map<FormInput, dynamic> getValues() => Map.fromIterable(inputs,
+      key: (input) => input, value: (input) => input.value);
 
   /// Returns a list of errors if validation fails or an empty list on success.
   ///
@@ -45,11 +45,25 @@ class Form {
 class FormInput<T> {
   FormInput(
       {this.label,
+      this.helperText,
+      this.hidden: false,
       this.validator,
       this.onChanged,
       this.onSaved,
       this.onSubmitted});
+
+  FormInput.clone(FormInput<T> other)
+      : label = other.label,
+        helperText = other.helperText,
+        hidden = other.hidden,
+        validator = other.validator,
+        onChanged = other.onChanged,
+        onSaved = other.onSaved,
+        onSubmitted = other.onSubmitted;
+
   final String label;
+  final String helperText;
+  final bool hidden;
 
   /// Returns `null` if validation succeeds. Otherwise returns an error string.
   final String Function(T value) validator;

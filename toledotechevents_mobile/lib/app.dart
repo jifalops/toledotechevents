@@ -10,7 +10,7 @@ import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/providers.dart';
-import 'package:toledotechevents_mobile/view/page_layout.dart';
+import 'package:toledotechevents_mobile/view/page_container.dart';
 import 'package:toledotechevents_mobile/view/pages.dart';
 
 class App extends StatefulWidget {
@@ -46,9 +46,9 @@ class _AppState extends BlocState<App> {
   @override
   void initBloc() {
     bloc = AppBloc(
-        themeResource: themeResource,
-        eventsResource: eventListResource,
-        venuesResource: venueListResource);
+        themeResource: resources.theme,
+        eventsResource: resources.eventList,
+        venuesResource: resources.venueList);
     checkDisplayMedia = true;
   }
 
@@ -82,11 +82,11 @@ class _PageNavigatorState extends State<PageNavigator> {
     if (prevPageData == null ||
         pageData.page == prevPageData.page ||
         pageData.layout.nav.contains(pageData.page)) {
-      return PageLayoutView(pageData, _buildBody);
+      return PageContainerView(pageData, _buildBody);
     } else {
       Navigator.of(context).push(NoAnimationRoute(
-        builder: (context) => PageLayoutView(pageData, _buildBody),
-      ));
+            builder: (context) => PageContainerView(pageData, _buildBody),
+          ));
       return NullWidget();
     }
   }
@@ -102,11 +102,11 @@ class _PageNavigatorState extends State<PageNavigator> {
       case Page.venueDetails:
         return VenueDetailsPage(pageData);
       case Page.createEvent:
-        return CreateEventPage(pageData);
+        return EventFormPage(pageData);
       case Page.about:
         return AboutPage(pageData);
       case Page.spamRemover:
-        return SpamRemoverPage(pageData);
+        return SpamListPage(pageData);
       default:
         assert(false);
         return NullWidget();

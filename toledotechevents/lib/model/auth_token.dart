@@ -1,7 +1,5 @@
-import 'package:toledotechevents/model/venues.dart';
-
-class NewEvent {
-  NewEvent(String newEventPage) : value = _findToken(newEventPage);
+class AuthToken {
+  AuthToken(String newEventPage) : value = _findToken(newEventPage);
 
   final String value;
 }

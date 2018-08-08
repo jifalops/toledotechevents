@@ -25,9 +25,9 @@ class AboutSectionBloc {
     _aboutSection.close();
   }
 
-  void _updateAboutSection(AboutSection aboutSection) {
-    if (aboutSection != null) {
-      _aboutSection.add(aboutSection);
+  void _updateAboutSection(AboutSection about) {
+    if (about != null && about.html != null) {
+      _aboutSection.add(about);
     }
   }
 
