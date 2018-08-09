@@ -179,7 +179,7 @@ class PageRequest {
 
   @override
   operator ==(other) =>
-      page == other.page && MapEquality().equals(args, other.args);
+      page == other.pageData && MapEquality().equals(args, other.args);
 
   @override
   int get hashCode => '$page$args'.hashCode;
@@ -200,7 +200,7 @@ class PageData {
 
   @override
   operator ==(other) =>
-      page == other.page &&
+      page == other.pageData &&
       MapEquality().equals(args, other.args) &&
       theme == other.theme &&
       display == other.display &&

@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:toledotechevents/forms.dart';
-import 'package:toledotechevents_mobile/providers.dart';
+import 'package:toledotechevents_mobile/view/page_container.dart';
 
 class EventFormView extends StatefulWidget {
   EventFormView(this.authToken, this.pageData);
@@ -21,47 +20,33 @@ class EventFormView extends StatefulWidget {
 
 class _EventFormViewState extends State<EventFormView> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
-  final eventData = EventData();
   final venueController = TextEditingController();
-  // final venuFocusNode = FocusNode();
   final startTimeController = TextEditingController();
   final endTimeController = TextEditingController();
 
-  // bool showVenueSuggestions = false;
   bool autovalidate = false;
-  List<Venue> venues;
+  VenueListItem selectedVenue;
 
-  String venueHelperText;
-
-  // _CreateEventFormState() {
-  //   venueController.addListener(() {
-  //     setState(
-  //         () => showVenueSuggestions = venueController.text.trim().isNotEmpty);
-  //   });
-  //   venuFocusNode.addListener(() {
-  //     if (!venuFocusNode.hasFocus) {
-  //       setState(() => showVenueSuggestions = false);
-  //     }
-  //   });
-  // }
+  @override
+  Widget build(BuildContext context) =>
+      buildScaffold(context, widget.pageData, _buildBody);
 
   _showSnackBar(BuildContext context, String text) {
     Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(text),
-            duration: Duration(milliseconds: 3000),
-          ),
-        );
+      SnackBar(
+        content: Text(text),
+        duration: Duration(milliseconds: 3000),
+      ),
+    );
   }
 
   void _handleSubmitted() {
-    final FormState form = formKey.currentState;
+    final FormState form = formKey.currentState;form.
     if (!form.validate()) {
       autovalidate = true; // Start validating on every change.
       _showSnackBar(context, 'Please fix the errors in red before submitting.');
     } else {
       form.save();
-      // print(eventData);
 
       var text;
       if (formKey.currentState.validate()) {
@@ -109,12 +94,12 @@ class _EventFormViewState extends State<EventFormView> {
     if (response?.statusCode == 302) {
       int id;
       try {
-        id = int
-            .parse(response.body.split('.org/events/').last.split('"').first);
+        id = int.parse(
+            response.body.split('.org/events/').last.split('"').first);
       } catch (e) {
         try {
-          id = int
-              .parse(response.body.split('from_event=').last.split('"').first);
+          id = int.parse(
+              response.body.split('from_event=').last.split('"').first);
           // A venue was also created
           await getVenues(forceReload: true);
         } catch (e) {
@@ -152,8 +137,7 @@ class _EventFormViewState extends State<EventFormView> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     return Form(
       key: formKey,
       autovalidate: autovalidate,
@@ -169,35 +153,23 @@ class _EventFormViewState extends State<EventFormView> {
                       style: Theme.of(context).textTheme.headline),
                   SizedBox(height: 16.0),
                   TextFormField(
-                    // autofocus: true,
-                    decoration: InputDecoration(labelText: 'Event name'),
-                    validator: (value) {
-                      if (value.trim().length < 3) {
-                        return 'The event name is required.';
-                      }
-                    },
-                    onSaved: (value) => eventData.name = value.trim(),
+                    decoration: InputDecoration(labelText: EventInput.name.label()),
+                    validator: EventInput.name.validator,
+                    onSaved: (value) => EventInput.name.value = value,
                   ),
                   SizedBox(height: 8.0),
-                  SimpleAutocompleteFormField<Venue>(
-                    // suggestionsContainerHeight: 156.0,
+                  StreamHandler<VenueList>(stream: AppDataProvider.of(context).venues,
+                  handler: (context, venues) =>
+                  SimpleAutocompleteFormField<VenueListItem>(
                     maxSuggestions: 10,
                     controller: venueController,
                     decoration: InputDecoration(
-                        labelText: 'Venue', helperText: venueHelperText),
-                    onChanged: (value) {
-                      // print('venue changed');
-                      setState(() {
-                        venueHelperText = value?.address;
-                        eventData.venue = value;
-                      });
-                    },
+                        labelText: EventInput.venue.label(),
+                        helperText: EventInput.venue.helperText(selectedVenue?.address)),
+                    onChanged: (value) => setState(() => selectedVenue = value),
                     onSaved: (value) {
-                      eventData.venue = value;
-                      if (value == null)
-                        eventData.venueTitle = venueController.text;
-                      else
-                        eventData.venueTitle = value.title;
+                      // selectedVenue = value;
+                      EventInput.venue.value = venueController.text;
                     },
                     itemBuilder: (context, venue) => Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -208,24 +180,23 @@ class _EventFormViewState extends State<EventFormView> {
                               venue.address,
                               style: Theme.of(context).textTheme.caption,
                             ),
-                            // Text('${venue.eventCount}'),
                           ],
                         ),
-                    itemParser: ItemParser<Venue>(
+                    itemParser: ItemParser<VenueListItem>(
                       itemToString: (item) => item?.title ?? '',
                       itemFromString: (string) =>
-                          Venue.findByTitle(venues, string),
+                          venues.findByTitle(string),
                     ),
                     onSearch: (search) async {
                       // debugPrint('Sorting...');
                       search = search.toLowerCase().trim();
-                      venues ??= await getVenues();
-                      final results = List<Venue>();
-                      results.addAll(venues.where((v) =>
+                      final results = VenueList.from(
+                      venues.where((v) =>
                           v.title.toLowerCase().contains(search) ||
                           v.address.toLowerCase().contains(search)));
+
                       results.sort((a, b) {
-                        int mostPopular(Venue a, Venue b) {
+                        int mostPopular(VenueListItem a,VenueListItem b) {
                           return b.eventCount - a.eventCount;
                         }
 
@@ -270,19 +241,17 @@ class _EventFormViewState extends State<EventFormView> {
                       // results.take(3).forEach((venue) => debugPrint(venue.title));
                       return results;
                     },
-                  ),
+                  )),
                   SizedBox(height: 8.0),
                   DateTimePickerFormField(
                     controller: startTimeController,
-                    format: format,
-                    decoration: InputDecoration(labelText: 'Start time'),
-                    validator: (value) {
-                      return value == null ? 'Invalid start time.' : null;
-                    },
-                    onSaved: (value) => eventData.startTime = value,
+                    format: EventForm.date,
+                    decoration: InputDecoration(labelText: EventInput.startTime.label()),
+                    validator: EventInput.startTime.validator,
+                    onSaved: (value) => EventInput.startTime.value = value,
                     onChanged: (value) {
                       if (value != null && endTimeController.text.isEmpty) {
-                        endTimeController.text =
+                        endTimeController.text =EventForm.date.format(date)
                             format.format(value.add(Duration(hours: 1)));
                       }
                     },

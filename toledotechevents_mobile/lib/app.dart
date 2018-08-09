@@ -10,7 +10,6 @@ import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/providers.dart';
-import 'package:toledotechevents_mobile/view/page_container.dart';
 import 'package:toledotechevents_mobile/view/pages.dart';
 
 class App extends StatefulWidget {
@@ -37,7 +36,7 @@ class _AppState extends BlocState<App> {
         handler: (context, theme) => MaterialApp(
               title: config.title,
               theme: buildTheme(theme),
-              home: PageNavigator(),
+              home: AppPage(),
             ),
       ),
     );
@@ -58,12 +57,12 @@ class _AppState extends BlocState<App> {
   }
 }
 
-class PageNavigator extends StatefulWidget {
+class AppPage extends StatefulWidget {
   @override
-  _PageNavigatorState createState() => _PageNavigatorState();
+  _AppPageState createState() => _AppPageState();
 }
 
-class _PageNavigatorState extends State<PageNavigator> {
+class _AppPageState extends State<AppPage> {
   PageData pageData, prevPageData;
 
   @override
@@ -72,26 +71,26 @@ class _PageNavigatorState extends State<PageNavigator> {
         stream: AppDataProvider.of(context).page,
         handler: (context, data) {
           pageData = data;
-          Widget page = _handleLayout(context);
+          Widget page = _navigateOrRebuildPage(context);
           prevPageData = pageData;
           return page;
         });
   }
 
-  Widget _handleLayout(BuildContext context) {
+  Widget _navigateOrRebuildPage(BuildContext context) {
     if (prevPageData == null ||
         pageData.page == prevPageData.page ||
         pageData.layout.nav.contains(pageData.page)) {
-      return PageContainerView(pageData, _buildBody);
+      return _buildPage(context);
     } else {
       Navigator.of(context).push(NoAnimationRoute(
-            builder: (context) => PageContainerView(pageData, _buildBody),
-          ));
+        builder: (context) => _buildPage(context),
+      ));
       return NullWidget();
     }
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildPage(BuildContext context) {
     switch (pageData.page) {
       case Page.eventList:
         return EventListPage(pageData);

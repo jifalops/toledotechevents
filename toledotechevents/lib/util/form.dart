@@ -40,41 +40,85 @@ class Form {
       if (input.onSubmitted != null) input.onSubmitted(input.value);
     });
   }
+
+  /// Calls [FormInput.reset()] on all of the [inputs].
+  @mustCallSuper
+  void reset() => inputs.forEach((input) => input.reset());
 }
 
 class FormInput<T> {
   FormInput(
       {this.label,
+      this.initialValue,
       this.helperText,
-      this.hidden: false,
+      bool hidden: false,
       this.validator,
       this.onChanged,
       this.onSaved,
-      this.onSubmitted});
+      this.onSubmitted})
+      : _value = initialValue,
+        hidden = hidden ?? false;
 
-  FormInput.clone(FormInput<T> other)
-      : label = other.label,
-        helperText = other.helperText,
-        hidden = other.hidden,
-        validator = other.validator,
-        onChanged = other.onChanged,
-        onSaved = other.onSaved,
-        onSubmitted = other.onSubmitted;
-
-  final String label;
-  final String helperText;
+  final StringResolver<T> label;
+  final StringResolver<T> helperText;
+  final T initialValue;
   final bool hidden;
 
   /// Returns `null` if validation succeeds. Otherwise returns an error string.
-  final String Function(T value) validator;
-  final void Function(T value) onChanged;
-  final void Function(T value) onSaved;
-  final void Function(T value) onSubmitted;
+  final InputValidator<T> validator;
+  final ValueHandler<T> onChanged;
+  final ValueHandler<T> onSaved;
+  final ValueHandler<T> onSubmitted;
 
   T _value;
   T get value => _value;
-  void set value(val) {
+  void set value(T val) {
     _value = val;
     if (onChanged != null) onChanged(_value);
   }
+
+  void reset() => value = initialValue;
+
+  FormInput<T> clone() {
+    final input = FormInput<T>(
+      label: label,
+      initialValue: initialValue,
+      helperText: helperText,
+      hidden: hidden,
+      validator: validator,
+      onChanged: onChanged,
+      onSaved: onSaved,
+      onSubmitted: onSubmitted,
+    );
+    input._value = _value;
+    return input;
+  }
+}
+
+typedef String StringResolver<T>([T value]);
+typedef String InputValidator<T>(T value);
+typedef void ValueHandler<T>(T value);
+
+/// Runs [String.trim()] when setting [value].
+class TrimmingFormInput extends FormInput<String> {
+  TrimmingFormInput(
+      {StringResolver<String> label,
+      StringResolver<String> helperText,
+      String initialValue,
+      bool hidden: false,
+      InputValidator<String> validator,
+      ValueHandler<String> onChanged,
+      ValueHandler<String> onSaved,
+      ValueHandler<String> onSubmitted})
+      : super(
+            label: label,
+            helperText: helperText,
+            initialValue: initialValue,
+            hidden: hidden,
+            validator: validator,
+            onChanged: onChanged,
+            onSaved: onSaved,
+            onSubmitted: onSubmitted);
+  @override
+  void set value(String val) => super.value = (val?.trim());
 }

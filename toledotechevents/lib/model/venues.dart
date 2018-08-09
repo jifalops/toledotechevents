@@ -80,7 +80,12 @@ class VenueList extends ExtendableList<VenueListItem> {
   }
 
   @override
-  sort([int Function(VenueListItem a, VenueListItem b) ignored]) {
+  sort([int Function(VenueListItem a, VenueListItem b) custom]) {
+    if (custom != null) {
+      super.sort(custom);
+      return;
+    }
+
     switch (_sortOrder) {
       case VenuesOrder.popular:
         _sortReverse
@@ -251,7 +256,7 @@ Closed: $isClosed
 Wifi: $hasWifi
 ''';
 
-  static final formatter = DateFormat('MMM yyyy');
+  static final date = DateFormat('MMM yyyy');
 }
 
 /// A ToledoTechEvents venue. See http://toledotechevents.org/venues.json.
@@ -310,7 +315,7 @@ class VenueDetails extends VenueListItem {
     return null;
   }
 
-  static final formatter = DateFormat(' MMMM dd, yyyy');
+  static final date = DateFormat(' MMMM dd, yyyy');
 }
 
 class _Address {

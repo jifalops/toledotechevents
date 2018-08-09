@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/providers.dart' hide Theme, Color;
+import 'package:toledotechevents_mobile/providers.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-@deprecated
-class PageContainerView extends StatelessWidget {
-  final PageData pageData;
-  final WidgetBuilder bodyBuilder;
-
-  PageContainerView(this.pageData, this.bodyBuilder);
-
-  @override
-  Widget build(BuildContext context) =>
-      buildScaffold(context, pageData, bodyBuilder);
-}
+export 'package:toledotechevents_mobile/resources.dart';
+export 'package:toledotechevents_mobile/providers.dart';
+export 'package:toledotechevents_mobile/theme.dart';
 
 Scaffold buildScaffold(
     BuildContext context, PageData pageData, WidgetBuilder bodyBuilder,
@@ -58,15 +50,13 @@ Widget buildOverflowMenu(BuildContext context, PageData pageData) {
 
   void _overflowItemSelected(String action) async {
     if (action == MenuOption.removeSpam.action(null)) {
-      AppDataProvider
-          .of(context)
+      AppDataProvider.of(context)
           .pageRequest
           .add(PageRequest(Page.spamRemover));
     } else if (await canLaunch(action)) {
       launch(action);
     } else {
-      Scaffold
-          .of(context)
+      Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text('Unable to launch URL.')));
     }
   }
@@ -123,8 +113,7 @@ Widget buildBottomNav(BuildContext context, PageData pageData) {
       currentIndex:
           pageData.layout.nav.items.keys.toList().indexOf(pageData.page),
       iconSize: 24.0,
-      onTap: (index) => AppDataProvider
-          .of(context)
+      onTap: (index) => AppDataProvider.of(context)
           .pageRequest
           .add(PageRequest(pageData.layout.nav.items.keys.toList()[index])),
       items: items);

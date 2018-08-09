@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/theme.dart';
-import 'package:toledotechevents_mobile/providers.dart';
-import 'package:toledotechevents_mobile/resources.dart';
+import 'package:toledotechevents_mobile/view/page_container.dart';
 
 class VenueListView extends StatefulWidget {
   VenueListView(this.venues, this.pageData);
@@ -17,14 +15,17 @@ class _VenueListState extends State<VenueListView> {
   void initState() {
     super.initState();
     if (widget.venues.selectedItem != null) {
-      Future
-          .delayed(Duration(milliseconds: 400))
+      Future.delayed(Duration(milliseconds: 400))
           .then((_) => setState(() => widget.venues.selectedItem = null));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    return buildScaffold(context, widget.pageData, _buildBody);
+  }
+
+  Widget _buildBody(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
         AppDataProvider.of(context).venuesRequest.add(true);
@@ -94,8 +95,7 @@ class _VenueListState extends State<VenueListView> {
                       ),
                       Hero(
                         tag: 'venue-created-${venue.id}',
-                        child: Text(
-                            VenueListItem.formatter.format(venue.created),
+                        child: Text(VenueListItem.date.format(venue.created),
                             style: Theme.of(context).textTheme.caption),
                       ),
                     ],
@@ -116,8 +116,7 @@ class _VenueListState extends State<VenueListView> {
         widget.venues.selectedItem == venue ? null : venue);
     if (widget.venues.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      AppDataProvider
-          .of(context)
+      AppDataProvider.of(context)
           .pageRequest
           .add(PageRequest(Page.venueDetails, {
             'venue': widget.venues.selectedItem,

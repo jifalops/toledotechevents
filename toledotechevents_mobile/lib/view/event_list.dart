@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/providers.dart';
-import 'package:toledotechevents_mobile/resources.dart';
+import 'package:toledotechevents_mobile/view/page_container.dart';
 
 class EventListView extends StatefulWidget {
   EventListView(this.events, this.pageData);
@@ -16,14 +15,17 @@ class _EventListState extends State<EventListView> {
   void initState() {
     super.initState();
     if (widget.events.selectedItem != null) {
-      Future
-          .delayed(Duration(milliseconds: 400))
+      Future.delayed(Duration(milliseconds: 400))
           .then((_) => setState(() => widget.events.selectedItem = null));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    return buildScaffold(context, widget.pageData, _buildBody);
+  }
+
+  Widget _buildBody(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
         AppDataProvider.of(context).eventsRequest.add(true);
@@ -97,8 +99,7 @@ class _EventListState extends State<EventListView> {
     });
     if (widget.events.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
-      AppDataProvider
-          .of(context)
+      AppDataProvider.of(context)
           .pageRequest
           .add(PageRequest(Page.eventDetails, {
             'event': widget.events.selectedItem,

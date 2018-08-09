@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:toledotechevents/build_config.dart';
-import 'package:toledotechevents_mobile/theme.dart';
-import 'package:toledotechevents_mobile/providers.dart';
+import 'package:toledotechevents_mobile/view/page_container.dart';
 
 class EventDetailsView extends StatelessWidget {
-  EventDetailsView(this.event, this.page);
+  EventDetailsView(this.event, this.pageData);
   final EventDetails event;
-  final PageData page;
+  final PageData pageData;
 
   @override
   Widget build(BuildContext context) {
+    return buildScaffold(context, pageData, _buildBody);
+  }
+
+  Widget _buildBody(BuildContext context) {
     return Hero(
       tag: 'event-${event.id}',
       child: Card(
@@ -50,10 +53,10 @@ class EventDetailsView extends StatelessWidget {
                     Row(
                       children: [
                         SecondaryButton(context, 'ICAL',
-                            () => launch(event.iCalendarUrl), page.theme),
+                            () => launch(event.iCalendarUrl), pageData.theme),
                         SizedBox(width: 8.0),
                         SecondaryButton(context, 'GOOGLE',
-                            () => _launchGoogleCalendarUrl(), page.theme),
+                            () => _launchGoogleCalendarUrl(), pageData.theme),
                       ],
                     ),
                   ],
@@ -111,8 +114,8 @@ class EventDetailsView extends StatelessWidget {
         : Padding(
             padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
             child: Center(
-              child: PrimaryButton(
-                  context, 'RSVP / REGISTER', () => launch(url), page.theme),
+              child: PrimaryButton(context, 'RSVP / REGISTER',
+                  () => launch(url), pageData.theme),
             ),
           );
   }
@@ -156,7 +159,7 @@ class EventDetailsView extends StatelessWidget {
                     Hero(
                       tag: 'venue-map-${venue.id}',
                       child: SecondaryButton(context, 'MAP',
-                          () => launch(venue.mapUrl), page.theme),
+                          () => launch(venue.mapUrl), pageData.theme),
                     ),
                   ],
                 ),
@@ -177,8 +180,7 @@ class EventDetailsView extends StatelessWidget {
                 // SizedBox(width: 16.0),
                 TertiaryButton(
                     'VENUE DETAILS',
-                    () => AppDataProvider
-                        .of(context)
+                    () => AppDataProvider.of(context)
                         .pageRequest
                         .add(PageRequest(Page.venueDetails, {'id': venue.id}))),
               ])

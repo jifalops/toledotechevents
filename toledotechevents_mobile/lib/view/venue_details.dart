@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:toledotechevents_mobile/theme.dart';
-import 'package:toledotechevents_mobile/providers.dart';
+import 'package:toledotechevents_mobile/view/page_container.dart';
 
 class VenueDetailsView extends StatelessWidget {
   VenueDetailsView(this.venue, this.pageData);
@@ -11,6 +10,10 @@ class VenueDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return buildScaffold(context, pageData, _buildBody);
+  }
+
+  Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
       child: Hero(
         tag: 'venue-${venue.id}',
@@ -47,7 +50,7 @@ class VenueDetailsView extends StatelessWidget {
                     Text(' since ', style: Theme.of(context).textTheme.caption),
                     Hero(
                       tag: 'venue-created-${venue.id}',
-                      child: Text(VenueDetails.formatter.format(venue.created),
+                      child: Text(VenueDetails.date.format(venue.created),
                           style: Theme.of(context).textTheme.caption),
                     ),
                   ],
