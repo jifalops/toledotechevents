@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:toledotechevents/forms.dart';
@@ -27,6 +25,29 @@ class _EventFormViewState extends State<EventFormView> {
   bool autovalidate = false;
   VenueListItem selectedVenue;
 
+  void startTimeListener(DateTime value) {
+    if (value != null) startTimeController.text = EventForm.date.format(value);
+  }
+
+  void endTimeListener(DateTime value) {
+    if (value != null) endTimeController.text = EventForm.date.format(value);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    EventInput.startTime.addListener(startTimeListener);
+    EventInput.endTime.addListener(endTimeListener);
+    EventInput.authToken.value = widget.authToken;
+  }
+
+  @override
+  void dispose() {
+    EventInput.startTime.removeListener(startTimeListener);
+    EventInput.endTime.removeListener(endTimeListener);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) =>
       buildScaffold(context, widget.pageData, _buildBody);
@@ -41,99 +62,14 @@ class _EventFormViewState extends State<EventFormView> {
   }
 
   void _handleSubmitted() {
-    final FormState form = formKey.currentState;form.
-    if (!form.validate()) {
-      autovalidate = true; // Start validating on every change.
-      _showSnackBar(context, 'Please fix the errors in red before submitting.');
-    } else {
+    final FormState form = formKey.currentState;
+    if (form.validate()) {
       form.save();
-
-      var text;
-      if (formKey.currentState.validate()) {
-        formKey.currentState.save();
-        if (eventData.name == null || eventData.name.length < 3) {
-          text = 'Event name is required.';
-        }
-        if (!(eventData.endTime?.isAfter(eventData.startTime) ?? false)) {
-          text = 'Event must end after it starts.';
-        }
-      } else {
-        setState(() => autovalidate = true);
-        text = 'Fix fields outlined in red.';
-      }
-      if (text != null) {
-        _showSnackBar(context, text);
-      } else {
-        _postEvent();
-      }
-    }
-  }
-
-  void _postEvent() async {
-    print('posting event...');
-    final response =
-        await http.post('http://toledotechevents.org/events', body: {
-      'utf8': '✓',
-      'authenticity_token': widget.authToken,
-      'event[title]': eventData.name,
-      'venue_name': eventData.venueTitle,
-      'event[venue_id]': '${eventData.venue?.id ?? ''}',
-      'start_date': DateFormat('yyyy-MM-dd').format(eventData.startTime),
-      'start_time': DateFormat('h:mm a').format(eventData.startTime),
-      'end_date': DateFormat('yyyy-MM-dd').format(eventData.endTime),
-      'end_time': DateFormat('h:mm a').format(eventData.endTime),
-      'event[url]': eventData.websiteUrl,
-      'event[rsvp_url]': eventData.rsvpUrl,
-      'event[description]': eventData.description,
-      'event[venue_details]': eventData.venueDetails,
-      'event[tag_list]': eventData.tags,
-    });
-
-    print("Response status: ${response?.statusCode}");
-    // print("Response body: ${response?.body}");
-    if (response?.statusCode == 302) {
-      int id;
-      try {
-        id = int.parse(
-            response.body.split('.org/events/').last.split('"').first);
-      } catch (e) {
-        try {
-          id = int.parse(
-              response.body.split('from_event=').last.split('"').first);
-          // A venue was also created
-          await getVenues(forceReload: true);
-        } catch (e) {
-          print('Failed to find new event.');
-          _showSnackBar(context, 'Created new event.');
-          final events = await getEvents(forceReload: true);
-          // Navigator.push(context, MaterialPageRoute(builder: (_) {
-          //   return EventList(events);
-          // }));
-        }
-      }
-
-      if (id != null) {
-        _showSnackBar(context, 'Created event $id');
-        final events = await getEvents(forceReload: true);
-        final event = Event.findById(events, id);
-        if (event != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) {
-            return EventDetails(event);
-          }));
-        } else {
-          // TODO events created in the past wont be available in the atom feed.
-          // They could be constructed based on their ID but this is a rare
-          // situation not currently supported
-          print(
-              'Failed to get newly created event $id. Is the event already over?');
-          // Navigator.push(context, MaterialPageRoute(builder: (_) {
-          //   return EventList(events);
-          // }));
-        }
-      } else {}
+      eventForm.submit();
     } else {
-      _showSnackBar(context,
-          'Problem submitting form. Please report this if it continues to happen');
+      // Start validating on every change.
+      setState(() => autovalidate = true);
+      _showSnackBar(context, 'Fix fields outlined in red.');
     }
   }
 
@@ -152,180 +88,10 @@ class _EventFormViewState extends State<EventFormView> {
                   Text('Add Event',
                       style: Theme.of(context).textTheme.headline),
                   SizedBox(height: 16.0),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: EventInput.name.label()),
-                    validator: EventInput.name.validator,
-                    onSaved: (value) => EventInput.name.value = value,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _buildInputs(context),
                   ),
-                  SizedBox(height: 8.0),
-                  StreamHandler<VenueList>(stream: AppDataProvider.of(context).venues,
-                  handler: (context, venues) =>
-                  SimpleAutocompleteFormField<VenueListItem>(
-                    maxSuggestions: 10,
-                    controller: venueController,
-                    decoration: InputDecoration(
-                        labelText: EventInput.venue.label(),
-                        helperText: EventInput.venue.helperText(selectedVenue?.address)),
-                    onChanged: (value) => setState(() => selectedVenue = value),
-                    onSaved: (value) {
-                      // selectedVenue = value;
-                      EventInput.venue.value = venueController.text;
-                    },
-                    itemBuilder: (context, venue) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Text(venue.title,
-                                style: TextStyle(fontWeight: FontWeight.w600)),
-                            Text(
-                              venue.address,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                          ],
-                        ),
-                    itemParser: ItemParser<VenueListItem>(
-                      itemToString: (item) => item?.title ?? '',
-                      itemFromString: (string) =>
-                          venues.findByTitle(string),
-                    ),
-                    onSearch: (search) async {
-                      // debugPrint('Sorting...');
-                      search = search.toLowerCase().trim();
-                      final results = VenueList.from(
-                      venues.where((v) =>
-                          v.title.toLowerCase().contains(search) ||
-                          v.address.toLowerCase().contains(search)));
-
-                      results.sort((a, b) {
-                        int mostPopular(VenueListItem a,VenueListItem b) {
-                          return b.eventCount - a.eventCount;
-                        }
-
-                        final aTitleStartsWith =
-                            a.title.toLowerCase().startsWith(search);
-                        final bTitleStartsWith =
-                            b.title.toLowerCase().startsWith(search);
-                        if (aTitleStartsWith && bTitleStartsWith)
-                          return mostPopular(a, b);
-                        else if (aTitleStartsWith)
-                          return -1;
-                        else if (bTitleStartsWith)
-                          return 1;
-                        else {
-                          final aTitleContains =
-                              a.title.toLowerCase().contains(search);
-                          final bTitleContains =
-                              b.title.toLowerCase().contains(search);
-                          if (aTitleContains && bTitleContains)
-                            return mostPopular(a, b);
-                          else if (aTitleContains)
-                            return -1;
-                          else if (bTitleContains)
-                            return 1;
-                          else {
-                            final aAddressContains =
-                                a.address.toLowerCase().contains(search);
-                            final bAddressContains =
-                                b.address.toLowerCase().contains(search);
-                            if (aAddressContains && bAddressContains)
-                              return mostPopular(a, b);
-                            else if (aAddressContains)
-                              return -1;
-                            else if (bAddressContains)
-                              return 1;
-                            else {
-                              return mostPopular(a, b);
-                            }
-                          }
-                        }
-                      });
-                      // results.take(3).forEach((venue) => debugPrint(venue.title));
-                      return results;
-                    },
-                  )),
-                  SizedBox(height: 8.0),
-                  DateTimePickerFormField(
-                    controller: startTimeController,
-                    format: EventForm.date,
-                    decoration: InputDecoration(labelText: EventInput.startTime.label()),
-                    validator: EventInput.startTime.validator,
-                    onSaved: (value) => EventInput.startTime.value = value,
-                    onChanged: (value) {
-                      if (value != null && endTimeController.text.isEmpty) {
-                        endTimeController.text =EventForm.date.format(date)
-                            format.format(value.add(Duration(hours: 1)));
-                      }
-                    },
-                  ),
-                  SizedBox(height: 8.0),
-                  DateTimePickerFormField(
-                    controller: endTimeController,
-                    format: format,
-                    decoration: InputDecoration(labelText: 'End time'),
-                    validator: (value) =>
-                        value == null ? 'Invalid end time.' : null,
-                    onSaved: (value) => eventData.endTime = value,
-                    onChanged: (value) {
-                      if (value != null && startTimeController.text.isEmpty) {
-                        startTimeController.text =
-                            format.format(value.subtract(Duration(hours: 1)));
-                      }
-                    },
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    decoration:
-                        InputDecoration(labelText: 'RSVP / Register URL'),
-                    validator: (value) {
-                      try {
-                        Uri.parse(value);
-                      } catch (e) {
-                        return 'Invalid URL';
-                      }
-                    },
-                    onSaved: (value) => eventData.rsvpUrl = value.toLowerCase(),
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    decoration:
-                        InputDecoration(labelText: 'Website / More Info URL'),
-                    validator: (value) {
-                      try {
-                        Uri.parse(value);
-                      } catch (e) {
-                        return 'Invalid URL';
-                      }
-                    },
-                    onSaved: (value) =>
-                        eventData.websiteUrl = value.toLowerCase(),
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Description',
-                      helperText: 'Markdown and some HTML supported.',
-                    ),
-                    onSaved: (value) => eventData.description = value.trim(),
-                    maxLines: null,
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Venue Details',
-                      helperText:
-                          'Event-specific details like the room number.',
-                    ),
-                    onSaved: (value) => eventData.venueDetails = value.trim(),
-                    maxLines: null,
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Tags',
-                        helperText: 'Comma-separated keywords.',
-                      ),
-                      onSaved: (value) {
-                        eventData.tags = value;
-                      }),
                   Center(
                     child: Padding(
                       padding: EdgeInsets.all(24.0),
@@ -333,7 +99,10 @@ class _EventFormViewState extends State<EventFormView> {
                         context,
                         'CREATE EVENT',
                         _handleSubmitted,
-                        color: kPrimaryColor,
+                        widget.pageData.theme,
+                        color: Theme.of(context).primaryColor,
+                        textColor:
+                            Color(widget.pageData.theme.onPrimaryColor.argb),
                       ),
                     ),
                   ),
@@ -345,4 +114,153 @@ class _EventFormViewState extends State<EventFormView> {
       ),
     );
   }
+
+  List<Widget> _buildInputs(BuildContext context) {
+    return [
+      TextFormField(
+        decoration: InputDecoration(labelText: EventInput.name.label()),
+        validator: EventInput.name.validator,
+        onSaved: (value) => EventInput.name.value = value,
+      ),
+      SizedBox(height: 8.0),
+      StreamHandler<VenueList>(
+        stream: AppDataProvider.of(context).venues,
+        handler: _buildVenueInput,
+      ),
+      SizedBox(height: 8.0),
+      DateTimePickerFormField(
+        controller: startTimeController,
+        format: EventForm.date,
+        decoration: InputDecoration(labelText: EventInput.startTime.label()),
+        validator: EventInput.startTime.validator,
+        onSaved: (value) => EventInput.startTime.value = value,
+        onChanged: (value) => EventInput.startTime.value = value,
+      ),
+      SizedBox(height: 8.0),
+      DateTimePickerFormField(
+        controller: endTimeController,
+        format: EventForm.date,
+        decoration: InputDecoration(labelText: EventInput.endTime.label()),
+        validator: EventInput.endTime.validator,
+        onSaved: (value) => EventInput.endTime.value = value,
+        onChanged: (value) => EventInput.endTime.value = value,
+      ),
+      SizedBox(height: 8.0),
+      TextFormField(
+        decoration: InputDecoration(labelText: EventInput.rsvp.label()),
+        validator: EventInput.rsvp.validator,
+        onSaved: (value) => EventInput.rsvp.value = value,
+      ),
+      SizedBox(height: 8.0),
+      TextFormField(
+        decoration: InputDecoration(labelText: EventInput.website.label()),
+        validator: EventInput.website.validator,
+        onSaved: (value) => EventInput.website.value = value,
+      ),
+      SizedBox(height: 8.0),
+      TextFormField(
+        decoration: InputDecoration(
+          labelText: EventInput.description.label(),
+          helperText: EventInput.description.helperText(),
+        ),
+        onSaved: (value) => EventInput.description.value = value,
+        maxLines: null, // auto-grow
+      ),
+      SizedBox(height: 8.0),
+      TextFormField(
+        decoration: InputDecoration(
+          labelText: EventInput.venueDetails.label(),
+          helperText: EventInput.venueDetails.helperText(),
+        ),
+        onSaved: (value) => EventInput.venueDetails.value = value,
+        maxLines: null, // auto-grow
+      ),
+      SizedBox(height: 8.0),
+      TextFormField(
+        decoration: InputDecoration(
+          labelText: EventInput.tags.label(),
+          helperText: EventInput.tags.helperText(),
+        ),
+        onSaved: (value) => EventInput.tags.value = value,
+      )
+    ];
+  }
+
+  Widget _buildVenueInput(BuildContext context, VenueList venues) {
+    return SimpleAutocompleteFormField<VenueListItem>(
+      maxSuggestions: 10,
+      controller: venueController,
+      decoration: InputDecoration(
+        labelText: EventInput.venue.label(),
+        helperText: EventInput.venue.helperText(selectedVenue?.address),
+      ),
+      onChanged: (value) => setState(() => selectedVenue = value),
+      onSaved: (value) {
+        selectedVenue = value;
+        EventInput.venue.value = venueController.text;
+      },
+      itemBuilder: (context, venue) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(venue.title, style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                venue.address,
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ],
+          ),
+      itemParser: ItemParser<VenueListItem>(
+        itemToString: (item) => item?.title ?? '',
+        itemFromString: (string) => venues.findByTitle(string),
+      ),
+      onSearch: (search) async {
+        search = search.toLowerCase().trim();
+        final results = VenueList.from(venues.where((v) =>
+            v.title.toLowerCase().contains(search) ||
+            v.address.toLowerCase().contains(search)));
+        _sortVenues(results, search);
+        return results;
+      },
+    );
+  }
+}
+
+void _sortVenues(VenueList results, String search) {
+  results.sort((a, b) {
+    int mostPopular(VenueListItem a, VenueListItem b) {
+      return b.eventCount - a.eventCount;
+    }
+
+    final aTitleStartsWith = a.title.toLowerCase().startsWith(search);
+    final bTitleStartsWith = b.title.toLowerCase().startsWith(search);
+    if (aTitleStartsWith && bTitleStartsWith)
+      return mostPopular(a, b);
+    else if (aTitleStartsWith)
+      return -1;
+    else if (bTitleStartsWith)
+      return 1;
+    else {
+      final aTitleContains = a.title.toLowerCase().contains(search);
+      final bTitleContains = b.title.toLowerCase().contains(search);
+      if (aTitleContains && bTitleContains)
+        return mostPopular(a, b);
+      else if (aTitleContains)
+        return -1;
+      else if (bTitleContains)
+        return 1;
+      else {
+        final aAddressContains = a.address.toLowerCase().contains(search);
+        final bAddressContains = b.address.toLowerCase().contains(search);
+        if (aAddressContains && bAddressContains)
+          return mostPopular(a, b);
+        else if (aAddressContains)
+          return -1;
+        else if (bAddressContains)
+          return 1;
+        else {
+          return mostPopular(a, b);
+        }
+      }
+    }
+  });
 }

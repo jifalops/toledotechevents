@@ -12,16 +12,17 @@ class SpamListView extends StatefulWidget {
   final VenueList venues;
   final PageData pageData;
   @override
-  _VenueSpamListState createState() => new _VenueSpamListState();
+  _SpamListViewState createState() => new _SpamListViewState();
 }
 
-class _VenueSpamListState extends State<SpamListView> {
+class _SpamListViewState extends State<SpamListView> {
   final _selectedVenues = List<VenueListItem>();
   bool _isDeleting = false;
 
   Future<Null> refresh() async {
     AppDataProvider.of(context).venuesRequest.add(true);
     _isDeleting = false;
+    _selectedVenues.clear();
   }
 
   @override
@@ -176,7 +177,6 @@ class _VenueSpamListState extends State<SpamListView> {
   }
 
   void _cardTapped(VenueListItem venue, BuildContext context) async {
-    // timeDilation = 10.0;
     setState(() => widget.venues.selectedItem =
         widget.venues.selectedItem == venue ? null : venue);
     if (widget.venues.selectedItem != null) {
