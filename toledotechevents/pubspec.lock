@@ -21,14 +21,14 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.13.3"
+    version: "2.0.8"
   async_resource:
     dependency: "direct main"
     description:
       name: async_resource
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   boolean_selector:
     dependency: transitive
     description:
@@ -273,14 +273,14 @@ packages:
       name: service_worker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2"
+    version: "0.2.3"
   shelf:
     dependency: transitive
     description:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.3+2"
+    version: "0.7.3+3"
   shelf_packages_handler:
     dependency: transitive
     description:
@@ -408,4 +408,4 @@ packages:
     source: hosted
     version: "2.1.15"
 sdks:
-  dart: ">=2.0.0-dev.62.0 <=2.0.0-dev.69.4"
+  dart: ">=2.0.0-dev.62.0 <3.0.0"

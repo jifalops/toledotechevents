@@ -103,7 +103,9 @@ class _EventListState extends State<EventListView> {
           .pageRequest
           .add(PageRequest(Page.eventDetails, {
             'event': widget.events.selectedItem,
-            'resource': resources.eventDetails(widget.events.selectedItem.id)
+            'resource': AppDataProvider.of(context)
+                .resources
+                .eventDetails(widget.events.selectedItem.id)
           }));
     }
   }

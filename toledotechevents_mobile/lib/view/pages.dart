@@ -23,10 +23,10 @@ class EventListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamHandler<EventList>(
-      stream: AppDataProvider.of(context).events,
-      handler: (context, events) =>
-          AnimatedPage(EventListView(events, pageData)),
-    );
+        stream: AppDataProvider.of(context).events,
+        handler: (context, events) {
+          AnimatedPage(EventListView(events, pageData));
+        });
   }
 }
 
@@ -131,7 +131,7 @@ class _AboutPageState extends BlocState<AboutPage> {
 
   @override
   void initBloc() {
-    bloc = AboutSectionBloc(resources.about);
+    bloc = AboutSectionBloc(AppDataProvider.of(context).resources.about);
   }
 
   @override
@@ -162,7 +162,7 @@ class _EventFormPageState extends BlocState<EventFormPage> {
 
   @override
   void initBloc() {
-    bloc = AuthTokenBloc(resources.authToken);
+    bloc = AuthTokenBloc(AppDataProvider.of(context).resources.authToken);
   }
 
   @override

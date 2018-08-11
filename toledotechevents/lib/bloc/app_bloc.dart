@@ -5,12 +5,14 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:async_resource/async_resource.dart';
 
+import 'package:toledotechevents/resources.dart';
 import 'package:toledotechevents/theme.dart';
 import 'package:toledotechevents/pages.dart';
 import 'package:toledotechevents/layouts.dart';
 import 'package:toledotechevents/model/events.dart';
 import 'package:toledotechevents/model/venues.dart';
 
+export 'package:toledotechevents/resources.dart';
 // export 'package:toledotechevents/theme.dart';
 export 'package:toledotechevents/pages.dart';
 export 'package:toledotechevents/layouts.dart';
@@ -47,21 +49,19 @@ class AppBloc {
   final _events = BehaviorSubject<EventList>();
   final _venues = BehaviorSubject<VenueList>();
 
-  final LocalResource<String> _themeResource;
-  final NetworkResource<EventList> _eventsResource;
-  final NetworkResource<VenueList> _venuesResource;
+  final Resources resources;
 
-  AppBloc(
-      {@required LocalResource<String> themeResource,
-      @required NetworkResource<EventList> eventsResource,
-      @required NetworkResource<VenueList> venuesResource})
-      : _themeResource = themeResource,
-        _eventsResource = eventsResource,
-        _venuesResource = venuesResource {
+  // trouble combining streams
+  Display _lastDisplay;
+  Theme _lastTheme;
+  PageRequest _lastRequest;
+  VenueList _lastVenues;
+
+  AppBloc(this.resources) {
     setupInputs();
 
     // Read the user's theme preference from disk and add it to the stream.
-    _themeResource.get().then((name) => themeRequest.add(name == null
+    resources.theme.get().then((name) => themeRequest.add(name == null
         ? Theme.light
         : Theme.values.firstWhere((theme) => theme.name == name,
             orElse: () => Theme.light)));
@@ -78,8 +78,14 @@ class AppBloc {
     _themeController.stream.distinct().listen((theme) {
       _updateTheme(theme);
       _updatePage(theme: theme);
-      _themeResource.write(theme.name);
+      resources.theme.write(theme.name);
     });
+
+    // Observable.combineLatest3(
+    //     _displayController.stream.distinct(),
+    //     _pageController.stream.distinct(),
+    //     _themeController.stream.distinct(),
+    //     (d, r, t) => _PageUpdate(d, r, t)).listen(_updatePage2);
 
     /// Set the [Display] from the view layer.
     _displayController.stream
@@ -93,11 +99,11 @@ class AppBloc {
 
     /// Load the [EventList].
     _eventsController.stream.listen((refresh) async =>
-        _updateEvents(await _eventsResource.get(forceReload: refresh)));
+        _updateEvents(await resources.eventList.get(forceReload: refresh)));
 
     /// Load the [VenueList].
     _venuesController.stream.listen((refresh) async =>
-        _updateVenues(await _venuesResource.get(forceReload: refresh)));
+        _updateVenues(await resources.venueList.get(forceReload: refresh)));
   }
 
   void dispose() {
@@ -112,24 +118,50 @@ class AppBloc {
     _venues.close();
   }
 
-  void _updateTheme(Theme theme) => _theme.add(theme);
+  void _updateTheme(Theme theme) {
+    print('Updating theme to "${theme.name}"...');
+    _theme.add(theme);
+  }
 
-  void _updatePage({PageRequest request, Display display, Theme theme}) async {
-    request ??= await _pageController.stream.last;
-    theme ??= await _themeController.stream.last;
-    display ??= await _displayController.stream.last;
-    if (request != null && theme != null && display != null) {
-      _page.add(PageData(request, theme, display));
+  void _updatePage({Display display, PageRequest request, Theme theme}) async {
+    if (display != null) _lastDisplay = display;
+    if (request != null) _lastRequest = request;
+    if (theme != null) _lastTheme = theme;
+
+    if (_lastDisplay != null && _lastRequest != null && _lastTheme != null) {
+      print('Updating page to "${_lastRequest.page.route}"...');
+      _page.add(PageData(_lastRequest, _lastTheme, _lastDisplay));
 
       /// Ensure the venue list has been requested for pages that depend on it.
-      if (request.page != Page.eventList &&
-          request.page != Page.about &&
-          await _venuesController.stream.last == null) {
+      if (_lastRequest.page != Page.eventList &&
+          _lastRequest.page != Page.about &&
+          _lastVenues == null) {
         // Start fetching venues.
         venuesRequest.add(false);
       }
     }
   }
+
+  // void _updatePage2(_PageUpdate update) async {
+  //   print('updating page... $update.request, $update.theme, $update.display');
+  //   // request ??= await _pageController.stream.last;
+  //   // theme ??= await _themeController.stream.last;
+  //   // display ??= await _displayController.stream.last;
+  //   // print('updating page... $request, $theme, $display');
+  //   if (update.request != null &&
+  //       update.theme != null &&
+  //       update.display != null) {
+  //     _page.add(PageData(update.request, update.theme, update.display));
+
+  //     /// Ensure the venue list has been requested for pages that depend on it.
+  //     if (update.request.page != Page.eventList &&
+  //         update.request.page != Page.about &&
+  //         await _venuesController.stream.last == null) {
+  //       // Start fetching venues.
+  //       venuesRequest.add(false);
+  //     }
+  //   }
+  // }
 
   void _updateEvents(EventList events) {
     if (events != null) {
@@ -139,6 +171,7 @@ class AppBloc {
 
   void _updateVenues(VenueList venues) {
     if (venues != null) {
+      _lastVenues = venues;
       _venues.add(venues);
     }
   }
@@ -169,6 +202,13 @@ class AppBloc {
 
   /// Output stream of venue lists.
   Stream<VenueList> get venues => _venues.stream;
+}
+
+class _PageUpdate {
+  _PageUpdate(this.display, this.request, this.theme);
+  final Display display;
+  final PageRequest request;
+  final Theme theme;
 }
 
 /// Passed to the [PageLayoutBloc] to signal for a new page that may require arguments.

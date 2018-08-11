@@ -75,8 +75,10 @@ class _SpamListViewState extends State<SpamListView> {
                         : TertiaryButton('REMOVE ALL', () async {
                             if (Deleter.validatePassword(controller.text)) {
                               setState(() => _isDeleting = true);
-                              if (await Deleter.deleteAll(_selectedVenues,
-                                  controller.text, resources)) {
+                              if (await Deleter.deleteAll(
+                                  _selectedVenues,
+                                  controller.text,
+                                  AppDataProvider.of(context).resources)) {
                                 Navigator.pop(context);
                                 _selectedVenues.clear();
                                 refresh();
@@ -185,7 +187,9 @@ class _SpamListViewState extends State<SpamListView> {
           .pageRequest
           .add(PageRequest(Page.venueDetails, {
             'venue': widget.venues.selectedItem,
-            'resource': resources.venueDetails(widget.venues.selectedItem.id),
+            'resource': AppDataProvider.of(context)
+                .resources
+                .venueDetails(widget.venues.selectedItem.id),
           }));
     }
   }

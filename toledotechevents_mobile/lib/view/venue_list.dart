@@ -120,7 +120,9 @@ class _VenueListState extends State<VenueListView> {
           .pageRequest
           .add(PageRequest(Page.venueDetails, {
             'venue': widget.venues.selectedItem,
-            'resource': resources.venueDetails(widget.venues.selectedItem.id),
+            'resource': AppDataProvider.of(context)
+                .resources
+                .venueDetails(widget.venues.selectedItem.id),
           }));
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:path_provider/path_provider.dart';
 import 'package:async_resource/file_resource.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse;
@@ -7,16 +9,19 @@ import 'package:toledotechevents_mobile/util/shared_prefs_resource.dart';
 
 export 'package:toledotechevents/resources.dart';
 
-final resources = MobileResources._();
+MobileResources _resources;
+
+Future<MobileResources> getResources() async => _resources ??=
+    MobileResources._((await getApplicationDocumentsDirectory()).path);
 
 class MobileResources extends Resources {
-  MobileResources._()
+  MobileResources._(this.path)
       : super(
             theme: StringPrefsResource('theme'),
             eventList: HttpNetworkResource<EventList>(
               url: config.baseUrl + '/events.atom',
               cache: FileResource(
-                File('events.atom'),
+                File('$path/events.atom'),
                 parser: Resources.parseEvents,
               ),
               maxAge: Duration(minutes: 60),
@@ -25,7 +30,7 @@ class MobileResources extends Resources {
             venueList: HttpNetworkResource<VenueList>(
               url: config.baseUrl + '/venues.json',
               cache: FileResource(
-                File('venues.json'),
+                File('$path/venues.json'),
                 parser: Resources.parseVenues,
               ),
               maxAge: Duration(minutes: 60),
@@ -34,7 +39,7 @@ class MobileResources extends Resources {
             about: HttpNetworkResource<AboutSection>(
               url: config.baseUrl + '/about.html',
               cache: FileResource(
-                File('about.html'),
+                File('$path/about.html'),
                 parser: Resources.parseAboutSection,
               ),
               maxAge: Duration(hours: 24),
@@ -43,19 +48,20 @@ class MobileResources extends Resources {
             authToken: HttpNetworkResource<AuthToken>(
               url: config.baseUrl + '/events/new.html',
               cache: FileResource(
-                File('new_event.html'),
+                File('$path/new_event.html'),
                 parser: Resources.parseAuthToken,
               ),
               maxAge: Duration(hours: 24),
               strategy: CacheStrategy.cacheFirst,
             ));
+  final String path;
 
   @override
   NetworkResource<dom.Document> eventDetails(int id) =>
       HttpNetworkResource<dom.Document>(
         url: config.eventUrl(id),
         cache: FileResource(
-          File('event_$id.html'),
+          File('$path/event_$id.html'),
           parser: (contents) => parse(contents),
         ),
         maxAge: Duration(hours: 24),
@@ -67,7 +73,7 @@ class MobileResources extends Resources {
       HttpNetworkResource<dom.Document>(
         url: config.venueUrl(id),
         cache: FileResource(
-          File('venue_$id.html'),
+          File('$path/venue_$id.html'),
           parser: (contents) => parse(contents),
         ),
         maxAge: Duration(hours: 24),

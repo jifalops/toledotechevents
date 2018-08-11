@@ -53,6 +53,7 @@ class _EventFormViewState extends State<EventFormView> {
     final FormState formState = formKey.currentState;
     if (formState.validate()) {
       formState.save();
+      final resources = AppDataProvider.of(context).resources;
       final result = await form.submit(
           venueId: selectedVenue?.title?.trim() == form.venue.value
               ? selectedVenue?.id

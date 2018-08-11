@@ -33,12 +33,14 @@ AppBar buildAppBar(BuildContext context, PageData pageData) {
   return AppBar(
     title: pageData.page.title ?? defaultTitle,
     actions: [buildOverflowMenu(context, pageData)],
-    // bottom: data.layout.nav == MainNavigation.top
-    // ? TabBar(tabs: data.layout.nav.items.map((page, label) =>
+    // bottom: pageData.layout.nav == MainNavigation.top
+    // ? TabBar(tabs: pageData.layout.nav.items.map((page, label) =>
     // ),)
     // : null,
   );
 }
+
+List<Widget> _buildTabs() {}
 
 Widget buildOverflowMenu(BuildContext context, PageData pageData) {
   final options = List<PopupMenuEntry<String>>();

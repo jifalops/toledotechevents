@@ -31,11 +31,16 @@ abstract class Resources {
     /// On subsequent runs, only expired data will be requested from the network
     /// since each resource uses [CacheStrategy.cacheFirst]. If the network is
     /// unavailable, the cached copy will be used and the app won't skip a beat.
-    theme.get();
-    eventList.get();
-    venueList.get();
-    about.get();
-    authToken.get();
+    theme.get().then((theme) => print('Init resources: Theme: "$theme".'));
+    eventList
+        .get()
+        .then((list) => print('Init resources: Events: "${list?.length}".'));
+    venueList
+        .get()
+        .then((list) => print('Init resources: Venues: "${list?.length}".'));
+    about.get().then((about) => print('Init resources: About: "${about}".'));
+    authToken.get().then(
+        (token) => print('Init resources: AuthToken: "${token?.value}".'));
   }
   final LocalResource<String> theme;
   final NetworkResource<EventList> eventList;
