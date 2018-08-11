@@ -39,19 +39,19 @@ flutter:
   fonts:
     - family: Ubuntu
       fonts:
-        - asset: ../fonts/Ubuntu-Regular.ttf
-        - asset: ../fonts/Ubuntu-Bold.ttf
+        - asset: fonts/Ubuntu-Regular.ttf
+        - asset: fonts/Ubuntu-Bold.ttf
           weight: 700
-        - asset: ../fonts/Ubuntu-Light.ttf
+        - asset: fonts/Ubuntu-Light.ttf
           weight: 300
     - family: Open Sans
       fonts:
-        - asset: ../fonts/OpenSans-Regular.ttf
-        - asset: ../fonts/OpenSans-Bold.ttf
+        - asset: fonts/OpenSans-Regular.ttf
+        - asset: fonts/OpenSans-Bold.ttf
           weight: 700
-        - asset: ../fonts/OpenSans-Italic.ttf
+        - asset: fonts/OpenSans-Italic.ttf
           style: italic
-        - asset: ../fonts/OpenSans-Light.ttf
+        - asset: fonts/OpenSans-Light.ttf
           weight: 300
-        - asset: ../fonts/OpenSans-SemiBold.ttf
+        - asset: fonts/OpenSans-SemiBold.ttf
           weight: 500

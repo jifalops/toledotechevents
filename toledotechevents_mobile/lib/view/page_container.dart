@@ -104,7 +104,7 @@ Widget buildBottomNav(BuildContext context, PageData pageData) {
     }
   }
 
-  List<BottomNavigationBarItem> items;
+  final items = List<BottomNavigationBarItem>();
   pageData.layout.nav.items.forEach((page, title) => items.add(
       BottomNavigationBarItem(
           title: Text(title, style: Theme.of(context).textTheme.button),

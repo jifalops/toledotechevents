@@ -25,7 +25,7 @@ class EventListPage extends StatelessWidget {
     return StreamHandler<EventList>(
         stream: AppDataProvider.of(context).events,
         handler: (context, events) {
-          AnimatedPage(EventListView(events, pageData));
+          return AnimatedPage(EventListView(events, pageData));
         });
   }
 }
