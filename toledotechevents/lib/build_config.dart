@@ -43,7 +43,7 @@ class BuildConfig {
   static const forumUrl = 'http://groups.google.com/group/tol-calagator/';
 
   String get subscribeICalendarUrl =>
-      baseUrl.replaceAll('https?://', 'webcal://') + '/events.ics';
+      baseUrl.replaceAll(RegExp(r'https?://'), 'webcal://') + '/events.ics';
 
   /// Past events, starting from 90 days ago.
   String get pastEventsUrl {
@@ -56,6 +56,7 @@ class BuildConfig {
         '&time%5Bstart%5D=&time%5Bend%5D=&commit=Filter';
   }
 
+  String get newEventUrl => '$baseUrl/events';
   String eventUrl(int id) => '$baseUrl/events/$id';
   String eventEditUrl(int id) => eventUrl(id) + '/edit';
   String eventCloneUrl(int id) => eventUrl(id) + '/clone';
@@ -64,7 +65,7 @@ class BuildConfig {
   String venueCloneUrl(int id) => venueUrl(id) + '/clone';
   String venueICalendarUrl(int id) => venueUrl(id) + '.ics';
   String venueSubscribeUrl(int id) =>
-      venueICalendarUrl(id).replaceAll('https?://', 'webcal://');
+      venueICalendarUrl(id).replaceAll(RegExp(r'https?://'), 'webcal://');
 
   String tagUrl(String tag) =>
       '$baseUrl/events/tag/${Uri.encodeComponent(tag)}';

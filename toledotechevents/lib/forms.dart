@@ -1,170 +1,198 @@
+import 'dart:async';
+import 'package:meta/meta.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents/util/form.dart';
+import 'package:toledotechevents/resources.dart';
 
-final eventForm = EventForm._();
+class EventForm extends DynamicForm {
+  EventForm() {
+    // Inputs that affect one another cannot be `final` unless they are `static`.
+    // However, making them static makes their value static as well, which
+    // should be avoided.
 
-class EventInput {
-  static final name = TrimmedStringInput(
+    inputs.addAll([
+      name,
+      venue,
+      _startTime = FormInput<DateTime>(
+        label: ([_]) => 'Start time',
+        validator: (value) => value == null ? 'Invalid start time.' : null,
+        onChanged: (value) {
+          if (value != null && endTime.value == null) {
+            endTime.value = value.add(Duration(hours: 1));
+          }
+        },
+      ),
+      _endTime = FormInput<DateTime>(
+        label: ([_]) => 'End time',
+        validator: (value) => value == null
+            ? 'Invalid end time.'
+            : (startTime.value != null
+                ? (startTime.value.isBefore(value)
+                    ? null
+                    : 'Event must end after it starts.')
+                : null),
+        onChanged: (value) {
+          if (value != null && startTime.value == null) {
+            startTime.value = value.subtract(Duration(hours: 1));
+          }
+        },
+      ),
+      rsvp,
+      website,
+      description,
+      venueDetails,
+      tags,
+      authToken
+    ]);
+  }
+
+  final name = TrimmedStringInput(
     label: ([_]) => 'Event name',
     validator: (value) => (value == null || value.trim().length < 3)
         ? 'The event name is required.'
         : null,
   );
 
-  static final venue = TrimmedStringInput(
+  final venue = TrimmedStringInput(
     label: ([_]) => 'Venue',
     helperText: ([address]) => address,
   );
 
-  static final startTime = FormInput<DateTime>(
-    label: ([_]) => 'Start time',
-    validator: (value) => value == null ? 'Invalid start time.' : null,
-    onChanged: (value) {
-      if (value != null && EventInput.endTime.value == null) {
-        EventInput.endTime.value = value.add(Duration(hours: 1));
-      }
-    },
-  );
+  FormInput<DateTime> _startTime;
+  FormInput<DateTime> get startTime => _startTime;
 
-  static final endTime = FormInput<DateTime>(
-    label: ([_]) => 'End time',
-    validator: (value) => value == null
-        ? 'Invalid end time.'
-        : (EventInput.startTime.value != null
-            ? (EventInput.startTime.value.isBefore(value)
-                ? null
-                : 'Event must end after it starts.')
-            : null),
-    onChanged: (value) {
-      if (value != null && EventInput.startTime.value == null) {
-        EventInput.startTime.value = value.subtract(Duration(hours: 1));
-      }
-    },
-  );
+  FormInput<DateTime> _endTime;
+  FormInput<DateTime> get endTime => _endTime;
 
-  static final rsvp = TrimmedStringInput(
+  final rsvp = TrimmedStringInput(
     label: ([_]) => 'RSVP / register URL',
     validator: (value) => (value == null || Uri.tryParse(value.trim()) == null)
         ? 'Invalid URL'
         : null,
   );
 
-  static final website = TrimmedStringInput(
+  final website = TrimmedStringInput(
     label: ([_]) => 'Website / more Info URL',
     validator: (value) => (value == null || Uri.tryParse(value.trim()) == null)
         ? 'Invalid URL'
         : null,
   );
 
-  static final description = TrimmedStringInput(
+  final description = TrimmedStringInput(
     label: ([_]) => 'Description',
     helperText: ([_]) => 'Markdown and some HTML supported.',
   );
 
-  static final venueDetails = TrimmedStringInput(
+  final venueDetails = TrimmedStringInput(
     label: ([_]) => 'Venue details',
     helperText: ([_]) => 'Event-specific details like the room number.',
   );
 
-  static final tags = TrimmedStringInput(
+  final tags = TrimmedStringInput(
     label: ([_]) => 'Tags',
     helperText: ([_]) => 'Comma-separated keywords.',
   );
 
-  static final authToken = FormInput<String>(hidden: true);
-
-  static final values = <FormInput>[
-    name,
-    venue,
-    startTime,
-    endTime,
-    rsvp,
-    website,
-    description,
-    venueDetails,
-    tags,
-    authToken
-  ];
-}
-
-class EventForm extends Form {
-  EventForm._() : super(EventInput.values);
+  final authToken = TrimmedStringInput(hidden: true);
 
   static final date = DateFormat("MMMM d, yyyy 'at' h:mma");
   static final serverDate = DateFormat('yyyy-MM-dd');
   static final serverTime = DateFormat('h:mm a');
 
   @override
-  void submit() {
-    // TODO: implement submit
+  Future<EventFormResult> submit(
+      {@required int venueId,
+      @required NetworkResource<EventList> eventsResource,
+      @required NetworkResource<VenueList> venuesResource}) async {
+    print('posting event...');
+    final response = await http.post(config.newEventUrl, body: {
+      'utf8': '✓',
+      'authenticity_token': authToken.value,
+      'event[title]': name.value,
+      'venue_name': venue.value,
+      'event[venue_id]': '${venueId ?? ''}',
+      'start_date': serverDate.format(startTime.value),
+      'start_time': serverTime.format(startTime.value),
+      'end_date': serverDate.format(endTime.value),
+      'end_time': serverTime.format(endTime.value),
+      'event[url]': website.value,
+      'event[rsvp_url]': rsvp.value,
+      'event[description]': description.value,
+      'event[venue_details]': venueDetails.value,
+      'event[tag_list]': tags.value,
+    });
+
+    print("Response status: ${response?.statusCode}");
+    // print("Response body: ${response?.body}");
+    if (response?.statusCode == 302) {
+      int id;
+      try {
+        id = int.parse(
+            response.body.split('.org/events/').last.split('"').first);
+      } catch (e) {
+        try {
+          id = int.parse(
+              response.body.split('from_event=').last.split('"').first);
+          // A venue was also created
+          await venuesResource.get(forceReload: true);
+        } catch (e) {
+          print('Event created but failed to parse response.');
+          eventsResource.get(forceReload: true);
+        }
+      }
+
+      if (id != null) {
+        final events = await eventsResource.get(forceReload: true);
+        final event = events.findById(id);
+        if (event != null) {
+          return EventFormResult(
+              message: 'Created new event',
+              events: events,
+              created: true,
+              id: id,
+              foundInFeed: true);
+        } else {
+          // TODO events created in the past wont be available in the atom feed.
+          // They could be constructed based on their ID but this is not
+          // currently supported
+          print(
+              'Failed to get newly created event $id. Is the event already over?');
+          return EventFormResult(
+              message: 'Created new event',
+              events: events,
+              created: true,
+              id: id,
+              foundInFeed: false);
+        }
+      } else {
+        return EventFormResult(
+            message: 'Created new event',
+            created: true,
+            id: -1,
+            foundInFeed: false);
+      }
+    } else {
+      return EventFormResult(
+          message: 'Problem submitting form.',
+          created: false,
+          id: -1,
+          foundInFeed: false);
+    }
   }
+}
 
-  // void _postEvent() async {
-  //   print('posting event...');
-  //   final response =
-  //       await http.post('http://toledotechevents.org/events', body: {
-  //     'utf8': '✓',
-  //     'authenticity_token': widget.authToken,
-  //     'event[title]': eventData.name,
-  //     'venue_name': eventData.venueTitle,
-  //     'event[venue_id]': '${eventData.venue?.id ?? ''}',
-  //     'start_date': DateFormat('yyyy-MM-dd').format(eventData.startTime),
-  //     'start_time': DateFormat('h:mm a').format(eventData.startTime),
-  //     'end_date': DateFormat('yyyy-MM-dd').format(eventData.endTime),
-  //     'end_time': DateFormat('h:mm a').format(eventData.endTime),
-  //     'event[url]': eventData.websiteUrl,
-  //     'event[rsvp_url]': eventData.rsvpUrl,
-  //     'event[description]': eventData.description,
-  //     'event[venue_details]': eventData.venueDetails,
-  //     'event[tag_list]': eventData.tags,
-  //   });
-
-  //   print("Response status: ${response?.statusCode}");
-  //   // print("Response body: ${response?.body}");
-  //   if (response?.statusCode == 302) {
-  //     int id;
-  //     try {
-  //       id = int.parse(
-  //           response.body.split('.org/events/').last.split('"').first);
-  //     } catch (e) {
-  //       try {
-  //         id = int.parse(
-  //             response.body.split('from_event=').last.split('"').first);
-  //         // A venue was also created
-  //         await getVenues(forceReload: true);
-  //       } catch (e) {
-  //         print('Failed to find new event.');
-  //         _showSnackBar(context, 'Created new event.');
-  //         final events = await getEvents(forceReload: true);
-  //         // Navigator.push(context, MaterialPageRoute(builder: (_) {
-  //         //   return EventList(events);
-  //         // }));
-  //       }
-  //     }
-
-  //     if (id != null) {
-  //       _showSnackBar(context, 'Created event $id');
-  //       final events = await getEvents(forceReload: true);
-  //       final event = Event.findById(events, id);
-  //       if (event != null) {
-  //         Navigator.push(context, MaterialPageRoute(builder: (_) {
-  //           return EventDetails(event);
-  //         }));
-  //       } else {
-  //         // TODO events created in the past wont be available in the atom feed.
-  //         // They could be constructed based on their ID but this is a rare
-  //         // situation not currently supported
-  //         print(
-  //             'Failed to get newly created event $id. Is the event already over?');
-  //         // Navigator.push(context, MaterialPageRoute(builder: (_) {
-  //         //   return EventList(events);
-  //         // }));
-  //       }
-  //     } else {}
-  //   } else {
-  //     _showSnackBar(context,
-  //         'Problem submitting form. Please report this if it continues to happen');
-  //   }
-  // }
-
+class EventFormResult {
+  EventFormResult(
+      {@required this.message,
+      @required this.created,
+      @required this.id,
+      @required this.foundInFeed,
+      this.events});
+  final EventList events;
+  final String message;
+  final bool created;
+  final int id;
+  final bool foundInFeed;
 }

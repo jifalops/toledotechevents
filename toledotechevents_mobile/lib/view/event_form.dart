@@ -17,36 +17,24 @@ class EventFormView extends StatefulWidget {
 }
 
 class _EventFormViewState extends State<EventFormView> {
+  _EventFormViewState() {
+    form.startTime.addListener((value) {
+      if (value != null)
+        startTimeController.text = EventForm.date.format(value);
+    });
+    form.endTime.addListener((value) {
+      if (value != null) endTimeController.text = EventForm.date.format(value);
+    });
+  }
+
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final venueController = TextEditingController();
   final startTimeController = TextEditingController();
   final endTimeController = TextEditingController();
+  final form = EventForm();
 
   bool autovalidate = false;
   VenueListItem selectedVenue;
-
-  void startTimeListener(DateTime value) {
-    if (value != null) startTimeController.text = EventForm.date.format(value);
-  }
-
-  void endTimeListener(DateTime value) {
-    if (value != null) endTimeController.text = EventForm.date.format(value);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    EventInput.startTime.addListener(startTimeListener);
-    EventInput.endTime.addListener(endTimeListener);
-    EventInput.authToken.value = widget.authToken;
-  }
-
-  @override
-  void dispose() {
-    EventInput.startTime.removeListener(startTimeListener);
-    EventInput.endTime.removeListener(endTimeListener);
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) =>
@@ -61,11 +49,31 @@ class _EventFormViewState extends State<EventFormView> {
     );
   }
 
-  void _handleSubmitted() {
-    final FormState form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      eventForm.submit();
+  void _handleSubmitted() async {
+    final FormState formState = formKey.currentState;
+    if (formState.validate()) {
+      formState.save();
+      final result = await form.submit(
+          venueId: selectedVenue?.title?.trim() == form.venue.value
+              ? selectedVenue?.id
+              : null,
+          eventsResource: resources.eventList,
+          venuesResource: resources.venueList);
+      _showSnackBar(context, result.message);
+      if (result.created) {
+        if (result.foundInFeed) {
+          AppDataProvider.of(context)
+              .pageRequest
+              .add(PageRequest(Page.eventDetails, {
+                'event': result.events.findById(result.id),
+                'resource': resources.eventDetails(result.id)
+              }));
+        } else {
+          AppDataProvider.of(context)
+              .pageRequest
+              .add(PageRequest(Page.eventList));
+        }
+      }
     } else {
       // Start validating on every change.
       setState(() => autovalidate = true);
@@ -118,9 +126,9 @@ class _EventFormViewState extends State<EventFormView> {
   List<Widget> _buildInputs(BuildContext context) {
     return [
       TextFormField(
-        decoration: InputDecoration(labelText: EventInput.name.label()),
-        validator: EventInput.name.validator,
-        onSaved: (value) => EventInput.name.value = value,
+        decoration: InputDecoration(labelText: form.name.label()),
+        validator: form.name.validator,
+        onSaved: (value) => form.name.value = value,
       ),
       SizedBox(height: 8.0),
       StreamHandler<VenueList>(
@@ -131,57 +139,57 @@ class _EventFormViewState extends State<EventFormView> {
       DateTimePickerFormField(
         controller: startTimeController,
         format: EventForm.date,
-        decoration: InputDecoration(labelText: EventInput.startTime.label()),
-        validator: EventInput.startTime.validator,
-        onSaved: (value) => EventInput.startTime.value = value,
-        onChanged: (value) => EventInput.startTime.value = value,
+        decoration: InputDecoration(labelText: form.startTime.label()),
+        validator: form.startTime.validator,
+        onSaved: (value) => form.startTime.value = value,
+        onChanged: (value) => form.startTime.value = value,
       ),
       SizedBox(height: 8.0),
       DateTimePickerFormField(
         controller: endTimeController,
         format: EventForm.date,
-        decoration: InputDecoration(labelText: EventInput.endTime.label()),
-        validator: EventInput.endTime.validator,
-        onSaved: (value) => EventInput.endTime.value = value,
-        onChanged: (value) => EventInput.endTime.value = value,
+        decoration: InputDecoration(labelText: form.endTime.label()),
+        validator: form.endTime.validator,
+        onSaved: (value) => form.endTime.value = value,
+        onChanged: (value) => form.endTime.value = value,
       ),
       SizedBox(height: 8.0),
       TextFormField(
-        decoration: InputDecoration(labelText: EventInput.rsvp.label()),
-        validator: EventInput.rsvp.validator,
-        onSaved: (value) => EventInput.rsvp.value = value,
+        decoration: InputDecoration(labelText: form.rsvp.label()),
+        validator: form.rsvp.validator,
+        onSaved: (value) => form.rsvp.value = value,
       ),
       SizedBox(height: 8.0),
       TextFormField(
-        decoration: InputDecoration(labelText: EventInput.website.label()),
-        validator: EventInput.website.validator,
-        onSaved: (value) => EventInput.website.value = value,
+        decoration: InputDecoration(labelText: form.website.label()),
+        validator: form.website.validator,
+        onSaved: (value) => form.website.value = value,
       ),
       SizedBox(height: 8.0),
       TextFormField(
         decoration: InputDecoration(
-          labelText: EventInput.description.label(),
-          helperText: EventInput.description.helperText(),
+          labelText: form.description.label(),
+          helperText: form.description.helperText(),
         ),
-        onSaved: (value) => EventInput.description.value = value,
+        onSaved: (value) => form.description.value = value,
         maxLines: null, // auto-grow
       ),
       SizedBox(height: 8.0),
       TextFormField(
         decoration: InputDecoration(
-          labelText: EventInput.venueDetails.label(),
-          helperText: EventInput.venueDetails.helperText(),
+          labelText: form.venueDetails.label(),
+          helperText: form.venueDetails.helperText(),
         ),
-        onSaved: (value) => EventInput.venueDetails.value = value,
+        onSaved: (value) => form.venueDetails.value = value,
         maxLines: null, // auto-grow
       ),
       SizedBox(height: 8.0),
       TextFormField(
         decoration: InputDecoration(
-          labelText: EventInput.tags.label(),
-          helperText: EventInput.tags.helperText(),
+          labelText: form.tags.label(),
+          helperText: form.tags.helperText(),
         ),
-        onSaved: (value) => EventInput.tags.value = value,
+        onSaved: (value) => form.tags.value = value,
       )
     ];
   }
@@ -191,13 +199,13 @@ class _EventFormViewState extends State<EventFormView> {
       maxSuggestions: 10,
       controller: venueController,
       decoration: InputDecoration(
-        labelText: EventInput.venue.label(),
-        helperText: EventInput.venue.helperText(selectedVenue?.address),
+        labelText: form.venue.label(),
+        helperText: form.venue.helperText(selectedVenue?.address),
       ),
       onChanged: (value) => setState(() => selectedVenue = value),
       onSaved: (value) {
         selectedVenue = value;
-        EventInput.venue.value = venueController.text;
+        form.venue.value = venueController.text;
       },
       itemBuilder: (context, venue) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

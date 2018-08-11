@@ -6,6 +6,7 @@ import 'package:toledotechevents/model/venues.dart';
 import 'package:toledotechevents/model/about_section.dart';
 import 'package:toledotechevents/model/auth_token.dart';
 
+export 'package:async_resource/async_resource.dart';
 export 'package:toledotechevents/model/events.dart';
 export 'package:toledotechevents/model/venues.dart';
 export 'package:toledotechevents/model/about_section.dart';

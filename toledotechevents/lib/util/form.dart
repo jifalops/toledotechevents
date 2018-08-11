@@ -1,23 +1,19 @@
-import 'package:meta/meta.dart';
+import 'dart:async';
 
-// TODO document
+/// Forms hold the values of one or more [FormInputs] and has methods to reset,
+/// validate, and submit the form.
+///
+/// To be able to add and remove this form's inputs dynamically, use
+/// [DynamicForm].
 abstract class Form {
-  const Form(this.inputs);
-  final List<FormInput> inputs;
+  Form(Iterable<FormInput> inputs) : _inputs = inputs;
+  final List<FormInput> _inputs;
 
-  dynamic getValue(FormInput input) => inputs[inputs.indexOf(input)];
-
-  Map<FormInput, dynamic> getValues() => Map.fromIterable(inputs,
-      key: (input) => input, value: (input) => input.value);
-
-  /// Returns a list of errors if validation fails or an empty list on success.
-  ///
-  /// Subclasses should call `super.validate()` first to get a list of errors
-  /// from the individual [inputs]. Then proceed to add inter-input errors.
-  @mustCallSuper
+  /// Returns a list of error strings, one from each [FormInput] in the form.
+  /// If validation succeeds, the returned list will be empty.
   List<String> validate() {
     final errors = List<String>();
-    inputs.forEach((input) {
+    _inputs.forEach((input) {
       if (input.validator != null) {
         final error = input.validator(input.value);
         if (error != null) errors.add(error);
@@ -26,15 +22,31 @@ abstract class Form {
     return errors;
   }
 
-  /// Calls [FormInput.reset()] on all of the [inputs].
-  @mustCallSuper
-  void reset() => inputs.forEach((input) => input.reset());
+  /// Calls [FormInput.reset()] on all inputs, resetting them to their
+  /// [FormInput.initialValue].
+  void reset() => _inputs.forEach((input) => input.reset());
 
   /// Submit this [Form].
-  void submit();
+  Future submit();
+
+  /// The number of [FormInputs] in this form.
+  int get length => _inputs.length;
+
+  /// Allow iterating over this form's inputs.
+  Iterable<FormInput> iterate() => _inputs.getRange(0, _inputs.length);
 }
 
-// TODO document
+/// Exposes its inputs using the [inputs] getter.
+abstract class DynamicForm extends Form {
+  DynamicForm([Iterable<FormInput> inputs]) : super(inputs ?? []);
+  List<FormInput> get inputs => _inputs;
+}
+
+/// Defines an input for a [Form], including its value.
+///
+/// The default [FormInput.validator] accepts any value as valid.
+/// [FormInput.onChanged] is added as the first value change listener if it is
+/// non-null.
 class FormInput<T> {
   FormInput(
       {this.label,
@@ -48,19 +60,6 @@ class FormInput<T> {
         validator = validator ?? _defaultValidator,
         hidden = hidden ?? false {
     if (onChanged != null) _listeners.add(onChanged);
-  }
-
-  FormInput<T> clone() {
-    final input = FormInput<T>(
-        label: label,
-        initialValue: initialValue,
-        helperText: helperText,
-        hidden: hidden,
-        validator: validator,
-        filter: filter);
-    input._value = _value;
-    input._listeners.addAll(_listeners);
-    return input;
   }
 
   final StringResolver<T> label;
@@ -89,6 +88,19 @@ class FormInput<T> {
   bool removeListener(ValueHandler listener) => _listeners.remove(listener);
 
   void reset() => value = initialValue;
+
+  FormInput<T> clone() {
+    final input = FormInput<T>(
+        label: label,
+        initialValue: initialValue,
+        helperText: helperText,
+        hidden: hidden,
+        validator: validator,
+        filter: filter);
+    input._value = _value;
+    input._listeners.addAll(_listeners);
+    return input;
+  }
 }
 
 typedef T ValueFilter<T>(T value);
