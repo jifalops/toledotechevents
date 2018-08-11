@@ -38,7 +38,8 @@ abstract class Resources {
     venueList
         .get()
         .then((list) => print('Init resources: Venues: "${list?.length}".'));
-    about.get().then((about) => print('Init resources: About: "${about}".'));
+    about.get().then(
+        (about) => print('Init resources: About: "${about?.html?.length}".'));
     authToken.get().then(
         (token) => print('Init resources: AuthToken: "${token?.value}".'));
   }

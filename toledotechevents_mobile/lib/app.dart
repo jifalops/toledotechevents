@@ -100,6 +100,7 @@ class _AppPageState extends State<AppPage> {
   }
 
   Widget _buildPage(BuildContext context) {
+    final resources = AppDataProvider.of(context).resources;
     switch (pageData.page) {
       case Page.eventList:
         print('Building EventListPage...');
@@ -115,10 +116,10 @@ class _AppPageState extends State<AppPage> {
         return VenueDetailsPage(pageData);
       case Page.createEvent:
         print('Building EventFormPage...');
-        return EventFormPage(pageData);
+        return EventFormPage(pageData, resources);
       case Page.about:
         print('Building AboutPage...');
-        return AboutPage(pageData);
+        return AboutPage(pageData, resources);
       case Page.spamRemover:
         print('Building SpamListPage...');
         return SpamListPage(pageData);

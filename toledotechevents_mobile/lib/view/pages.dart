@@ -112,8 +112,9 @@ class _VenueDetailsPageState extends BlocState<VenueDetailsPage> {
 /// Builds [HtmlView]s as [AboutSection]s come from the
 /// [AboutSectionBloc.about] stream.
 class AboutPage extends StatefulWidget {
-  AboutPage(this.pageData);
+  AboutPage(this.pageData, this.resources);
   final PageData pageData;
+  final Resources resources;
   @override
   _AboutPageState createState() => new _AboutPageState();
 }
@@ -125,13 +126,14 @@ class _AboutPageState extends BlocState<AboutPage> {
   Widget build(BuildContext context) {
     return StreamHandler<AboutSection>(
       stream: bloc.about,
-      handler: (context, about) => HtmlView(data: about.html),
+      handler: (context, about) => AnimatedPage(
+          SingleChildScrollView(child: HtmlView(data: about.html))),
     );
   }
 
   @override
   void initBloc() {
-    bloc = AboutSectionBloc(AppDataProvider.of(context).resources.about);
+    bloc = AboutSectionBloc(widget.resources.about);
   }
 
   @override
@@ -143,8 +145,9 @@ class _AboutPageState extends BlocState<AboutPage> {
 /// Builds [EventFormView]s as [AuthToken]s come from the
 /// [AuthTokenBloc.token] stream.
 class EventFormPage extends StatefulWidget {
-  EventFormPage(this.pageData);
+  EventFormPage(this.pageData, this.resources);
   final PageData pageData;
+  final Resources resources;
   @override
   _EventFormPageState createState() => new _EventFormPageState();
 }
@@ -156,13 +159,14 @@ class _EventFormPageState extends BlocState<EventFormPage> {
   Widget build(BuildContext context) {
     return StreamHandler<AuthToken>(
       stream: bloc.token,
-      handler: (context, token) => EventFormView(token.value, widget.pageData),
+      handler: (context, token) =>
+          AnimatedPage(EventFormView(token.value, widget.pageData)),
     );
   }
 
   @override
   void initBloc() {
-    bloc = AuthTokenBloc(AppDataProvider.of(context).resources.authToken);
+    bloc = AuthTokenBloc(widget.resources.authToken);
   }
 
   @override

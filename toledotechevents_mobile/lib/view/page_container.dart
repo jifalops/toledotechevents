@@ -22,7 +22,10 @@ Scaffold buildScaffold(
 AppBar buildAppBar(BuildContext context, PageData pageData) {
   Widget defaultTitle = Row(
     children: <Widget>[
-      Text('Toledo'),
+      Text(
+        'Toledo',
+        style: TextStyle(color: Color(pageData.theme.onPrimaryColor.argb)),
+      ),
       SizedBox(width: 3.0),
       Text(
         'Tech Events',
@@ -115,8 +118,10 @@ Widget buildBottomNav(BuildContext context, PageData pageData) {
       currentIndex:
           pageData.layout.nav.items.keys.toList().indexOf(pageData.page),
       iconSize: 24.0,
-      onTap: (index) => AppDataProvider.of(context)
-          .pageRequest
-          .add(PageRequest(pageData.layout.nav.items.keys.toList()[index])),
+      onTap: (index) {
+        final page = pageData.layout.nav.items.keys.toList()[index];
+        print('tapped $index: ${page.route}');
+        AppDataProvider.of(context).pageRequest.add(PageRequest(page));
+      },
       items: items);
 }

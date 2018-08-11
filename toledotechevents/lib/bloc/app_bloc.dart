@@ -219,10 +219,11 @@ class PageRequest {
 
   @override
   operator ==(other) =>
-      page == other.pageData && MapEquality().equals(args, other.args);
+      page.route == other?.page?.route &&
+      MapEquality().equals(args, other.args);
 
   @override
-  int get hashCode => '$page$args'.hashCode;
+  int get hashCode => '${page.route}$args'.hashCode;
 }
 
 /// Platform specific view logic uses this to show a page to the user.
