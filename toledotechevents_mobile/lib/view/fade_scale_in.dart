@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
-class AnimatedPage extends StatefulWidget {
+class FadeScaleIn extends StatefulWidget {
   final Widget child;
-  AnimatedPage(this.child);
+  FadeScaleIn(this.child);
   @override
   _AnimatedPageState createState() => _AnimatedPageState();
 }
 
-class _AnimatedPageState extends State<AnimatedPage>
+class _AnimatedPageState extends State<FadeScaleIn>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
 
@@ -31,19 +31,19 @@ class _AnimatedPageState extends State<AnimatedPage>
   @override
   Widget build(BuildContext context) {
     // timeDilation = 10.0;
-    return PageAnimation(
+    return FadeScaleAnimation(
       controller: _controller.view,
       child: widget.child,
     );
   }
 }
 
-class PageAnimation extends StatelessWidget {
+class FadeScaleAnimation extends StatelessWidget {
   final Animation<double> controller;
   final Animation<double> scale;
   final Animation<double> fade;
   final Widget child;
-  PageAnimation({Key key, @required this.controller, @required this.child})
+  FadeScaleAnimation({Key key, @required this.controller, @required this.child})
       : fade = Tween(
           begin: 0.0,
           end: 1.0,

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:async_resource/async_resource.dart';
 
 import 'package:toledotechevents/resources.dart';
 import 'package:toledotechevents/theme.dart';
@@ -13,7 +11,6 @@ import 'package:toledotechevents/model/events.dart';
 import 'package:toledotechevents/model/venues.dart';
 
 export 'package:toledotechevents/resources.dart';
-// export 'package:toledotechevents/theme.dart';
 export 'package:toledotechevents/pages.dart';
 export 'package:toledotechevents/layouts.dart';
 export 'package:toledotechevents/model/events.dart';
@@ -62,9 +59,9 @@ class AppBloc {
 
     // Read the user's theme preference from disk and add it to the stream.
     resources.theme.get().then((name) => themeRequest.add(name == null
-        ? Theme.light
+        ? Theme.defaultTheme
         : Theme.values.firstWhere((theme) => theme.name == name,
-            orElse: () => Theme.light)));
+            orElse: () => Theme.defaultTheme)));
 
     // Request the first page.
     pageRequest.add(PageRequest(Page.eventList));
@@ -80,12 +77,6 @@ class AppBloc {
       _updatePage(theme: theme);
       resources.theme.write(theme.name);
     });
-
-    // Observable.combineLatest3(
-    //     _displayController.stream.distinct(),
-    //     _pageController.stream.distinct(),
-    //     _themeController.stream.distinct(),
-    //     (d, r, t) => _PageUpdate(d, r, t)).listen(_updatePage2);
 
     /// Set the [Display] from the view layer.
     _displayController.stream
@@ -142,27 +133,6 @@ class AppBloc {
     }
   }
 
-  // void _updatePage2(_PageUpdate update) async {
-  //   print('updating page... $update.request, $update.theme, $update.display');
-  //   // request ??= await _pageController.stream.last;
-  //   // theme ??= await _themeController.stream.last;
-  //   // display ??= await _displayController.stream.last;
-  //   // print('updating page... $request, $theme, $display');
-  //   if (update.request != null &&
-  //       update.theme != null &&
-  //       update.display != null) {
-  //     _page.add(PageData(update.request, update.theme, update.display));
-
-  //     /// Ensure the venue list has been requested for pages that depend on it.
-  //     if (update.request.page != Page.eventList &&
-  //         update.request.page != Page.about &&
-  //         await _venuesController.stream.last == null) {
-  //       // Start fetching venues.
-  //       venuesRequest.add(false);
-  //     }
-  //   }
-  // }
-
   void _updateEvents(EventList events) {
     if (events != null) {
       _events.add(events);
@@ -204,18 +174,12 @@ class AppBloc {
   Stream<VenueList> get venues => _venues.stream;
 }
 
-class _PageUpdate {
-  _PageUpdate(this.display, this.request, this.theme);
-  final Display display;
-  final PageRequest request;
-  final Theme theme;
-}
-
 /// Passed to the [PageLayoutBloc] to signal for a new page that may require arguments.
 class PageRequest {
   final Page page;
   final Map<String, dynamic> args;
-  const PageRequest(this.page, [this.args]);
+  final void Function() onPop;
+  const PageRequest(this.page, {this.args, this.onPop});
 
   @override
   operator ==(other) =>
@@ -233,10 +197,12 @@ class PageData {
   final Theme theme;
   final Display display;
   final Layout layout;
+  final void Function() onPop;
 
   PageData(PageRequest request, this.theme, this.display)
       : page = request.page,
         args = UnmodifiableMapView(request.args ?? {}),
+        onPop = request.onPop,
         layout = Layout(request.page, theme, display);
 
   @override

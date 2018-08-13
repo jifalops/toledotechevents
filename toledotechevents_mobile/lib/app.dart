@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:flutter_html_view/flutter_html_view.dart';
 
 import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents/theme.dart' as base;
@@ -10,16 +10,29 @@ import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/theme.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/providers.dart';
-import 'package:toledotechevents_mobile/view/pages.dart';
+import 'package:toledotechevents_mobile/view/splash.dart';
+import 'package:toledotechevents_mobile/view/page_parts.dart';
+import 'package:toledotechevents_mobile/view/event_list.dart';
+import 'package:toledotechevents_mobile/view/event_details.dart';
+import 'package:toledotechevents_mobile/view/venue_list.dart';
+import 'package:toledotechevents_mobile/view/venue_details.dart';
+import 'package:toledotechevents_mobile/view/event_form.dart';
+import 'package:toledotechevents_mobile/view/spam_list.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  _AppState createState() {
+    return new _AppState();
+  }
+}
+
+class _AppState extends State<App> {
+  Resources resources;
   @override
   Widget build(BuildContext context) {
-    print('Initializing resources...');
-    return FutureHandler(
-      future: getResources(),
-      handler: (context, resources) => AppWithResources(resources),
-    );
+    return resources == null
+        ? SplashScreen((res) => setState(() => resources = res))
+        : AppWithResources(resources);
   }
 }
 
@@ -42,10 +55,9 @@ class _AppWithResourcesState extends BlocState<AppWithResources> {
           handler: (context, theme) {
             print('Building app...');
             return MaterialApp(
-              title: config.title,
-              theme: buildTheme(theme),
-              home: AppPage(),
-            );
+                title: config.title,
+                theme: buildTheme(theme),
+                home: HomePage());
           }),
     );
   }
@@ -64,68 +76,71 @@ class _AppWithResourcesState extends BlocState<AppWithResources> {
   }
 }
 
-class AppPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _AppPageState createState() => _AppPageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _AppPageState extends State<AppPage> {
-  PageData pageData, prevPageData;
+class _HomePageState extends BlocState<HomePage> {
+  PageData pageData;
+  StreamSubscription subscription;
 
   @override
   Widget build(BuildContext context) {
-    return StreamHandler<PageData>(
-        stream: AppDataProvider.of(context).page,
-        handler: (context, data) {
-          pageData = data;
-          Widget page = _navigateOrRebuildPage(context);
-          prevPageData = pageData;
-          return page;
-        });
+    return pageData == null ? Scaffold() : _buildPage(context, pageData);
   }
 
-  Widget _navigateOrRebuildPage(BuildContext context) {
-    if (prevPageData == null ||
-        pageData.page == prevPageData.page ||
-        pageData.layout.nav.contains(pageData.page)) {
-      print('Skipping navigation.');
-      return _buildPage(context);
+  void _handleIncomingData(PageData data) {
+    if (data.layout.nav.contains(data.page)) {
+      // One of the main pages was requested, rebuild this widget.
+      setState(() => pageData = data);
     } else {
-      print('Using navigation.');
-      Navigator.of(context).push(NoAnimationRoute(
-        builder: (context) => _buildPage(context),
-      ));
-      return NullWidget();
+      // Navigate to the new page.
+      Navigator.of(context)
+          .push(FadePageRoute(builder: (context) => _buildPage(context, data)))
+          .then((_) {
+        if (data.onPop != null) data.onPop();
+      });
     }
   }
 
-  Widget _buildPage(BuildContext context) {
-    final resources = AppDataProvider.of(context).resources;
-    switch (pageData.page) {
-      case Page.eventList:
-        print('Building EventListPage...');
-        return EventListPage(pageData);
-      case Page.eventDetails:
-        print('Building EventDetailsPage...');
-        return EventDetailsPage(pageData);
-      case Page.venuesList:
-        print('Building VenueListPage...');
-        return VenueListPage(pageData);
-      case Page.venueDetails:
-        print('Building VenueDetailsPage...');
-        return VenueDetailsPage(pageData);
-      case Page.createEvent:
-        print('Building EventFormPage...');
-        return EventFormPage(pageData, resources);
-      case Page.about:
-        print('Building AboutPage...');
-        return AboutPage(pageData, resources);
-      case Page.spamRemover:
-        print('Building SpamListPage...');
-        return SpamListPage(pageData);
-      default:
-        assert(false);
-        return NullWidget();
-    }
+  @override
+  void initBloc() {
+    subscription = AppDataProvider.of(context).page.listen(_handleIncomingData);
+  }
+
+  @override
+  void disposeBloc() {
+    subscription.cancel();
+  }
+}
+
+Widget _buildPage(BuildContext context, PageData data) {
+  print('Building ${data.page.route}...');
+  final resources = AppDataProvider.of(context).resources;
+  switch (data.page) {
+    case Page.eventList:
+      return EventListView(data);
+    case Page.eventDetails:
+      return EventDetailsView(data);
+    case Page.venuesList:
+      return VenueListView(data);
+    case Page.venueDetails:
+      return VenueDetailsView(data);
+    case Page.createEvent:
+      return EventFormView(data);
+    case Page.about:
+      return buildScaffold(
+          context,
+          data,
+          (context) => FutureHandler(
+              future: resources.about.get(),
+              handler: (context, about) => FadeScaleIn(
+                  SingleChildScrollView(child: HtmlView(data: about.html)))));
+    case Page.spamRemover:
+      return SpamListView(data);
+    default:
+      assert(false);
+      return NullWidget();
   }
 }

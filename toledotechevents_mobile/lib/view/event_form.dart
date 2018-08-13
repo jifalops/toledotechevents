@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 import 'package:toledotechevents/forms.dart';
-import 'package:toledotechevents_mobile/view/page_container.dart';
+import 'package:toledotechevents_mobile/view/page_parts.dart';
 
 class EventFormView extends StatefulWidget {
-  EventFormView(this.authToken, this.pageData);
-  final String authToken;
+  EventFormView(this.pageData);
   final PageData pageData;
 
   @override
@@ -35,6 +34,7 @@ class _EventFormViewState extends State<EventFormView> {
 
   bool autovalidate = false;
   VenueListItem selectedVenue;
+  bool submitting = false;
 
   @override
   Widget build(BuildContext context) =>
@@ -50,10 +50,12 @@ class _EventFormViewState extends State<EventFormView> {
   }
 
   void _handleSubmitted() async {
+    setState(() => submitting = true);
     final FormState formState = formKey.currentState;
     if (formState.validate()) {
       formState.save();
       final resources = AppDataProvider.of(context).resources;
+      form.authToken.value = (await resources.authToken.get())?.value;
       final result = await form.submit(
           venueId: selectedVenue?.title?.trim() == form.venue.value
               ? selectedVenue?.id
@@ -65,11 +67,13 @@ class _EventFormViewState extends State<EventFormView> {
         if (result.foundInFeed) {
           AppDataProvider.of(context)
               .pageRequest
-              .add(PageRequest(Page.eventDetails, {
-                'event': result.events.findById(result.id),
-                'resource': resources.eventDetails(result.id)
+              .add(PageRequest(Page.eventDetails, args: {
+                'details': EventDetails(result.events.findById(result.id),
+                    resources.eventDetails(result.id))
               }));
         } else {
+          // TODO load past event details from event id.
+          Navigator.of(context).pop();
           AppDataProvider.of(context)
               .pageRequest
               .add(PageRequest(Page.eventList));
@@ -104,15 +108,17 @@ class _EventFormViewState extends State<EventFormView> {
                   Center(
                     child: Padding(
                       padding: EdgeInsets.all(24.0),
-                      child: PrimaryButton(
-                        context,
-                        'CREATE EVENT',
-                        _handleSubmitted,
-                        widget.pageData.theme,
-                        color: Theme.of(context).primaryColor,
-                        textColor:
-                            Color(widget.pageData.theme.onPrimaryColor.argb),
-                      ),
+                      child: submitting
+                          ? CircularProgressIndicator()
+                          : PrimaryButton(
+                              context,
+                              'CREATE EVENT',
+                              _handleSubmitted,
+                              widget.pageData.theme,
+                              color: Theme.of(context).primaryColor,
+                              textColor: Color(
+                                  widget.pageData.theme.onPrimaryColor.argb),
+                            ),
                     ),
                   ),
                 ],

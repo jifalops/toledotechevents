@@ -5,6 +5,24 @@ import 'package:url_launcher/url_launcher.dart';
 export 'package:toledotechevents_mobile/resources.dart';
 export 'package:toledotechevents_mobile/providers.dart';
 export 'package:toledotechevents_mobile/theme.dart';
+export 'package:toledotechevents_mobile/view/fade_scale_in.dart';
+
+Widget defaultTitle(BuildContext context, [PageData data]) => Row(
+      children: <Widget>[
+        Text(
+          'Toledo',
+          style: TextStyle(
+              color: data == null
+                  ? Colors.white
+                  : Color(data.theme.onPrimaryColor.argb)),
+        ),
+        SizedBox(width: 3.0),
+        Text(
+          'Tech Events',
+          style: TextStyle(color: Theme.of(context).accentColor),
+        ),
+      ],
+    );
 
 Scaffold buildScaffold(
     BuildContext context, PageData pageData, WidgetBuilder bodyBuilder,
@@ -20,21 +38,11 @@ Scaffold buildScaffold(
 }
 
 AppBar buildAppBar(BuildContext context, PageData pageData) {
-  Widget defaultTitle = Row(
-    children: <Widget>[
-      Text(
-        'Toledo',
-        style: TextStyle(color: Color(pageData.theme.onPrimaryColor.argb)),
-      ),
-      SizedBox(width: 3.0),
-      Text(
-        'Tech Events',
-        style: TextStyle(color: Color(pageData.theme.secondaryColor.argb)),
-      ),
-    ],
-  );
   return AppBar(
-    title: pageData.page.title ?? defaultTitle,
+    title: pageData.page.title == null
+        ? defaultTitle(context, pageData)
+        : Text(pageData.page.title,
+            style: TextStyle(color: Color(pageData.theme.onPrimaryColor.argb))),
     actions: [buildOverflowMenu(context, pageData)],
     // bottom: pageData.layout.nav == MainNavigation.top
     // ? TabBar(tabs: pageData.layout.nav.items.map((page, label) =>

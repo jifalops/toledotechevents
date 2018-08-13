@@ -1,17 +1,9 @@
 // The app's pages.
 class Page {
   static const eventList = Page._(null, '/events');
-
-  /// `resource` is an [EventDetailsResource]. `event` is an optional
-  /// [EventListItem].
-  static const eventDetails =
-      Page._('Event details', '/event/:resource/:event');
+  static const eventDetails = Page._('Event details', '/events/:details');
   static const venuesList = Page._(null, '/venues');
-
-  /// `resource` is a [VenueDetailsResource]. `venue` is an optional
-  /// [VenueListItem].
-  static const venueDetails =
-      Page._('Venue details', '/venue/:resource/:venue');
+  static const venueDetails = Page._('Venue details', '/venues/:details');
   static const createEvent = Page._(null, '/events/new');
   static const about = Page._(null, '/about');
   static const spamRemover = Page._(null, '/venues/spam');

@@ -1,6 +1,5 @@
 import 'dart:core';
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:html/dom.dart' as dom;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:async_resource/async_resource.dart';
 import 'package:meta/meta.dart';
 import 'package:html/dom.dart' as dom;
@@ -19,30 +20,8 @@ abstract class Resources {
       @required this.eventList,
       @required this.venueList,
       @required this.about,
-      @required this.authToken}) {
-    /// Perform an initial fetch on the data, once per app run. This lets the
-    /// app have resources in memory for fast execution.
-    ///
-    /// On the first run, this will fetch everything from the network.
-    /// Even though this approach doesn't scale, the relatively small amount
-    /// of data being fetched here is acceptable. Grouping network requests may
-    /// also allow the underlying platform to optimize them.
-    ///
-    /// On subsequent runs, only expired data will be requested from the network
-    /// since each resource uses [CacheStrategy.cacheFirst]. If the network is
-    /// unavailable, the cached copy will be used and the app won't skip a beat.
-    theme.get().then((theme) => print('Init resources: Theme: "$theme".'));
-    eventList
-        .get()
-        .then((list) => print('Init resources: Events: "${list?.length}".'));
-    venueList
-        .get()
-        .then((list) => print('Init resources: Venues: "${list?.length}".'));
-    about.get().then(
-        (about) => print('Init resources: About: "${about?.html?.length}".'));
-    authToken.get().then(
-        (token) => print('Init resources: AuthToken: "${token?.value}".'));
-  }
+      @required this.authToken});
+
   final LocalResource<String> theme;
   final NetworkResource<EventList> eventList;
   final NetworkResource<VenueList> venueList;
@@ -63,4 +42,31 @@ abstract class Resources {
 
   static AuthToken parseAuthToken(contents) =>
       contents == null ? null : AuthToken(contents);
+
+  /// Perform an initial fetch on the data, once per app run. This lets the
+  /// app have resources in memory for fast execution.
+  ///
+  /// On the first run, this will fetch everything from the network.
+  /// Even though this approach doesn't scale, the relatively small amount
+  /// of data being fetched here is acceptable. Grouping network requests may
+  /// also allow the underlying platform to optimize them.
+  ///
+  /// On subsequent runs, only expired data will be requested from the network
+  /// since each resource uses [CacheStrategy.cacheFirst]. If the network is
+  /// unavailable, the cached copy will be used and the app won't skip a beat.
+  Stream init([bool forceReload = false]) async* {
+    yield await theme
+        .get(forceReload: forceReload)
+        .then((theme) => print('Init resources: Theme: "$theme".'));
+    yield await eventList
+        .get(forceReload: forceReload)
+        .then((list) => print('Init resources: Events: "${list?.length}".'));
+    yield await venueList
+        .get(forceReload: forceReload)
+        .then((list) => print('Init resources: Venues: "${list?.length}".'));
+    yield await about.get(forceReload: forceReload).then(
+        (about) => print('Init resources: About: "${about?.html?.length}".'));
+    yield await authToken.get(forceReload: forceReload).then(
+        (token) => print('Init resources: AuthToken: "${token?.value}".'));
+  }
 }

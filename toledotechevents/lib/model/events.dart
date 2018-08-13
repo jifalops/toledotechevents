@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:core';
 import 'dart:collection';
 import 'package:xml/xml.dart' as xml;
-import 'package:html/parser.dart' show parse, parseFragment;
+import 'package:html/parser.dart' show parseFragment;
 import 'package:html/dom.dart' as dom;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';

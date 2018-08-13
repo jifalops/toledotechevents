@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:toledotechevents_mobile/view/page_container.dart';
+import 'package:toledotechevents_mobile/view/page_parts.dart';
 
 class EventListView extends StatefulWidget {
-  EventListView(this.events, this.pageData);
-  final EventList events;
+  EventListView(this.pageData);
   final PageData pageData;
   @override
   State<EventListView> createState() => _EventListState();
@@ -12,29 +11,24 @@ class EventListView extends StatefulWidget {
 
 class _EventListState extends State<EventListView> {
   @override
-  void initState() {
-    super.initState();
-    if (widget.events.selectedItem != null) {
-      Future.delayed(Duration(milliseconds: 400))
-          .then((_) => setState(() => widget.events.selectedItem = null));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return buildScaffold(context, widget.pageData, _buildBody);
   }
 
   Widget _buildBody(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async {
-        AppDataProvider.of(context).eventsRequest.add(true);
-      },
-      child: ListView(children: _buildEventList(context)),
-    );
+        onRefresh: () async {
+          AppDataProvider.of(context).eventsRequest.add(true);
+        },
+        child: StreamHandler<EventList>(
+            stream: AppDataProvider.of(context).events,
+            handler: (context, events) {
+              return FadeScaleIn(
+                  ListView(children: _buildEventList(context, events)));
+            }));
   }
 
-  List<Widget> _buildEventList(BuildContext context) {
+  List<Widget> _buildEventList(BuildContext context, EventList events) {
     var items = List<Widget>();
     var now = DateTime.now();
     var twoWeeks = now.add(Duration(days: 15)); // 15 intended.
@@ -44,7 +38,7 @@ class _EventListState extends State<EventListView> {
     var nextTwoWeeks = List<EventListItem>();
     var afterTwoWeeks = List<EventListItem>();
 
-    widget.events.forEach((e) {
+    events.forEach((e) {
       if (e.occursOnDay(now)) today.add(e);
       if (e.occursOnDay(now.add(Duration(days: 1)))) tomorrow.add(e);
       if (e.occursOnDayInRange(now.add(Duration(days: 2)), twoWeeks))
@@ -52,23 +46,23 @@ class _EventListState extends State<EventListView> {
       if (e.occursOnOrAfterDay(twoWeeks)) afterTwoWeeks.add(e);
     });
 
-    void addItems(String name, List<EventListItem> events) {
-      if (events.length > 0) {
+    void addItems(String name, List<EventListItem> list) {
+      if (list.length > 0) {
         items.add(
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(name, style: Theme.of(context).textTheme.subhead),
           ),
         );
-        events.asMap().forEach((i, event) {
+        list.asMap().forEach((i, event) {
           items.add(
             EventListItemView(
               event,
               color: i % 2 == 0
                   ? Theme.of(context).dividerColor
                   : Theme.of(context).backgroundColor,
-              elevation: widget.events.selectedItem == event ? 8.0 : 0.0,
-              onTap: () => _cardTapped(event, context),
+              elevation: events.selectedItem == event ? 8.0 : 0.0,
+              onTap: () => _cardTapped(events, event, context),
             ),
           );
         });
@@ -92,20 +86,26 @@ class _EventListState extends State<EventListView> {
     return items;
   }
 
-  void _cardTapped(EventListItem event, BuildContext context) async {
+  void _cardTapped(
+      EventList events, EventListItem event, BuildContext context) async {
     setState(() {
-      widget.events.selectedItem =
-          widget.events.selectedItem == event ? null : event;
+      events.selectedItem = events.selectedItem == event ? null : event;
     });
-    if (widget.events.selectedItem != null) {
+    if (events.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
       AppDataProvider.of(context)
           .pageRequest
-          .add(PageRequest(Page.eventDetails, {
-            'event': widget.events.selectedItem,
-            'resource': AppDataProvider.of(context)
-                .resources
-                .eventDetails(widget.events.selectedItem.id)
+          .add(PageRequest(Page.eventDetails, args: {
+            'details': EventDetails(
+                events.selectedItem,
+                AppDataProvider.of(context)
+                    .resources
+                    .eventDetails(events.selectedItem.id))
+          }, onPop: () {
+            if (events.selectedItem != null) {
+              Future.delayed(Duration(milliseconds: 400))
+                  .then((_) => setState(() => events.selectedItem = null));
+            }
           }));
     }
   }

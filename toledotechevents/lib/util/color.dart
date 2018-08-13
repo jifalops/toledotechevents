@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 /// Platform independent representation of a color in the red-green-blue scheme
 /// with an optional alpha (opacity) component.
 class Color {

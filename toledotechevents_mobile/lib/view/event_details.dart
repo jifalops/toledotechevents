@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:toledotechevents/build_config.dart';
-import 'package:toledotechevents_mobile/view/page_container.dart';
+import 'package:toledotechevents_mobile/view/page_parts.dart';
 
 class EventDetailsView extends StatelessWidget {
-  EventDetailsView(this.event, this.pageData);
+  EventDetailsView(this.pageData) : event = pageData.args['details'];
   final EventDetails event;
   final PageData pageData;
 
@@ -182,7 +182,13 @@ class EventDetailsView extends StatelessWidget {
                     'VENUE DETAILS',
                     () => AppDataProvider.of(context)
                         .pageRequest
-                        .add(PageRequest(Page.venueDetails, {'id': venue.id}))),
+                        .add(PageRequest(Page.venueDetails, args: {
+                          'details': VenueDetails(
+                              venues.findById(venue.id),
+                              AppDataProvider.of(context)
+                                  .resources
+                                  .venueDetails(venue.id))
+                        }))),
               ])
             ],
           ),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:async_resource/async_resource.dart';
-import 'package:meta/meta.dart';
 
 /// A value stored in shared preferences.
 abstract class SharedPrefsResource<T> extends LocalResource<T> {
@@ -22,8 +21,8 @@ abstract class SharedPrefsResource<T> extends LocalResource<T> {
   Future<DateTime> get lastModified async {
     if (saveLastModified) {
       try {
-        return DateTime
-            .fromMillisecondsSinceEpoch((await prefs).getInt(modifiedKey));
+        return DateTime.fromMillisecondsSinceEpoch(
+            (await prefs).getInt(modifiedKey));
       } catch (e) {}
     }
     return null;

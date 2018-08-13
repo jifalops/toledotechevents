@@ -36,9 +36,9 @@ const _buttonCornerRadius = 4.0;
 
 /// Platform independent theming information such as colors and fonts.
 class Theme {
+  static const defaultTheme = Theme.light;
+
   /// The statically defined themes.
-  ///
-  /// For the default theme use `Theme.values[0]`.
   static const values = [Theme.light, Theme.dark];
 
   /// The business's light theme.

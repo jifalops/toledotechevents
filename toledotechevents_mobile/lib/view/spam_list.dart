@@ -1,15 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toledotechevents/internal/deleter.dart';
-import 'package:toledotechevents_mobile/view/page_container.dart';
+import 'package:toledotechevents_mobile/view/page_parts.dart';
 
 class SpamListView extends StatefulWidget {
-  SpamListView(this.venues, this.pageData) {
-    if (venues.sortOrder != VenuesOrder.newest) {
-      venues.setOrder(VenuesOrder.newest);
-    }
-  }
-  final VenueList venues;
+  SpamListView(this.pageData);
   final PageData pageData;
   @override
   _SpamListViewState createState() => new _SpamListViewState();
@@ -26,24 +21,18 @@ class _SpamListViewState extends State<SpamListView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.venues.selectedItem != null) {
-      Future.delayed(Duration(milliseconds: 400))
-          .then((_) => setState(() => widget.venues.selectedItem = null));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return buildScaffold(context, widget.pageData, _buildBody, _buildFab);
   }
 
   Widget _buildBody(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: refresh,
-      child: ListView(children: _buildVenueList(context)),
-    );
+        onRefresh: refresh,
+        child: StreamHandler<VenueList>(
+          stream: AppDataProvider.of(context).venues,
+          handler: (context, venues) => FadeScaleIn(
+              ListView(children: _buildVenueList(context, venues.findSpam()))),
+        ));
   }
 
   Widget _buildFab(BuildContext context) {
@@ -91,7 +80,11 @@ class _SpamListViewState extends State<SpamListView> {
         });
   }
 
-  List<Widget> _buildVenueList(BuildContext context) {
+  List<Widget> _buildVenueList(BuildContext context, VenueList venues) {
+    if (venues.sortOrder != VenuesOrder.newest) {
+      venues.setOrder(VenuesOrder.newest);
+    }
+
     final items = List<Widget>();
 
     items.add(
@@ -111,16 +104,16 @@ class _SpamListViewState extends State<SpamListView> {
       )),
     );
 
-    widget.venues.asMap().forEach((i, venue) {
+    venues.asMap().forEach((i, venue) {
       items.add(Hero(
         tag: 'venue-${venue.id}',
         child: Card(
-          elevation: widget.venues.selectedItem == venue ? 8.0 : 0.0,
+          elevation: venues.selectedItem == venue ? 8.0 : 0.0,
           color: i % 2 == 0
               ? Theme.of(context).dividerColor
               : Theme.of(context).backgroundColor,
           child: InkWell(
-            onTap: () => _cardTapped(venue, context),
+            onTap: () => _cardTapped(venues, venue, context),
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Row(
@@ -178,18 +171,25 @@ class _SpamListViewState extends State<SpamListView> {
     return items;
   }
 
-  void _cardTapped(VenueListItem venue, BuildContext context) async {
-    setState(() => widget.venues.selectedItem =
-        widget.venues.selectedItem == venue ? null : venue);
-    if (widget.venues.selectedItem != null) {
+  void _cardTapped(
+      VenueList venues, VenueListItem venue, BuildContext context) async {
+    setState(() =>
+        venues.selectedItem = venues.selectedItem == venue ? null : venue);
+    if (venues.selectedItem != null) {
       await Future.delayed(Duration(milliseconds: 250));
       AppDataProvider.of(context)
           .pageRequest
-          .add(PageRequest(Page.venueDetails, {
-            'venue': widget.venues.selectedItem,
-            'resource': AppDataProvider.of(context)
-                .resources
-                .venueDetails(widget.venues.selectedItem.id),
+          .add(PageRequest(Page.venueDetails, args: {
+            'details': VenueDetails(
+                venues.selectedItem,
+                AppDataProvider.of(context)
+                    .resources
+                    .venueDetails(venues.selectedItem.id)),
+          }, onPop: () {
+            if (venues.selectedItem != null) {
+              Future.delayed(Duration(milliseconds: 400))
+                  .then((_) => setState(() => venues.selectedItem = null));
+            }
           }));
     }
   }

@@ -36,22 +36,25 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/images/
+
   fonts:
     - family: Ubuntu
       fonts:
-        - asset: fonts/Ubuntu-Regular.ttf
-        - asset: fonts/Ubuntu-Bold.ttf
+        - asset: assets/fonts/Ubuntu-Regular.ttf
+        - asset: assets/fonts/Ubuntu-Bold.ttf
           weight: 700
-        - asset: fonts/Ubuntu-Light.ttf
+        - asset: assets/fonts/Ubuntu-Light.ttf
           weight: 300
     - family: Open Sans
       fonts:
-        - asset: fonts/OpenSans-Regular.ttf
-        - asset: fonts/OpenSans-Bold.ttf
+        - asset: assets/fonts/OpenSans-Regular.ttf
+        - asset: assets/fonts/OpenSans-Bold.ttf
           weight: 700
-        - asset: fonts/OpenSans-Italic.ttf
+        - asset: assets/fonts/OpenSans-Italic.ttf
           style: italic
-        - asset: fonts/OpenSans-Light.ttf
+        - asset: assets/fonts/OpenSans-Light.ttf
           weight: 300
-        - asset: fonts/OpenSans-SemiBold.ttf
+        - asset: assets/fonts/OpenSans-SemiBold.ttf
           weight: 500

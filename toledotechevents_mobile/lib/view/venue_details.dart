@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:toledotechevents_mobile/view/page_container.dart';
+import 'package:toledotechevents_mobile/view/page_parts.dart';
 
 class VenueDetailsView extends StatelessWidget {
-  VenueDetailsView(this.venue, this.pageData);
+  VenueDetailsView(this.pageData) : venue = pageData.args['details'];
   final VenueDetails venue;
   final PageData pageData;
 
