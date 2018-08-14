@@ -87,7 +87,7 @@ class _EventFormViewState extends State<EventFormView> {
   }
 
   Widget _buildBody(BuildContext context) {
-    return Form(
+    return FadeScaleIn(Form(
       key: formKey,
       autovalidate: autovalidate,
       child: SingleChildScrollView(
@@ -127,7 +127,7 @@ class _EventFormViewState extends State<EventFormView> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   List<Widget> _buildInputs(BuildContext context) {

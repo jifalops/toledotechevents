@@ -16,14 +16,15 @@ class _VenueListState extends State<VenueListView> {
   }
 
   Widget _buildBody(BuildContext context) {
-    return RefreshIndicator(
-        onRefresh: () async {
-          AppDataProvider.of(context).venuesRequest.add(true);
-        },
-        child: StreamHandler<VenueList>(
-            stream: AppDataProvider.of(context).venues,
-            handler: (context, venues) => FadeScaleIn(
-                ListView(children: _buildVenueList(context, venues)))));
+    return StreamHandler<VenueList>(
+        stream: AppDataProvider.of(context).venues,
+        handler: (context, venues) {
+          return FadeScaleIn(RefreshIndicator(
+              onRefresh: () async {
+                AppDataProvider.of(context).venuesRequest.add(true);
+              },
+              child: ListView(children: _buildVenueList(context, venues))));
+        });
   }
 
   List<Widget> _buildVenueList(BuildContext context, VenueList venues) {

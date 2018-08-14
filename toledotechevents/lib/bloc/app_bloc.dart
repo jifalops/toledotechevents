@@ -110,7 +110,7 @@ class AppBloc {
   }
 
   void _updateTheme(Theme theme) {
-    print('Updating theme to "${theme.name}"...');
+    print('Updating theme to "${theme.name}"');
     _theme.add(theme);
   }
 
@@ -120,7 +120,7 @@ class AppBloc {
     if (theme != null) _lastTheme = theme;
 
     if (_lastDisplay != null && _lastRequest != null && _lastTheme != null) {
-      print('Updating page to "${_lastRequest.page.route}"...');
+      print('Updating page to "${_lastRequest.page.route}"');
       _page.add(PageData(_lastRequest, _lastTheme, _lastDisplay));
 
       /// Ensure the venue list has been requested for pages that depend on it.

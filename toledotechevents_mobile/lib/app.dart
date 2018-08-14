@@ -57,7 +57,7 @@ class _AppWithResourcesState extends BlocState<AppWithResources> {
             return MaterialApp(
                 title: config.title,
                 theme: buildTheme(theme),
-                home: HomePage());
+                home: HomePage(bloc));
           }),
     );
   }
@@ -77,6 +77,8 @@ class _AppWithResourcesState extends BlocState<AppWithResources> {
 }
 
 class HomePage extends StatefulWidget {
+  HomePage(this.appBloc);
+  final AppBloc appBloc;
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -95,7 +97,6 @@ class _HomePageState extends BlocState<HomePage> {
       // One of the main pages was requested, rebuild this widget.
       setState(() => pageData = data);
     } else {
-      // Navigate to the new page.
       Navigator.of(context)
           .push(FadePageRoute(builder: (context) => _buildPage(context, data)))
           .then((_) {
@@ -106,7 +107,7 @@ class _HomePageState extends BlocState<HomePage> {
 
   @override
   void initBloc() {
-    subscription = AppDataProvider.of(context).page.listen(_handleIncomingData);
+    subscription = widget.appBloc.page.listen(_handleIncomingData);
   }
 
   @override
@@ -116,7 +117,7 @@ class _HomePageState extends BlocState<HomePage> {
 }
 
 Widget _buildPage(BuildContext context, PageData data) {
-  print('Building ${data.page.route}...');
+  print('Building ${data.page.route}');
   final resources = AppDataProvider.of(context).resources;
   switch (data.page) {
     case Page.eventList:
@@ -124,6 +125,7 @@ Widget _buildPage(BuildContext context, PageData data) {
     case Page.eventDetails:
       return EventDetailsView(data);
     case Page.venuesList:
+      print('menu options: ${data.layout.menuOptions}');
       return VenueListView(data);
     case Page.venueDetails:
       return VenueDetailsView(data);

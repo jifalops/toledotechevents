@@ -6,13 +6,19 @@
   "configurations": [
     {
       "name": "mobile development",
-      "program": "toledotechevents_mobile/lib/main_dev.dart",
+      "program": "lib/main_dev.dart",
+      "linux": {
+        "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile"
+      },
       "request": "launch",
       "type": "dart"
     },
     {
       "name": "mobile production",
-      "program": "toledotechevents_mobile/lib/main_prod.dart",
+      "program": "lib/main_prod.dart",
+      "linux": {
+        "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile"
+      },
       "request": "launch",
       "type": "dart"
     }

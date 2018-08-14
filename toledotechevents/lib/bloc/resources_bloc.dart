@@ -56,7 +56,7 @@ class ResourcesBloc {
   }
 
   void dispose() {
-    if (_subscription != null) _subscription.cancel();
+    _subscription.cancel();
     _reloadController.close();
     _percentComplete.close();
     _loaded.close();

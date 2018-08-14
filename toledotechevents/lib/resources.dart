@@ -55,18 +55,20 @@ abstract class Resources {
   /// since each resource uses [CacheStrategy.cacheFirst]. If the network is
   /// unavailable, the cached copy will be used and the app won't skip a beat.
   Stream init([bool forceReload = false]) async* {
-    yield await theme
-        .get(forceReload: forceReload)
-        .then((theme) => print('Init resources: Theme: "$theme".'));
-    yield await eventList
-        .get(forceReload: forceReload)
-        .then((list) => print('Init resources: Events: "${list?.length}".'));
-    yield await venueList
-        .get(forceReload: forceReload)
-        .then((list) => print('Init resources: Venues: "${list?.length}".'));
-    yield await about.get(forceReload: forceReload).then(
-        (about) => print('Init resources: About: "${about?.html?.length}".'));
-    yield await authToken.get(forceReload: forceReload).then(
-        (token) => print('Init resources: AuthToken: "${token?.value}".'));
+    final themeName = await theme.get(forceReload: forceReload);
+    print('Init resources: Theme: "$themeName".');
+    yield themeName;
+    final events = await eventList.get(forceReload: forceReload);
+    print('Init resources: Events: "${events?.length}".');
+    yield events;
+    final venues = await venueList.get(forceReload: forceReload);
+    print('Init resources: Venues: "${venues?.length}".');
+    yield venues;
+    final aboutSection = await about.get(forceReload: forceReload);
+    print('Init resources: About: "${aboutSection?.html?.length}".');
+    yield aboutSection;
+    final token = await authToken.get(forceReload: forceReload);
+    print('Init resources: AuthToken: "${token?.value}".');
+    yield token;
   }
 }

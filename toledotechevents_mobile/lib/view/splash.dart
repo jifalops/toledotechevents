@@ -19,21 +19,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Image.asset('assets/images/splash.jpg'),
-      Positioned(
-          child: FutureBuilder(
-              future: getResources(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return LoadingProgress(
-                      snapshot.data, widget.onLoadingComplete);
-                } else if (snapshot.hasError) {
-                  return new Text('${snapshot.error}');
-                }
-                return LoadingProgress(null, null);
-              })),
-    ]);
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Stack(children: <Widget>[
+          Image.asset('assets/images/splash.jpg'),
+          Positioned(
+              child: FutureBuilder(
+                  future: getResources(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return LoadingProgress(
+                          snapshot.data, widget.onLoadingComplete);
+                    } else if (snapshot.hasError) {
+                      return new Text('${snapshot.error}');
+                    }
+                    return LoadingProgress(null, null);
+                  })),
+        ]));
   }
 }
 
@@ -68,9 +70,7 @@ class _LoadingProgressState extends BlocState<LoadingProgress> {
 
   @override
   void disposeBloc() {
-    if (widget.resources != null) {
-      subscription.cancel();
-      bloc.dispose();
-    }
+    if (subscription != null) subscription.cancel();
+    if (bloc != null) bloc.dispose();
   }
 }

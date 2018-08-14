@@ -16,16 +16,15 @@ class _EventListState extends State<EventListView> {
   }
 
   Widget _buildBody(BuildContext context) {
-    return RefreshIndicator(
-        onRefresh: () async {
-          AppDataProvider.of(context).eventsRequest.add(true);
-        },
-        child: StreamHandler<EventList>(
-            stream: AppDataProvider.of(context).events,
-            handler: (context, events) {
-              return FadeScaleIn(
-                  ListView(children: _buildEventList(context, events)));
-            }));
+    return StreamHandler<EventList>(
+        stream: AppDataProvider.of(context).events,
+        handler: (context, events) {
+          return FadeScaleIn(RefreshIndicator(
+              onRefresh: () async {
+                AppDataProvider.of(context).eventsRequest.add(true);
+              },
+              child: ListView(children: _buildEventList(context, events))));
+        });
   }
 
   List<Widget> _buildEventList(BuildContext context, EventList events) {
