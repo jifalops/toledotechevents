@@ -50,10 +50,10 @@ class _EventFormViewState extends State<EventFormView> {
   }
 
   void _handleSubmitted() async {
-    setState(() => submitting = true);
     final FormState formState = formKey.currentState;
     if (formState.validate()) {
       formState.save();
+      setState(() => submitting = true);
       final resources = AppDataProvider.of(context).resources;
       form.authToken.value = (await resources.authToken.get())?.value;
       final result = await form.submit(
@@ -79,6 +79,7 @@ class _EventFormViewState extends State<EventFormView> {
               .add(PageRequest(Page.eventList));
         }
       }
+      setState(() => submitting = false);
     } else {
       // Start validating on every change.
       setState(() => autovalidate = true);

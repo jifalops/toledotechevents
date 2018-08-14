@@ -85,7 +85,6 @@ class AppBloc {
 
     /// Handle new [PageRequest]s.
     _pageController.stream
-        .distinct()
         .listen((pageRequest) => _updatePage(request: pageRequest));
 
     /// Load the [EventList].
@@ -180,14 +179,6 @@ class PageRequest {
   final Map<String, dynamic> args;
   final void Function() onPop;
   const PageRequest(this.page, {this.args, this.onPop});
-
-  @override
-  operator ==(other) =>
-      page.route == other?.page?.route &&
-      MapEquality().equals(args, other.args);
-
-  @override
-  int get hashCode => '${page.route}$args'.hashCode;
 }
 
 /// Platform specific view logic uses this to show a page to the user.
@@ -207,7 +198,7 @@ class PageData {
 
   @override
   operator ==(other) =>
-      page == other.pageData &&
+      page == other.page &&
       MapEquality().equals(args, other.args) &&
       theme == other.theme &&
       display == other.display &&

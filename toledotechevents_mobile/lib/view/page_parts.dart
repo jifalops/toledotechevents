@@ -78,6 +78,7 @@ Widget buildOverflowMenu(BuildContext context, PageData pageData) {
       icon: Icon(Icons.more_vert),
       onSelected: _overflowItemSelected,
       itemBuilder: (context) {
+        options.clear();
         // Main.
         tryAdd(MenuOption.pastEvents, null);
         tryAdd(MenuOption.subscribeAllGoogle, null);
