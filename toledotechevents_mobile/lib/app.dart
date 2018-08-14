@@ -52,6 +52,7 @@ class _AppWithResourcesState extends BlocState<AppWithResources> {
       bloc: bloc,
       child: StreamHandler<base.Theme>(
           stream: bloc.theme,
+          initialData: bloc.lastTheme,
           handler: (context, theme) {
             print('Building app...');
             return MaterialApp(
@@ -114,35 +115,36 @@ class _HomePageState extends BlocState<HomePage> {
   void disposeBloc() {
     subscription.cancel();
   }
-}
 
-Widget _buildPage(BuildContext context, PageData data) {
-  print('Building ${data.page.route}');
-  final resources = AppDataProvider.of(context).resources;
-  switch (data.page) {
-    case Page.eventList:
-      return EventListView(data);
-    case Page.eventDetails:
-      return EventDetailsView(data);
-    case Page.venuesList:
-      print('menu options: ${data.layout.menuOptions}');
-      return VenueListView(data);
-    case Page.venueDetails:
-      return VenueDetailsView(data);
-    case Page.createEvent:
-      return EventFormView(data);
-    case Page.about:
-      return buildScaffold(
-          context,
-          data,
-          (context) => FutureHandler(
-              future: resources.about.get(),
-              handler: (context, about) => FadeScaleIn(
-                  SingleChildScrollView(child: HtmlView(data: about.html)))));
-    case Page.spamRemover:
-      return SpamListView(data);
-    default:
-      assert(false);
-      return NullWidget();
+  Widget _buildPage(BuildContext context, PageData data) {
+    print('Building ${data.page.route}');
+    final resources = AppDataProvider.of(context).resources;
+    switch (data.page) {
+      case Page.eventList:
+        return EventListView(data);
+      case Page.eventDetails:
+        return EventDetailsView(data);
+      case Page.venuesList:
+        print('menu options: ${data.layout.menuOptions}');
+        return VenueListView(data);
+      case Page.venueDetails:
+        return VenueDetailsView(data);
+      case Page.createEvent:
+        return EventFormView(data);
+      case Page.about:
+        return buildScaffold(
+            context,
+            data,
+            (context) => FutureHandler<AboutSection>(
+                future: resources.about.get(),
+                initialData: widget.appBloc.resources.about.data,
+                handler: (context, about) => FadeScaleIn(
+                    SingleChildScrollView(child: HtmlView(data: about.html)))));
+      case Page.spamRemover:
+        return SpamListView(data);
+      default:
+        assert(false);
+        return NullWidget();
+    }
   }
 }

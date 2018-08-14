@@ -26,10 +26,12 @@ class _SpamListViewState extends State<SpamListView> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final appBloc = AppDataProvider.of(context);
     return RefreshIndicator(
         onRefresh: refresh,
         child: StreamHandler<VenueList>(
-          stream: AppDataProvider.of(context).venues,
+          stream: appBloc.venues,
+          initialData: appBloc.lastVenueList,
           handler: (context, venues) => FadeScaleIn(
               ListView(children: _buildVenueList(context, venues.findSpam()))),
         ));

@@ -16,8 +16,10 @@ class _VenueListState extends State<VenueListView> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final appBloc = AppDataProvider.of(context);
     return StreamHandler<VenueList>(
-        stream: AppDataProvider.of(context).venues,
+        stream: appBloc.venues,
+        initialData: appBloc.lastVenueList,
         handler: (context, venues) {
           return FadeScaleIn(RefreshIndicator(
               onRefresh: () async {

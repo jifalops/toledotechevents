@@ -16,6 +16,7 @@ class EventDetailsView extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    final appBloc = AppDataProvider.of(context);
     return Hero(
       tag: 'event-${event.id}',
       child: Card(
@@ -72,8 +73,10 @@ class EventDetailsView extends StatelessWidget {
                     // Text('Venue', style: Theme.of(context).textTheme.subhead),
                     event.venue != null
                         ? StreamHandler<VenueList>(
-                            stream: AppDataProvider.of(context).venues,
-                            handler: _buildVenue,
+                            stream: appBloc.venues,
+                            initialData: appBloc.lastVenueList,
+                            handler: (context, venues) =>
+                                _buildVenue(context, venues, appBloc),
                           )
                         : Text(
                             'Venue TBD',
@@ -120,7 +123,7 @@ class EventDetailsView extends StatelessWidget {
           );
   }
 
-  Widget _buildVenue(BuildContext context, VenueList venues) {
+  Widget _buildVenue(BuildContext context, VenueList venues, AppBloc appBloc) {
     VenueListItem venue = venues.findById(event.venue.id);
     if (venue != null) {
       return Hero(
@@ -180,14 +183,10 @@ class EventDetailsView extends StatelessWidget {
                 // SizedBox(width: 16.0),
                 TertiaryButton(
                     'VENUE DETAILS',
-                    () => AppDataProvider.of(context)
-                        .pageRequest
-                        .add(PageRequest(Page.venueDetails, args: {
-                          'details': VenueDetails(
-                              venues.findById(venue.id),
-                              AppDataProvider.of(context)
-                                  .resources
-                                  .venueDetails(venue.id))
+                    () => appBloc.pageRequest
+                            .add(PageRequest(Page.venueDetails, args: {
+                          'details': VenueDetails(venues.findById(venue.id),
+                              appBloc.resources.venueDetails(venue.id))
                         }))),
               ])
             ],

@@ -132,6 +132,7 @@ class _EventFormViewState extends State<EventFormView> {
   }
 
   List<Widget> _buildInputs(BuildContext context) {
+    final appBloc = AppDataProvider.of(context);
     return [
       TextFormField(
         decoration: InputDecoration(labelText: form.name.label()),
@@ -140,7 +141,8 @@ class _EventFormViewState extends State<EventFormView> {
       ),
       SizedBox(height: 8.0),
       StreamHandler<VenueList>(
-        stream: AppDataProvider.of(context).venues,
+        stream: appBloc.venues,
+        initialData: appBloc.lastVenueList,
         handler: _buildVenueInput,
       ),
       SizedBox(height: 8.0),

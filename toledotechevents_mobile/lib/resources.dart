@@ -23,40 +23,32 @@ class MobileResources extends Resources {
             eventList: HttpNetworkResource<EventList>(
               client: _client,
               url: config.baseUrl + '/events.atom',
-              cache: FileResource(
-                File('$path/events.atom'),
-                parser: Resources.parseEvents,
-              ),
+              parser: Resources.parseEvents,
+              cache: FileResource(File('$path/events.atom')),
               maxAge: Duration(minutes: 60),
               strategy: CacheStrategy.cacheFirst,
             ),
             venueList: HttpNetworkResource<VenueList>(
               client: _client,
               url: config.baseUrl + '/venues.json',
-              cache: FileResource(
-                File('$path/venues.json'),
-                parser: Resources.parseVenues,
-              ),
+              parser: Resources.parseVenues,
+              cache: FileResource(File('$path/venues.json')),
               maxAge: Duration(minutes: 60),
               strategy: CacheStrategy.cacheFirst,
             ),
             about: HttpNetworkResource<AboutSection>(
               client: _client,
               url: config.baseUrl + '/about.html',
-              cache: FileResource(
-                File('$path/about.html'),
-                parser: Resources.parseAboutSection,
-              ),
+              parser: Resources.parseAboutSection,
+              cache: FileResource(File('$path/about.html')),
               maxAge: Duration(hours: 24),
               strategy: CacheStrategy.cacheFirst,
             ),
             authToken: HttpNetworkResource<AuthToken>(
               client: _client,
               url: config.baseUrl + '/events/new.html',
-              cache: FileResource(
-                File('$path/new_event.html'),
-                parser: Resources.parseAuthToken,
-              ),
+              parser: Resources.parseAuthToken,
+              cache: FileResource(File('$path/new_event.html')),
               maxAge: Duration(hours: 24),
               strategy: CacheStrategy.cacheFirst,
             ));
@@ -67,10 +59,8 @@ class MobileResources extends Resources {
       HttpNetworkResource<dom.Document>(
         client: _client,
         url: config.eventUrl(id),
-        cache: FileResource(
-          File('$path/event_$id.html'),
-          parser: (contents) => parse(contents),
-        ),
+        parser: (contents) => parse(contents),
+        cache: FileResource(File('$path/event_$id.html')),
         maxAge: Duration(hours: 24),
         strategy: CacheStrategy.cacheFirst,
       );
@@ -80,10 +70,8 @@ class MobileResources extends Resources {
       HttpNetworkResource<dom.Document>(
         client: _client,
         url: config.venueUrl(id),
-        cache: FileResource(
-          File('$path/venue_$id.html'),
-          parser: (contents) => parse(contents),
-        ),
+        parser: (contents) => parse(contents),
+        cache: FileResource(File('$path/venue_$id.html')),
         maxAge: Duration(hours: 24),
         strategy: CacheStrategy.cacheFirst,
       );

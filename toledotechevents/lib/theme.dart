@@ -41,6 +41,9 @@ class Theme {
   /// The statically defined themes.
   static const values = [Theme.light, Theme.dark];
 
+  static Theme fromName(String name) =>
+      values.firstWhere((theme) => theme.name == name, orElse: () => null);
+
   /// The business's light theme.
   static const Theme light = Theme._(
       name: 'Light',

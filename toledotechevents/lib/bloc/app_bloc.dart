@@ -48,11 +48,10 @@ class AppBloc {
 
   final Resources resources;
 
-  // trouble combining streams
-  Display _lastDisplay;
-  Theme _lastTheme;
-  PageRequest _lastRequest;
-  VenueList _lastVenues;
+  Theme get lastTheme => _theme.value ?? Theme.fromName(resources.theme.data);
+  PageData get lastPage => _page.value;
+  EventList get lastEventList => _events.value ?? resources.eventList.data;
+  VenueList get lastVenueList => _venues.value ?? resources.venueList.data;
 
   AppBloc(this.resources) {
     setupInputs();
@@ -60,8 +59,7 @@ class AppBloc {
     // Read the user's theme preference from disk and add it to the stream.
     resources.theme.get().then((name) => themeRequest.add(name == null
         ? Theme.defaultTheme
-        : Theme.values.firstWhere((theme) => theme.name == name,
-            orElse: () => Theme.defaultTheme)));
+        : Theme.fromName(name) ?? Theme.defaultTheme));
 
     // Request the first page.
     pageRequest.add(PageRequest(Page.eventList));

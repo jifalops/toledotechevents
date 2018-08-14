@@ -16,8 +16,10 @@ class _EventListState extends State<EventListView> {
   }
 
   Widget _buildBody(BuildContext context) {
+    final appBloc = AppDataProvider.of(context);
     return StreamHandler<EventList>(
-        stream: AppDataProvider.of(context).events,
+        stream: appBloc.events,
+        initialData: appBloc.lastEventList,
         handler: (context, events) {
           return FadeScaleIn(RefreshIndicator(
               onRefresh: () async {
