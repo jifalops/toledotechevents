@@ -8,6 +8,10 @@ import 'package:toledotechevents_mobile/providers.dart';
 
 typedef void LoadedCallback(Resources resources);
 
+final _backgroundColor = Color(base.Theme.defaultTheme.primaryColor.argb);
+final _textColor = Color(base.Theme.defaultTheme.onPrimaryColor.argb);
+final _textSize = 16.0;
+
 class SplashScreen extends StatefulWidget {
   SplashScreen(this.onLoadingComplete);
   final LoadedCallback onLoadingComplete;
@@ -24,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
         textDirection: TextDirection.ltr,
         child: Stack(children: <Widget>[
           Container(
-              color: Color(base.Theme.defaultTheme.primaryColor.argb),
+              color: _backgroundColor,
               alignment: Alignment.center,
               child: Image.asset('assets/images/splash.jpg')),
           Container(
@@ -58,15 +62,12 @@ class _LoadingProgressState extends BlocState<LoadingProgress> {
   StreamSubscription subscription;
   @override
   Widget build(BuildContext context) => bloc == null
-      ? Text('0%',
-          style: TextStyle(
-              color: Color(base.Theme.defaultTheme.onPrimaryColor.argb)))
+      ? Text('0%', style: TextStyle(color: _textColor, fontSize: _textSize))
       : StreamHandler<int>(
           stream: bloc.percent,
           initialData: 0,
           handler: (context, percent) => Text('$percent%',
-              style: TextStyle(
-                  color: Color(base.Theme.defaultTheme.onPrimaryColor.argb))),
+              style: TextStyle(color: _textColor, fontSize: _textSize)),
         );
 
   @override

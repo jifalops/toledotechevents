@@ -53,6 +53,11 @@ class AppBloc {
   EventList get lastEventList => _events.value ?? resources.eventList.data;
   VenueList get lastVenueList => _venues.value ?? resources.venueList.data;
 
+  // Need to keep track of these in order to output the first `PageData`.
+  Display _lastDisplay;
+  Theme _lastTheme;
+  PageRequest _lastRequest;
+
   AppBloc(this.resources) {
     setupInputs();
 
@@ -83,6 +88,7 @@ class AppBloc {
 
     /// Handle new [PageRequest]s.
     _pageController.stream
+        .distinct()
         .listen((pageRequest) => _updatePage(request: pageRequest));
 
     /// Load the [EventList].
@@ -111,11 +117,10 @@ class AppBloc {
     _theme.add(theme);
   }
 
-  void _updatePage({Display display, PageRequest request, Theme theme}) async {
+  void _updatePage({Display display, Theme theme, PageRequest request}) async {
     if (display != null) _lastDisplay = display;
-    if (request != null) _lastRequest = request;
     if (theme != null) _lastTheme = theme;
-
+    if (request != null) _lastRequest = request;
     if (_lastDisplay != null && _lastRequest != null && _lastTheme != null) {
       print('Updating page to "${_lastRequest.page.route}"');
       _page.add(PageData(_lastRequest, _lastTheme, _lastDisplay));
@@ -123,7 +128,7 @@ class AppBloc {
       /// Ensure the venue list has been requested for pages that depend on it.
       if (_lastRequest.page != Page.eventList &&
           _lastRequest.page != Page.about &&
-          _lastVenues == null) {
+          lastVenueList == null) {
         // Start fetching venues.
         venuesRequest.add(false);
       }
@@ -138,7 +143,6 @@ class AppBloc {
 
   void _updateVenues(VenueList venues) {
     if (venues != null) {
-      _lastVenues = venues;
       _venues.add(venues);
     }
   }
@@ -173,10 +177,18 @@ class AppBloc {
 
 /// Passed to the [PageLayoutBloc] to signal for a new page that may require arguments.
 class PageRequest {
+  const PageRequest(this.page, {this.args, this.onPop});
+
   final Page page;
   final Map<String, dynamic> args;
   final void Function() onPop;
-  const PageRequest(this.page, {this.args, this.onPop});
+
+  @override
+  operator ==(other) =>
+      page == other.page && MapEquality().equals(args, other.args);
+
+  @override
+  int get hashCode => '$page$args'.hashCode;
 }
 
 /// Platform specific view logic uses this to show a page to the user.
