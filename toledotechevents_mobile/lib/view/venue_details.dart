@@ -123,51 +123,41 @@ class VenueDetailsView extends StatelessWidget {
                 HtmlView(
                     data: '<a href="${venue.homepage}">${venue.homepage}</a>'),
                 SizedBox(height: 16.0),
-                FutureBuilder<List<VenueEvent>>(
+                FutureHandler<List<VenueEvent>>(
                   future: venue.futureEvents,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final items = List<Widget>();
-                      items.add(Text('Upcoming events',
-                          style: TextStyle(fontWeight: FontWeight.bold)));
-                      if (snapshot.data.length > 0) {
-                        snapshot.data.forEach((event) =>
-                            items.add(Text('${event.id}: ${event.title}')));
-                      } else {
-                        items.add(Text('none',
-                            style: TextStyle(fontStyle: FontStyle.italic)));
-                      }
-                      return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: items);
-                    } else if (snapshot.hasError) {
-                      return new Text('${snapshot.error}');
+                  handler: (context, events) {
+                    final items = List<Widget>();
+                    items.add(Text('Upcoming events',
+                        style: TextStyle(fontWeight: FontWeight.bold)));
+                    if (events.length > 0) {
+                      events.forEach((event) =>
+                          items.add(Text('${event.id}: ${event.title}')));
+                    } else {
+                      items.add(Text('none',
+                          style: TextStyle(fontStyle: FontStyle.italic)));
                     }
-                    return Center(child: CircularProgressIndicator());
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: items);
                   },
                 ),
                 SizedBox(height: 16.0),
-                FutureBuilder<List<VenueEvent>>(
+                FutureHandler<List<VenueEvent>>(
                   future: venue.pastEvents,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final items = List<Widget>();
-                      items.add(Text('Past events',
-                          style: TextStyle(fontWeight: FontWeight.bold)));
-                      if (snapshot.data.length > 0) {
-                        snapshot.data.forEach((event) =>
-                            items.add(Text('${event.id}: ${event.title}')));
-                      } else {
-                        items.add(Text('none',
-                            style: TextStyle(fontStyle: FontStyle.italic)));
-                      }
-                      return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: items);
-                    } else if (snapshot.hasError) {
-                      return new Text('${snapshot.error}');
+                  handler: (context, events) {
+                    final items = List<Widget>();
+                    items.add(Text('Past events',
+                        style: TextStyle(fontWeight: FontWeight.bold)));
+                    if (events.length > 0) {
+                      events.forEach((event) =>
+                          items.add(Text('${event.id}: ${event.title}')));
+                    } else {
+                      items.add(Text('none',
+                          style: TextStyle(fontStyle: FontStyle.italic)));
                     }
-                    return Center(child: CircularProgressIndicator());
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: items);
                   },
                 ),
               ],

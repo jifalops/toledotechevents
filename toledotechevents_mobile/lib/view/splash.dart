@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toledotechevents/bloc/resources_bloc.dart';
+import 'package:toledotechevents/theme.dart' as base;
 import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/resources.dart';
 import 'package:toledotechevents_mobile/providers.dart';
@@ -22,8 +23,13 @@ class _SplashScreenState extends State<SplashScreen> {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Stack(children: <Widget>[
-          Image.asset('assets/images/splash.jpg'),
-          Positioned(
+          Container(
+              color: Color(base.Theme.defaultTheme.primaryColor.argb),
+              alignment: Alignment.center,
+              child: Image.asset('assets/images/splash.jpg')),
+          Container(
+              alignment: Alignment.bottomCenter,
+              margin: EdgeInsets.only(bottom: 100.0),
               child: FutureBuilder(
                   future: getResources(),
                   builder: (context, snapshot) {
@@ -52,11 +58,15 @@ class _LoadingProgressState extends BlocState<LoadingProgress> {
   StreamSubscription subscription;
   @override
   Widget build(BuildContext context) => bloc == null
-      ? Text('0%')
+      ? Text('0%',
+          style: TextStyle(
+              color: Color(base.Theme.defaultTheme.onPrimaryColor.argb)))
       : StreamHandler<int>(
           stream: bloc.percent,
           initialData: 0,
-          handler: (context, percent) => Text('$percent%'),
+          handler: (context, percent) => Text('$percent%',
+              style: TextStyle(
+                  color: Color(base.Theme.defaultTheme.onPrimaryColor.argb))),
         );
 
   @override
