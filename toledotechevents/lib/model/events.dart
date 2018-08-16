@@ -114,7 +114,7 @@ class EventListItem {
       parseFragment(contentHtml).querySelector('.description')?.innerHtml ??
           '');
 
-  String get iCalendarUrl => '$url.ics';
+  String get iCalUrl => '$url.ics';
   String get editUrl => '$url/edit';
   String get cloneUrl => '$url/clone';
 
@@ -172,7 +172,7 @@ coords: [$latitude, $longitude]
 oneDay: $isOneDay
 edit: $editUrl
 clone: $cloneUrl
-ical: $iCalendarUrl
+ical: $iCalUrl
 tags: $tags
 links: $links
 $venue

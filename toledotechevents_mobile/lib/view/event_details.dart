@@ -54,7 +54,7 @@ class EventDetailsView extends StatelessWidget {
                     Row(
                       children: [
                         SecondaryButton(context, 'ICAL',
-                            () => launch(event.iCalendarUrl), pageData.theme),
+                            () => launch(event.iCalUrl), pageData.theme),
                         SizedBox(width: 8.0),
                         SecondaryButton(context, 'GOOGLE',
                             () => _launchGoogleCalendarUrl(), pageData.theme),
@@ -201,7 +201,7 @@ class EventDetailsView extends StatelessWidget {
   List<Widget> _buildTags() {
     var chips = List<Widget>();
     event.tags?.forEach((tag) => chips.add(GestureDetector(
-          onTap: () => launch(config.tagUrl(tag)),
+          onTap: () => launch(config.urls.tag(tag)),
           child: Chip(
             label: Text(tag),
           ),

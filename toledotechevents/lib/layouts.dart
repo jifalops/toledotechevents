@@ -93,29 +93,28 @@ final _venueListOptions = List.from(_mainOptions)..add(MenuOption.removeSpam);
 class MenuOption {
   // Main.
   static final pastEvents =
-      MenuOption._('See past events', (_) => config.pastEventsUrl);
-  static final subscribeAllGoogle = MenuOption._('Subscribe to Google Calendar',
-      (_) => BuildConfig.subscribeGoogleCalenderUrl);
-  static final subscribeAllICal =
-      MenuOption._('Subscribe via iCal', (_) => config.subscribeICalendarUrl);
-  static final visitForum =
-      MenuOption._('Visit forum', (_) => BuildConfig.forumUrl);
+      MenuOption._('See past events', (_) => config.urls.pastEvents);
+  static final subscribeAllGoogle = MenuOption._(
+      'Subscribe to Google Calendar', (_) => config.urls.subscribeEventsGoogle);
+  static final subscribeAllICal = MenuOption._(
+      'Subscribe via iCal', (_) => config.urls.subscribeEventsICal);
+  static final visitForum = MenuOption._('Visit forum', (_) => config.forumUrl);
   static final reportIssue =
-      MenuOption._('Report an issue', (_) => BuildConfig.fileIssueUrl);
+      MenuOption._('Report an issue', (_) => config.issuesUrl);
   // Event details.
   static final editEvent =
-      MenuOption._('Edit event', (id) => config.eventEditUrl(id));
+      MenuOption._('Edit event', (id) => config.urls.eventEdit(id));
   static final cloneEvent =
-      MenuOption._('Clone event', (id) => config.eventCloneUrl(id));
+      MenuOption._('Clone event', (id) => config.urls.eventClone(id));
   // Venue details.
   static final pastVenueEvents =
-      MenuOption._('See past venue events', (id) => config.venueUrl(id));
+      MenuOption._('See past venue events', (id) => config.urls.venue(id));
   static final subscribeVenueGoogle = MenuOption._(
-      'Subscribe via Google', (id) => config.venueSubscribeUrl(id));
+      'Subscribe via Google', (id) => config.urls.venueSubscribe(id));
   static final subscribeVenueICal =
-      MenuOption._('Subscribe via iCal', (id) => config.venueICalendarUrl(id));
+      MenuOption._('Subscribe via iCal', (id) => config.urls.venueICal(id));
   static final editVenue =
-      MenuOption._('Edit venue', (id) => config.venueEditUrl(id));
+      MenuOption._('Edit venue', (id) => config.urls.venueEdit(id));
   // Venue list (plus main)
   static final removeSpam = MenuOption._('Remove spam', (_) => 'removeSpam');
 

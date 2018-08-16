@@ -211,11 +211,12 @@ class VenueListItem {
   // Derivative values.
   _Address __addressComposed;
 
-  String get url => config.venueUrl(id);
-  String get iCalendarUrl => config.venueICalendarUrl(id);
-  String get subscribeUrl => config.venueSubscribeUrl(id);
-  String get editUrl => config.venueEditUrl(id);
-  String get mapUrl => 'http://maps.google.com/maps?q=$address';
+  String get url => config.urls.venue(id);
+  String get iCalUrl => config.urls.venueICal(id);
+  String get subscribeUrl => config.urls.venueSubscribe(id);
+  String get editUrl => config.urls.venueEdit(id);
+  String get mapUrl =>
+      'http://maps.google.com/maps?q=${Uri.encodeComponent(address)}';
   String get phoneUrl => 'tel://$phone';
   String get emailUrl => 'mailto:$email';
 

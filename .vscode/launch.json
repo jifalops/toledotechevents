@@ -19,10 +19,10 @@
       "type": "dart"
     },
     {
-      "name": "mobile prod profile",
+      "name": "mobile dev release",
       "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile",
-      "program": "lib/main_prod.dart",
-      "flutterMode": "profile",
+      "program": "lib/main_dev.dart",
+      "flutterMode": "release",
       "request": "launch",
       "type": "dart"
     },
@@ -33,6 +33,20 @@
       "flutterMode": "release",
       "request": "launch",
       "type": "dart"
-    }
+    },
+    {
+      "name": "web prod debug",
+      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_web",
+      "program": "web/main_prod.dart",
+      "type": "dart",
+      "request": "launch"
+    },
+    {
+      "name": "web dev debug",
+      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_web",
+      "program": "web/main_dev.dart",
+      "type": "dart",
+      "request": "launch"
+    },
   ]
 }

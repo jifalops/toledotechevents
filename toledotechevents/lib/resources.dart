@@ -31,6 +31,8 @@ abstract class Resources {
   NetworkResource<dom.Document> eventDetails(int id);
   NetworkResource<dom.Document> venueDetails(int id);
 
+
+
   static EventList parseEvents(contents) =>
       contents == null ? null : EventList(contents);
 

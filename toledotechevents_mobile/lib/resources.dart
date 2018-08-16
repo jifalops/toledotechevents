@@ -22,7 +22,7 @@ class MobileResources extends Resources {
             theme: StringPrefsResource('theme'),
             eventList: HttpNetworkResource<EventList>(
               client: _client,
-              url: config.baseUrl + '/events.atom',
+              url: config.urls.eventList,
               parser: Resources.parseEvents,
               cache: FileResource(File('$path/events.atom')),
               maxAge: Duration(minutes: 60),
@@ -30,7 +30,7 @@ class MobileResources extends Resources {
             ),
             venueList: HttpNetworkResource<VenueList>(
               client: _client,
-              url: config.baseUrl + '/venues.json',
+              url: config.urls.venueList,
               parser: Resources.parseVenues,
               cache: FileResource(File('$path/venues.json')),
               maxAge: Duration(minutes: 60),
@@ -38,7 +38,7 @@ class MobileResources extends Resources {
             ),
             about: HttpNetworkResource<AboutSection>(
               client: _client,
-              url: config.baseUrl + '/about.html',
+              url: config.urls.aboutPage,
               parser: Resources.parseAboutSection,
               cache: FileResource(File('$path/about.html')),
               maxAge: Duration(hours: 24),
@@ -46,7 +46,7 @@ class MobileResources extends Resources {
             ),
             authToken: HttpNetworkResource<AuthToken>(
               client: _client,
-              url: config.baseUrl + '/events/new.html',
+              url: config.urls.newEventPage,
               parser: Resources.parseAuthToken,
               cache: FileResource(File('$path/new_event.html')),
               maxAge: Duration(hours: 24),
@@ -58,7 +58,7 @@ class MobileResources extends Resources {
   NetworkResource<dom.Document> eventDetails(int id) =>
       HttpNetworkResource<dom.Document>(
         client: _client,
-        url: config.eventUrl(id),
+        url: config.urls.event(id),
         parser: (contents) => parse(contents),
         cache: FileResource(File('$path/event_$id.html')),
         maxAge: Duration(hours: 24),
@@ -69,7 +69,7 @@ class MobileResources extends Resources {
   NetworkResource<dom.Document> venueDetails(int id) =>
       HttpNetworkResource<dom.Document>(
         client: _client,
-        url: config.venueUrl(id),
+        url: config.urls.venue(id),
         parser: (contents) => parse(contents),
         cache: FileResource(File('$path/venue_$id.html')),
         maxAge: Duration(hours: 24),

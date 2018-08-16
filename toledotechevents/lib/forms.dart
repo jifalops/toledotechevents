@@ -107,7 +107,7 @@ class EventForm extends DynamicForm {
       @required NetworkResource<EventList> eventsResource,
       @required NetworkResource<VenueList> venuesResource}) async {
     print('posting event...');
-    final response = await http.post(config.newEventUrl, body: {
+    final response = await http.post(config.urls.eventFormAction, body: {
       'utf8': '✓',
       'authenticity_token': authToken.value,
       'event[title]': name.value,
