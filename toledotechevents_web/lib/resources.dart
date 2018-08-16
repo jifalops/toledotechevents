@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:async_resource/browser_resource.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse;
@@ -46,7 +45,6 @@ class WebResources extends Resources {
                   maxAge: Duration(hours: 24)),
               strategy: CacheStrategy.cacheFirst,
             ));
-  final String path;
 
   @override
   NetworkResource<dom.Document> eventDetails(int id) =>
