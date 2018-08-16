@@ -38,24 +38,18 @@ class AppBloc {
   final _displayController = StreamController<Display>();
   final _themeController = StreamController<Theme>();
   final _pageController = StreamController<PageRequest>();
-  final _eventsController = StreamController<bool>();
-  final _venuesController = StreamController<bool>();
   // Outputs.
   final _theme = BehaviorSubject<Theme>();
   final _page = BehaviorSubject<PageData>();
-  final _events = BehaviorSubject<EventList>();
-  final _venues = BehaviorSubject<VenueList>();
 
   final Resources resources;
 
   Theme get lastTheme => _theme.value ?? Theme.fromName(resources.theme.data);
   PageData get lastPage => _page.value;
-  EventList get lastEventList => _events.value ?? resources.eventList.data;
-  VenueList get lastVenueList => _venues.value ?? resources.venueList.data;
 
   // Need to keep track of these in order to output the first `PageData`.
-  Display _lastDisplay;
   Theme _lastTheme;
+  Display _lastDisplay;
   PageRequest _lastRequest;
 
   AppBloc(this.resources) {
@@ -68,9 +62,6 @@ class AppBloc {
 
     // Request the first page.
     pageRequest.add(PageRequest(Page.eventList));
-
-    // Start fetching events.
-    eventsRequest.add(false);
   }
 
   void setupInputs() {
@@ -90,14 +81,6 @@ class AppBloc {
     _pageController.stream
         .distinct()
         .listen((pageRequest) => _updatePage(request: pageRequest));
-
-    /// Load the [EventList].
-    _eventsController.stream.listen((refresh) async =>
-        _updateEvents(await resources.eventList.get(forceReload: refresh)));
-
-    /// Load the [VenueList].
-    _venuesController.stream.listen((refresh) async =>
-        _updateVenues(await resources.venueList.get(forceReload: refresh)));
   }
 
   void dispose() {
@@ -106,10 +89,6 @@ class AppBloc {
     _theme.close();
     _pageController.close();
     _page.close();
-    _eventsController.close();
-    _events.close();
-    _venuesController.close();
-    _venues.close();
   }
 
   void _updateTheme(Theme theme) {
@@ -124,26 +103,6 @@ class AppBloc {
     if (_lastDisplay != null && _lastRequest != null && _lastTheme != null) {
       print('Updating page to "${_lastRequest.page.route}"');
       _page.add(PageData(_lastRequest, _lastTheme, _lastDisplay));
-
-      /// Ensure the venue list has been requested for pages that depend on it.
-      if (_lastRequest.page != Page.eventList &&
-          _lastRequest.page != Page.about &&
-          lastVenueList == null) {
-        // Start fetching venues.
-        venuesRequest.add(false);
-      }
-    }
-  }
-
-  void _updateEvents(EventList events) {
-    if (events != null) {
-      _events.add(events);
-    }
-  }
-
-  void _updateVenues(VenueList venues) {
-    if (venues != null) {
-      _venues.add(venues);
     }
   }
 
@@ -156,23 +115,11 @@ class AppBloc {
   /// Signal that the current page or its arguments are changing.
   Sink<PageRequest> get pageRequest => _pageController.sink;
 
-  /// Request the [EventList] be readied. Input `true` to force a full reload.
-  Sink<bool> get eventsRequest => _eventsController.sink;
-
-  /// Request the [VenueList] be readied. Input `true` to force a full reload.
-  Sink<bool> get venuesRequest => _venuesController.sink;
-
   /// The currently selected theme.
   Stream<Theme> get theme => _theme.stream;
 
   /// The current page and encompassing data ([Theme], [Display], [Layout]).
   Stream<PageData> get page => _page.stream;
-
-  /// Output stream of event lists.
-  Stream<EventList> get events => _events.stream;
-
-  /// Output stream of venue lists.
-  Stream<VenueList> get venues => _venues.stream;
 }
 
 /// Passed to the [PageLayoutBloc] to signal for a new page that may require arguments.

@@ -72,9 +72,9 @@ class EventDetailsView extends StatelessWidget {
                 child:
                     // Text('Venue', style: Theme.of(context).textTheme.subhead),
                     event.venue != null
-                        ? StreamHandler<VenueList>(
-                            stream: appBloc.venues,
-                            initialData: appBloc.lastVenueList,
+                        ? FutureHandler<VenueList>(
+                            future: appBloc.resources.venueList.get(),
+                            initialData: appBloc.resources.venueList.data,
                             handler: (context, venues) =>
                                 _buildVenue(context, venues, appBloc),
                           )

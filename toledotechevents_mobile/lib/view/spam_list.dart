@@ -15,9 +15,14 @@ class _SpamListViewState extends State<SpamListView> {
   bool _isDeleting = false;
 
   Future<Null> refresh() async {
-    AppDataProvider.of(context).venuesRequest.add(true);
-    _isDeleting = false;
-    _selectedVenues.clear();
+    await AppDataProvider.of(context)
+        .resources
+        .venueList
+        .get(forceReload: true);
+    setState(() {
+      _isDeleting = false;
+      _selectedVenues.clear();
+    });
   }
 
   @override
@@ -29,9 +34,9 @@ class _SpamListViewState extends State<SpamListView> {
     final appBloc = AppDataProvider.of(context);
     return RefreshIndicator(
         onRefresh: refresh,
-        child: StreamHandler<VenueList>(
-          stream: appBloc.venues,
-          initialData: appBloc.lastVenueList,
+        child: FutureHandler<VenueList>(
+          future: appBloc.resources.venueList.get(),
+          initialData: appBloc.resources.venueList.data,
           handler: (context, venues) => FadeScaleIn(
               ListView(children: _buildVenueList(context, venues.findSpam()))),
         ));

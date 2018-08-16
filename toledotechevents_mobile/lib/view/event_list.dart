@@ -17,13 +17,14 @@ class _EventListState extends State<EventListView> {
 
   Widget _buildBody(BuildContext context) {
     final appBloc = AppDataProvider.of(context);
-    return StreamHandler<EventList>(
-        stream: appBloc.events,
-        initialData: appBloc.lastEventList,
+    return FutureHandler<EventList>(
+        future: appBloc.resources.eventList.get(),
+        initialData: appBloc.resources.eventList.data,
         handler: (context, events) {
           return FadeScaleIn(RefreshIndicator(
               onRefresh: () async {
-                AppDataProvider.of(context).eventsRequest.add(true);
+                await appBloc.resources.eventList.get(forceReload: true);
+                setState(() {});
               },
               child: ListView(children: _buildEventList(context, events))));
         });

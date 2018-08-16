@@ -140,9 +140,9 @@ class _EventFormViewState extends State<EventFormView> {
         onSaved: (value) => form.name.value = value,
       ),
       SizedBox(height: 8.0),
-      StreamHandler<VenueList>(
-        stream: appBloc.venues,
-        initialData: appBloc.lastVenueList,
+      FutureHandler<VenueList>(
+        future: appBloc.resources.venueList.get(),
+        initialData: appBloc.resources.venueList.data,
         handler: _buildVenueInput,
       ),
       SizedBox(height: 8.0),

@@ -1,11 +1,49 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:toledotechevents/resources.dart';
-import 'package:toledotechevents/theme.dart';
-import 'package:toledotechevents/model/events.dart';
-import 'package:toledotechevents/model/venues.dart';
-import 'package:toledotechevents/model/about_section.dart';
-import 'package:toledotechevents/model/auth_token.dart';
+
+/// Emits loading percentages for the splash screen during itialization.
+class ResourcesBloc {
+  final _percentComplete = BehaviorSubject<int>();
+  final _loaded = BehaviorSubject<void>();
+
+  final Resources resources;
+  StreamSubscription _subscription;
+
+  ResourcesBloc(this.resources) {
+    double total = 0.0;
+    _percentComplete.add(0);
+
+    void _addToTotal(double percent) async {
+      total += percent;
+      if (total >= _totalPercent || total >= 100) {
+        _percentComplete.add(100);
+        await Future.delayed(Duration(milliseconds: 250));
+        _loaded.add(null);
+      } else {
+        _percentComplete.add(total.round());
+      }
+    }
+
+    // Get resources concurrently and update the total as they finish.
+    resources.theme.get().then((_) => _addToTotal(_themePercent));
+    resources.eventList.get().then((_) => _addToTotal(_eventsPercent));
+    resources.venueList.get().then((_) => _addToTotal(_venuesPercent));
+    resources.authToken.get().then((_) => _addToTotal(_newEventPercent));
+    resources.about.get().then((_) => _addToTotal(_aboutPercent));
+  }
+
+  void dispose() {
+    _percentComplete.close();
+    _loaded.close();
+  }
+
+  /// Loading progress 0-100.
+  Stream<int> get percent => _percentComplete.stream;
+
+  /// All resources loaded.
+  Stream<void> get loaded => _loaded.stream;
+}
 
 // Reference resource sizes, sampled on Aug 13, 2018.
 const _eventsSize = 38905;
@@ -22,47 +60,8 @@ const _venuesPercent = _venuesSize / _totalSize * 100;
 const _aboutPercent = _aboutSize / _totalSize * 100;
 const _newEventPercent = _newEventSize / _totalSize * 100;
 const _themePercent = _themeSize / _totalSize * 100;
-
-/// Emits loading percentages for the splash screen during itialization.
-class ResourcesBloc {
-  final _reloadController = StreamController<bool>();
-  final _percentComplete = BehaviorSubject<int>();
-  final _loaded = BehaviorSubject<void>();
-
-  final Resources resources;
-  StreamSubscription _subscription;
-
-  ResourcesBloc(this.resources) {
-    _reloadController.stream.listen((refresh) async {
-      var total = 0;
-      _percentComplete.add(total);
-
-      _subscription = resources.init(refresh).listen((data) {
-        if (data is Theme)
-          total += _themePercent.round();
-        else if (data is EventList)
-          total += _eventsPercent.round();
-        else if (data is VenueList)
-          total += _venuesPercent.round();
-        else if (data is AboutSection)
-          total += _aboutPercent.round();
-        else if (data is AuthToken) total += _newEventPercent.round();
-        if (total > 100) total = 100;
-        _percentComplete.add(total);
-      }, onDone: () => _loaded.add(null));
-    });
-
-    reload.add(false);
-  }
-
-  void dispose() {
-    _subscription.cancel();
-    _reloadController.close();
-    _percentComplete.close();
-    _loaded.close();
-  }
-
-  Sink<bool> get reload => _reloadController.sink;
-  Stream<int> get percent => _percentComplete.stream;
-  Stream<void> get loaded => _loaded.stream;
-}
+const _totalPercent = _eventsPercent +
+    _venuesPercent +
+    _aboutPercent +
+    _newEventPercent +
+    _themePercent;
