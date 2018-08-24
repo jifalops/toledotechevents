@@ -16,12 +16,14 @@ export 'package:toledotechevents/model/auth_token.dart';
 /// The resources required by the app.
 abstract class Resources {
   Resources(
-      {@required this.theme,
+      {@required this.splash,
+      @required this.theme,
       @required this.eventList,
       @required this.venueList,
       @required this.about,
       @required this.authToken});
 
+  final LocalResource<bool> splash;
   final LocalResource<String> theme;
   final NetworkResource<EventList> eventList;
   final NetworkResource<VenueList> venueList;
@@ -31,7 +33,7 @@ abstract class Resources {
   NetworkResource<dom.Document> eventDetails(int id);
   NetworkResource<dom.Document> venueDetails(int id);
 
-
+  static bool parseSplash(contents) => contents == 'true';
 
   static EventList parseEvents(contents) =>
       contents == null ? null : EventList(contents);

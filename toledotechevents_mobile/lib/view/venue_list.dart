@@ -108,7 +108,6 @@ class _VenueListState extends State<VenueListView> {
 
   void _cardTapped(
       VenueList venues, VenueListItem venue, BuildContext context) async {
-    // timeDilation = 10.0;
     setState(() =>
         venues.selectedItem = venues.selectedItem == venue ? null : venue);
     if (venues.selectedItem != null) {

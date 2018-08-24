@@ -3,14 +3,14 @@ import 'package:rxdart/rxdart.dart';
 import 'package:toledotechevents/resources.dart';
 
 /// Emits loading percentages for the splash screen during itialization.
-class ResourcesBloc {
+class SplashBloc {
   final _percentComplete = BehaviorSubject<int>();
   final _loaded = BehaviorSubject<void>();
 
   final Resources resources;
-  StreamSubscription _subscription;
+  final bool forceReload;
 
-  ResourcesBloc(this.resources) {
+  SplashBloc(this.resources, {this.forceReload: true}) {
     double total = 0.0;
     _percentComplete.add(0);
 
@@ -26,11 +26,21 @@ class ResourcesBloc {
     }
 
     // Get resources concurrently and update the total as they finish.
-    resources.theme.get().then((_) => _addToTotal(_themePercent));
-    resources.eventList.get().then((_) => _addToTotal(_eventsPercent));
-    resources.venueList.get().then((_) => _addToTotal(_venuesPercent));
-    resources.authToken.get().then((_) => _addToTotal(_newEventPercent));
-    resources.about.get().then((_) => _addToTotal(_aboutPercent));
+    resources.theme
+        .get(forceReload: forceReload)
+        .then((_) => _addToTotal(_themePercent));
+    resources.eventList
+        .get(forceReload: forceReload)
+        .then((_) => _addToTotal(_eventsPercent));
+    resources.venueList
+        .get(forceReload: forceReload)
+        .then((_) => _addToTotal(_venuesPercent));
+    resources.authToken
+        .get(forceReload: forceReload)
+        .then((_) => _addToTotal(_newEventPercent));
+    resources.about
+        .get(forceReload: forceReload)
+        .then((_) => _addToTotal(_aboutPercent));
   }
 
   void dispose() {

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:toledotechevents/bloc/resources_bloc.dart';
+import 'package:toledotechevents/bloc/splash_bloc.dart';
 import 'package:toledotechevents/theme.dart' as base;
 import 'package:toledotechevents_mobile/util/bloc_state.dart';
 import 'package:toledotechevents_mobile/resources.dart';
@@ -13,14 +13,18 @@ final _textColor = Color(base.Theme.defaultTheme.onPrimaryColor.argb);
 final _textSize = 16.0;
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen(this.onLoadingComplete);
+  SplashScreen(this.resources, this.onLoadingComplete);
+
+  final Resources resources;
   final LoadedCallback onLoadingComplete;
+
   @override
-  _SplashScreenState createState() => new _SplashScreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  Resources resources;
+class _SplashScreenState extends BlocState<SplashScreen> {
+  SplashBloc bloc;
+  StreamSubscription subscription;
 
   @override
   Widget build(BuildContext context) {
@@ -34,54 +38,25 @@ class _SplashScreenState extends State<SplashScreen> {
           Container(
               alignment: Alignment.bottomCenter,
               margin: EdgeInsets.only(bottom: 100.0),
-              child: FutureBuilder(
-                  future: getResources(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return LoadingProgress(
-                          snapshot.data, widget.onLoadingComplete);
-                    } else if (snapshot.hasError) {
-                      return new Text('${snapshot.error}');
-                    }
-                    return LoadingProgress(null, null);
-                  })),
+              child: StreamHandler<int>(
+                stream: bloc.percent,
+                initialData: 0,
+                handler: (context, percent) => Text('$percent%',
+                    style: TextStyle(color: _textColor, fontSize: _textSize)),
+              ))
         ]));
   }
-}
-
-class LoadingProgress extends StatefulWidget {
-  LoadingProgress(this.resources, this.doneCallback);
-  final Resources resources;
-  final LoadedCallback doneCallback;
-  @override
-  _LoadingProgressState createState() => new _LoadingProgressState();
-}
-
-class _LoadingProgressState extends BlocState<LoadingProgress> {
-  ResourcesBloc bloc;
-  StreamSubscription subscription;
-  @override
-  Widget build(BuildContext context) => bloc == null
-      ? Text('0%', style: TextStyle(color: _textColor, fontSize: _textSize))
-      : StreamHandler<int>(
-          stream: bloc.percent,
-          initialData: 0,
-          handler: (context, percent) => Text('$percent%',
-              style: TextStyle(color: _textColor, fontSize: _textSize)),
-        );
 
   @override
   void initBloc() {
-    if (widget.resources != null) {
-      bloc = ResourcesBloc(widget.resources);
-      subscription =
-          bloc.loaded.listen((_) => widget.doneCallback(widget.resources));
-    }
+    bloc = SplashBloc(widget.resources);
+    subscription =
+        bloc.loaded.listen((_) => widget.onLoadingComplete(widget.resources));
   }
 
   @override
   void disposeBloc() {
-    if (subscription != null) subscription.cancel();
-    if (bloc != null) bloc.dispose();
+    subscription.cancel();
+    bloc.dispose();
   }
 }

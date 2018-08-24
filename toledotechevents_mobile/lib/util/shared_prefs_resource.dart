@@ -4,12 +4,13 @@ import 'package:async_resource/async_resource.dart';
 
 /// A value stored in shared preferences.
 abstract class SharedPrefsResource<T> extends LocalResource<T> {
-  SharedPrefsResource(this.key, {this.saveLastModified: false});
+  SharedPrefsResource(String key, {this.saveLastModified: false, Parser parser})
+      : super(path: key, parser: parser);
 
-  final String key;
   final bool saveLastModified;
 
-  Future<SharedPreferences> get prefs async => SharedPreferences.getInstance();
+  String get key => path;
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 
   @override
   Future<bool> get exists async => (await value) != null;
@@ -50,8 +51,8 @@ abstract class SharedPrefsResource<T> extends LocalResource<T> {
 
 /// A String [SharedPreferences] entry.
 class StringPrefsResource extends SharedPrefsResource<String> {
-  StringPrefsResource(String key, {bool saveLastModified: false})
-      : super(key, saveLastModified: saveLastModified);
+  StringPrefsResource(String key, {bool saveLastModified: false, Parser parser})
+      : super(key, saveLastModified: saveLastModified, parser: parser);
 
   @override
   Future<String> get value async => (await prefs).getString(key);
@@ -67,8 +68,8 @@ class StringPrefsResource extends SharedPrefsResource<String> {
 
 /// A boolean [SharedPreferences] entry.
 class BoolPrefsResource extends SharedPrefsResource<bool> {
-  BoolPrefsResource(String key, {bool saveLastModified: false})
-      : super(key, saveLastModified: saveLastModified);
+  BoolPrefsResource(String key, {bool saveLastModified: false, Parser parser})
+      : super(key, saveLastModified: saveLastModified, parser: parser);
 
   @override
   Future<bool> get value async => (await prefs).getBool(key);
@@ -84,8 +85,8 @@ class BoolPrefsResource extends SharedPrefsResource<bool> {
 
 /// An integer [SharedPreferences] entry.
 class IntPrefsResource extends SharedPrefsResource<int> {
-  IntPrefsResource(String key, {bool saveLastModified: false})
-      : super(key, saveLastModified: saveLastModified);
+  IntPrefsResource(String key, {bool saveLastModified: false, Parser parser})
+      : super(key, saveLastModified: saveLastModified, parser: parser);
 
   @override
   Future<int> get value async => (await prefs).getInt(key);
@@ -101,8 +102,8 @@ class IntPrefsResource extends SharedPrefsResource<int> {
 
 /// A double [SharedPreferences] entry.
 class DoublePrefsResource extends SharedPrefsResource<double> {
-  DoublePrefsResource(String key, {bool saveLastModified: false})
-      : super(key, saveLastModified: saveLastModified);
+  DoublePrefsResource(String key, {bool saveLastModified: false, Parser parser})
+      : super(key, saveLastModified: saveLastModified, parser: parser);
 
   @override
   Future<double> get value async => (await prefs).getDouble(key);
@@ -118,8 +119,9 @@ class DoublePrefsResource extends SharedPrefsResource<double> {
 
 /// A string list [SharedPreferences] entry.
 class StringListPrefsResource extends SharedPrefsResource<List<String>> {
-  StringListPrefsResource(String key, {bool saveLastModified: false})
-      : super(key, saveLastModified: saveLastModified);
+  StringListPrefsResource(String key,
+      {bool saveLastModified: false, Parser parser})
+      : super(key, saveLastModified: saveLastModified, parser: parser);
 
   @override
   Future<List<String>> get value async => (await prefs).getStringList(key);

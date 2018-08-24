@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents/theme.dart' as base;
@@ -21,18 +22,33 @@ import 'package:toledotechevents_mobile/view/spam_list.dart';
 
 class App extends StatefulWidget {
   @override
-  _AppState createState() {
-    return new _AppState();
-  }
+  _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
   Resources resources;
+  bool showSplash = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getApplicationDocumentsDirectory().then((dir) async {
+      final res = await MobileResources.init(dir.path);
+      final splash = await res.splash.get();
+      setState(() {
+        resources = res;
+        showSplash = splash;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return resources == null
-        ? SplashScreen((res) => setState(() => resources = res))
-        : AppWithResources(resources);
+        ? Container()
+        : showSplash
+            ? SplashScreen(resources, (_) => setState(() => showSplash = false))
+            : AppWithResources(resources);
   }
 }
 

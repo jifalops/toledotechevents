@@ -4,7 +4,8 @@ final List<String> offlineUrls = [
   r'./.build.manifest',
   r'./.packages',
   r'./favicon.png',
-  r'./main.dart.js',
+  r'./main_dev.dart.js',
+  r'./main_prod.dart.js',
   r'./manifest.json',
   r'./packages/$sdk/_internal/ddc_sdk.sum',
   r'./packages/$sdk/_internal/spec.sum',
@@ -280,4 +281,4 @@ final List<String> offlineUrls = [
 ];
 
 /// Last modified timestamp of the files
-final String lastModified = '2018-08-15T03:26:31.907Z';
+final String lastModified = '2018-08-16T10:55:21.135Z';

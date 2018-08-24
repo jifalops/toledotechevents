@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:path_provider/path_provider.dart';
 import 'package:async_resource/file_resource.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -7,19 +6,19 @@ import 'package:html/parser.dart' show parse;
 import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents/resources.dart';
 import 'package:toledotechevents_mobile/util/shared_prefs_resource.dart';
-import 'package:toledotechevents_mobile/util/async_handlers.dart';
 
 export 'package:toledotechevents/resources.dart';
 
 MobileResources _resources;
 final http.Client _client = http.Client();
 
-Future<MobileResources> getResources() async => _resources ??=
-    MobileResources._((await getApplicationDocumentsDirectory()).path);
-
 class MobileResources extends Resources {
+  static Future<MobileResources> init(String path) async =>
+      _resources ??= MobileResources._(path);
+
   MobileResources._(this.path)
       : super(
+            splash: BoolPrefsResource('splash', parser: Resources.parseSplash),
             theme: StringPrefsResource('theme'),
             eventList: HttpNetworkResource<EventList>(
               client: _client,
