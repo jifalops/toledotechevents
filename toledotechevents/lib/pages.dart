@@ -1,5 +1,7 @@
 // The app's pages.
 class Page {
+  // Route paths should conform to Angular's route paths.
+  // See https://angular.io/guide/router#configuration.
   static const eventList = Page._(null, '/events');
   static const eventDetails = Page._('Event details', '/events/:details');
   static const venuesList = Page._(null, '/venues');

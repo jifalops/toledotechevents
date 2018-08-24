@@ -5,6 +5,16 @@ import 'colors.dart';
 ///
 /// Its properties are chosen somewhat arbitrarily according to business needs.
 class Font {
+  const Font(
+      {@required this.size,
+      this.family: 'Roboto',
+      this.color: Colors.black87,
+      this.height: 1.0,
+      this.weight: 400,
+      this.italic: false,
+      this.underline: false,
+      this.align: TextAlign.start});
+
   final double size;
   final String family;
   final Color color;
@@ -15,15 +25,6 @@ class Font {
   /// The line-height factor where 1.0 is the default line height.
   final double height;
   final TextAlign align;
-  const Font(
-      {@required this.size,
-      this.family: 'Roboto',
-      this.color: Colors.black87,
-      this.height: 1.0,
-      this.weight: 400,
-      this.italic: false,
-      this.underline: false,
-      this.align: TextAlign.start});
 
   /// Returns a new [Font] with the desired changes to this [Font].
   Font copyWith(
@@ -44,6 +45,12 @@ class Font {
           italic: italic ?? this.italic,
           underline: underline ?? this.underline,
           align: align ?? this.align);
+
+  String toCss() {
+    final sb = StringBuffer();
+
+    return sb.toString();
+  }
 }
 
 enum TextAlign {

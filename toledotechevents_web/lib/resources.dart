@@ -11,6 +11,7 @@ final resources = WebResources._();
 class WebResources extends Resources {
   WebResources._()
       : super(
+            splash: StorageEntry(key: 'splash', parser: Resources.parseSplash),
             theme: StorageEntry(key: 'theme'),
             eventList: ServiceWorkerResource<EventList>(
               cache: ServiceWorkerCacheEntry(

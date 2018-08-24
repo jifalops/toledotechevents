@@ -1,20 +1,28 @@
 import 'package:angular/angular.dart';
-
-import 'src/todo_list/todo_list_component.dart';
-import 'resources.dart';
+import 'package:toledotechevents/bloc/app_bloc.dart';
+import 'resources.dart' as res;
+import 'src/splash/splash.dart';
+import 'src/event_list/event_list.dart';
 
 // AngularDart info: https://webdev.dartlang.org/angular
 // Components info: https://webdev.dartlang.org/components
 
 @Component(
   selector: 'my-app',
-  styleUrls: ['app_component.css'],
+  styleUrls: ['app_component.scss.css'],
   templateUrl: 'app_component.html',
-  directives: [TodoListComponent],
+  directives: [SplashComponent, EventListComponent, NgIf],
 )
 class AppComponent implements OnInit {
-  @override
-  void ngOnInit() {
+  final resources = res.resources;
+  final appBloc = AppBloc(res.resources);
 
+  bool initialized = false;
+  bool showSplash;
+
+  @override
+  void ngOnInit() async {
+    showSplash = await res.resources.splash.get();
+    initialized = true;
   }
 }

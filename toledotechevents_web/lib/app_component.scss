@@ -1,0 +1,30 @@
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+@import 'light_theme.scss';
+@import 'dark_theme.scss';
+
+.light-theme {
+  @include angular-material-theme($light-theme);
+}
+.dark-theme {
+  @include angular-material-theme($dark-theme);
+}
+
+
+:host {
+    /* This is equivalent of the 'body' selector of a page. */
+    /* final double size;
+  final String family;
+  final Color color;
+  final int weight;
+  final bool italic;
+  final bool underline;
+
+  /// The line-height factor where 1.0 is the default line height.
+  final double height;
+  final TextAlign align; */
+
+  // font-size: '${size}
+}

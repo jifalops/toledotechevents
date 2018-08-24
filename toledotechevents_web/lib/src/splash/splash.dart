@@ -4,7 +4,7 @@ import 'package:angular_components/angular_components.dart';
 import 'package:toledotechevents_web/resources.dart';
 
 @Component(
-  selector: 'event-list',
+  selector: 'splash-screen',
   styleUrls: [
     'package:angular_components/app_layout/layout.scss.css',
     'event_list.scss.css'
@@ -17,7 +17,7 @@ import 'package:toledotechevents_web/resources.dart';
     NgIf,
   ],
 )
-class EventListComponent implements OnInit {
+class SplashComponent implements OnInit {
   EventList events;
   EventListItem selectedEvent;
 
