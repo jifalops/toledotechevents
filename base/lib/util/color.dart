@@ -17,13 +17,15 @@ class Color {
             (((alpha * 0xFF) ~/ 1) << 24) | (red << 16) | (green << 8) | blue;
 
   double get alpha => alphaByte / 0xFF;
-  int get alphaByte => (argb >> 24) | 0xFF;
-  int get red => (argb >> 16) | 0xFF;
-  int get green => (argb >> 8) | 0xFF;
-  int get blue => argb | 0xFF;
+  int get alphaByte => (argb >> 24) & 0xFF;
+  int get red => (argb >> 16) & 0xFF;
+  int get green => (argb >> 8) & 0xFF;
+  int get blue => argb & 0xFF;
 
-  int get rgb => argb | 0xFFFFFF;
-  int get rgba => (rgb << 8) | alphaByte;
+  int get rgb => argb & 0xFFFFFF;
+  int get rgba => (rgb << 8) & alphaByte;
+
+  String get cssValue => 'rgba($red, $green, $blue, $alpha)';
 
   /// Calculates the luminence of this color and considers it dark if below a
   /// certain level. Does *not* take alpha into consideration.

@@ -184,7 +184,104 @@ class Theme {
   // Other
   final InputTheme inputTheme;
   final double buttonCornerRadius;
+
+  /// Return SCSS variables and classes for this theme.
+  ///
+  /// Each property is converted to a class by replacing capital letters with
+  /// a hyphen and the lowercase letter, `primaryColor` becomes `primary-color`.
+  ///
+  /// Single-valued properties such as color will also have a corresponding
+  /// variable, in hyphenated-lowercase.
+  ///
+  /// Global material design variables used by `angular_components` are also
+  /// set. See `package:angular_components/css/material/material.scss` and
+  /// `package:angular_components/css/mdc_web/theme/mixins.scss`.
+  List<String> toScss() {
+    return [
+      // Color vars
+      '\$primary-color: ${primaryColor.cssValue};',
+      '\$primary-color-light: ${primaryColorLight.cssValue};',
+      '\$primary-color-dark: ${primaryColorDark.cssValue};',
+      '\$secondary-color: ${secondaryColor.cssValue};',
+      '\$secondary-color-light: ${secondaryColorLight.cssValue};',
+      '\$secondary-color-dark: ${secondaryColorDark.cssValue};',
+      '\$background-color: ${backgroundColor.cssValue};',
+      '\$surface-color: ${surfaceColor.cssValue};',
+      '\$divider-color: ${dividerColor.cssValue};',
+      '\$error-color: ${errorColor.cssValue};',
+      '\$on-primary-color: ${onPrimaryColor.cssValue};',
+      '\$on-primary-color-light: ${onPrimaryColorLight.cssValue};',
+      '\$on-primary-color-dark: ${onPrimaryColorDark.cssValue};',
+      '\$on-secondary-color: ${onSecondaryColor.cssValue};',
+      '\$on-secondary-color-light: ${onSecondaryColorLight.cssValue};',
+      '\$on-secondary-color-dark: ${onSecondaryColorDark.cssValue};',
+      '\$on-background-color: ${onBackgroundColor.cssValue};',
+      '\$on-surface-color: ${onSurfaceColor.cssValue};',
+      '\$on-error-color: ${onErrorColor.cssValue};',
+
+      // Color classes
+      '.primary-color { background-color: \$primary-color; color: \$on-primary-color; }',
+      '.primary-color-light { background-color: \$primary-color-light; color: \$on-primary-color-light; }',
+      '.primary-color-dark { background-color: \$primary-color-dark; color: \$on-primary-color-dark; }',
+      '.secondary-color { background-color: \$secondary-color; color: \$on-secondary-color; }',
+      '.secondary-color-light { background-color: \$secondary-color-light; color: \$on-secondary-color-light; }',
+      '.secondary-color-dark { background-color: \$secondary-color-dark; color: \$on-secondary-color-dark; }',
+      '.background { background-color: \$background-color; color: \$on-background-color; }',
+      '.surface { background-color: \$surface-color; color: \$on-surface-color; }',
+      '.error { background-color: \$error-color; color: \$on-error-color; }',
+      '.divider { background-color: \$divider-color; }',
+
+      // Font classes
+      '.display4 { ${display4.toCss().join(' ')} }',
+      '.display3 { ${display3.toCss().join(' ')} }',
+      '.display2 { ${display2.toCss().join(' ')} }',
+      '.display1 { ${display1.toCss().join(' ')} }',
+      '.headline { ${headline.toCss().join(' ')} }',
+      '.title { ${title.toCss().join(' ')} }',
+      '.subhead { ${subhead.toCss().join(' ')} }',
+      '.body2 { ${body2.toCss().join(' ')} }',
+      '.body1 { ${body1.toCss().join(' ')} }',
+      '.caption { ${caption.toCss().join(' ')} }',
+      '.button { ${button.toCss().join(' ')} }',
+
+      // Other
+      '\$brightness: ${_brightnessToString(brightness)};',
+      '\$input-theme: ${_inputThemeToString(inputTheme)};',
+
+      // `angular_components` global vars.
+      '\$mdc-theme-primary: \$primary-color !global;',
+      '\$mdc-theme-secondary: \$secondary-color !global;',
+      '\$mdc-theme-background: \$background-color !global;',
+      '\$mdc-theme-surface: \$surface-color !global;',
+      '\$mdc-theme-on-primary: \$on-primary-color !global;',
+      '\$mdc-theme-on-secondary: \$on-secondary-color !global;',
+      '\$mdc-theme-on-background: \$on-background-color !global;',
+      '\$mdc-theme-on-surface: \$on-surface-color !global;',
+    ];
+  }
 }
 
 enum Brightness { light, dark }
 enum InputTheme { fill, outline }
+
+String _brightnessToString(Brightness brightness) {
+  switch (brightness) {
+    case Brightness.light:
+      return 'light';
+    case Brightness.dark:
+      return 'dark';
+    default:
+      return '';
+  }
+}
+
+String _inputThemeToString(InputTheme inputTheme) {
+  switch (inputTheme) {
+    case InputTheme.fill:
+      return 'fill';
+    case InputTheme.outline:
+      return 'outline';
+    default:
+      return '';
+  }
+}

@@ -16,7 +16,7 @@ dependencies:
   datetime_picker_formfield: ^0.1.2
   simple_autocomplete_formfield: ^0.1.2
   toledotechevents:
-    path: ../toledotechevents
+    path: ../base
   shared_preferences: ^0.4.2
   path_provider: ^0.4.1
 

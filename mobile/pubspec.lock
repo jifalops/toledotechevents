@@ -446,7 +446,7 @@ packages:
   toledotechevents:
     dependency: "direct main"
     description:
-      path: "../toledotechevents"
+      path: "../base"
       relative: true
     source: path
     version: "0.0.1"

@@ -11,7 +11,7 @@ import 'src/event_list/event_list.dart';
   selector: 'my-app',
   styleUrls: ['app_component.scss.css'],
   templateUrl: 'app_component.html',
-  directives: [SplashComponent, EventListComponent, NgIf],
+  directives: [SplashComponent, EventListComponent, NgIf, NgClass],
 )
 class AppComponent implements OnInit {
   final resources = res.resources;

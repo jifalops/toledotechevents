@@ -46,11 +46,17 @@ class Font {
           underline: underline ?? this.underline,
           align: align ?? this.align);
 
-  String toCss() {
-    final sb = StringBuffer();
-
-    return sb.toString();
-  }
+  /// Returns a list of CSS properties.
+  List<String> toCss() => [
+        'font-size: ${size}px;',
+        'font-family: $family;',
+        'color: ${color.cssValue};',
+        'line-height: ${height * 100}%;',
+        'font-weight: $weight;',
+        '${italic ? 'font-style: italic;' : ''}',
+        '${underline ? 'text-decoration: underline;' : ''}',
+        'text-align: ${_textAlignToString(align)};',
+      ];
 }
 
 enum TextAlign {
@@ -66,6 +72,25 @@ enum TextAlign {
   /// Right when the text direction is LTR (left to right) or
   /// left when the text direction is RTL (right to left).
   end,
+}
+
+String _textAlignToString(TextAlign align) {
+  switch (align) {
+    case TextAlign.left:
+      return 'left';
+    case TextAlign.right:
+      return 'right';
+    case TextAlign.center:
+      return 'center';
+    case TextAlign.justify:
+      return 'justify';
+    case TextAlign.start:
+      return 'start';
+    case TextAlign.end:
+      return 'end';
+    default:
+      return '';
+  }
 }
 
 /// Default fonts from material design.
