@@ -35,8 +35,9 @@ abstract class Resources {
 
   static bool parseSplash(contents) => contents == 'true';
 
-  static EventList parseEvents(contents) =>
-      contents == null ? null : EventList(contents);
+  static EventList parseEvents(contents) {
+    return contents == null ? null : EventList(contents);
+  }
 
   static VenueList parseVenues(contents) =>
       contents == null ? null : VenueList(contents);

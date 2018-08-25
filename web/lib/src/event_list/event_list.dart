@@ -6,7 +6,7 @@ import 'package:toledotechevents_web/resources.dart';
 @Component(
   selector: 'event-list',
   styleUrls: [
-    'package:angular_components/app_layout/layout.scss.css',
+    // 'package:angular_components/app_layout/layout.scss.css',
     'event_list.scss.css'
   ],
   templateUrl: 'event_list.html',
@@ -24,5 +24,6 @@ class EventListComponent implements OnInit {
   @override
   void ngOnInit() async {
     events = await resources.eventList.get();
+    print('Events: ${events?.length}');
   }
 }

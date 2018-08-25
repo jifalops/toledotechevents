@@ -276,9 +276,18 @@ final List<String> offlineUrls = [
   r'./packages/kernel/text/readme.md',
   r'./packages/node_preamble/preamble.js',
   r'./packages/node_preamble/preamble.min.js',
+  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Bold.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Italic.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Light.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Regular.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/OpenSans-SemiBold.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Bold.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Light.ttf',
+  r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Regular.ttf',
+  r'./packages/toledotechevents_web/assets/images/splash.jpg',
   r'./pwa_.dart.js',
   r'./styles.css',
 ];
 
 /// Last modified timestamp of the files
-final String lastModified = '2018-08-16T10:55:21.135Z';
+final String lastModified = '2018-08-24T05:41:17.496Z';

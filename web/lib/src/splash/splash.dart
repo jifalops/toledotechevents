@@ -5,24 +5,10 @@ import 'package:toledotechevents_web/resources.dart';
 
 @Component(
   selector: 'splash-screen',
-  styleUrls: [
-    'package:angular_components/app_layout/layout.scss.css',
-    'event_list.scss.css'
-  ],
-  templateUrl: 'event_list.html',
+  styles: [],
+  templateUrl: 'splash.html',
   directives: [
-    MaterialListComponent,
-    MaterialListItemComponent,
-    NgFor,
     NgIf,
   ],
 )
-class SplashComponent implements OnInit {
-  EventList events;
-  EventListItem selectedEvent;
-
-  @override
-  void ngOnInit() async {
-    events = await resources.eventList.get();
-  }
-}
+class SplashComponent {}
