@@ -33,8 +33,6 @@ abstract class Resources {
   NetworkResource<dom.Document> eventDetails(int id);
   NetworkResource<dom.Document> venueDetails(int id);
 
-  static bool parseSplash(contents) => contents == 'true';
-
   static EventList parseEvents(contents) {
     return contents == null ? null : EventList(contents);
   }

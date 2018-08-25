@@ -11,41 +11,33 @@ final resources = WebResources._();
 class WebResources extends Resources {
   WebResources._()
       : super(
-            splash: StorageEntry(key: 'splash', parser: Resources.parseSplash),
-            theme: StorageEntry(key: 'theme'),
+            splash: StorageEntry<bool>('splash',
+                parser: (contents) => contents == 'true'),
+            theme: StorageEntry<String>('theme'),
             eventList: ServiceWorkerResource<EventList>(
-              cache: ServiceWorkerCacheEntry(
-                  name: config.cacheName,
-                  url: config.urls.eventList,
-                  parser: Resources.parseEvents,
-                  maxAge: Duration(minutes: 60)),
-              strategy: CacheStrategy.cacheFirst,
-            ),
+                cache: ServiceWorkerCacheEntry(
+                    name: config.cacheName,
+                    url: config.urls.eventList,
+                    parser: Resources.parseEvents,
+                    maxAge: Duration(minutes: 60))),
             venueList: ServiceWorkerResource<VenueList>(
-              cache: ServiceWorkerCacheEntry(
-                name: config.cacheName,
-                url: config.urls.venueList,
-                parser: Resources.parseVenues,
-                maxAge: Duration(minutes: 60),
-              ),
-              strategy: CacheStrategy.cacheFirst,
-            ),
+                cache: ServiceWorkerCacheEntry(
+                    name: config.cacheName,
+                    url: config.urls.venueList,
+                    parser: Resources.parseVenues,
+                    maxAge: Duration(minutes: 60))),
             about: ServiceWorkerResource<AboutSection>(
-              cache: ServiceWorkerCacheEntry(
-                  name: config.cacheName,
-                  url: config.urls.aboutPage,
-                  parser: Resources.parseAboutSection,
-                  maxAge: Duration(hours: 24)),
-              strategy: CacheStrategy.cacheFirst,
-            ),
+                cache: ServiceWorkerCacheEntry(
+                    name: config.cacheName,
+                    url: config.urls.aboutPage,
+                    parser: Resources.parseAboutSection,
+                    maxAge: Duration(hours: 24))),
             authToken: ServiceWorkerResource<AuthToken>(
-              cache: ServiceWorkerCacheEntry(
-                  name: config.cacheName,
-                  url: config.urls.newEventPage,
-                  parser: Resources.parseAuthToken,
-                  maxAge: Duration(hours: 24)),
-              strategy: CacheStrategy.cacheFirst,
-            ));
+                cache: ServiceWorkerCacheEntry(
+                    name: config.cacheName,
+                    url: config.urls.newEventPage,
+                    parser: Resources.parseAuthToken,
+                    maxAge: Duration(hours: 24))));
 
   @override
   NetworkResource<dom.Document> eventDetails(int id) =>

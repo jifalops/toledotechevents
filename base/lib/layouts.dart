@@ -1,9 +1,9 @@
-import 'util/display.dart';
+import 'package:display/display.dart';
 import 'pages.dart';
 import 'theme.dart';
 import 'build_config.dart';
 
-export 'util/display.dart';
+export 'package:display/display.dart';
 
 /// Domain-specific [Page] layout information.
 class Layout {

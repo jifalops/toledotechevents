@@ -18,6 +18,7 @@ dependencies:
   toledotechevents:
     path: ../base
   shared_preferences: ^0.4.2
+  shared_prefs_resource: ^0.0.1
   path_provider: ^0.4.1
 
 dev_dependencies:

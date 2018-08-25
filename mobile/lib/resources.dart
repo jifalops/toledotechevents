@@ -5,7 +5,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' show parse;
 import 'package:toledotechevents/build_config.dart';
 import 'package:toledotechevents/resources.dart';
-import 'package:toledotechevents_mobile/util/shared_prefs_resource.dart';
+import 'package:shared_prefs_resource/shared_prefs_resource.dart';
 
 export 'package:toledotechevents/resources.dart';
 
@@ -18,7 +18,7 @@ class MobileResources extends Resources {
 
   MobileResources._(this.path)
       : super(
-            splash: BoolPrefsResource('splash', parser: Resources.parseSplash),
+            splash: BoolPrefsResource('splash'),
             theme: StringPrefsResource('theme'),
             eventList: HttpNetworkResource<EventList>(
               client: _client,
@@ -51,7 +51,14 @@ class MobileResources extends Resources {
               cache: FileResource(File('$path/new_event.html')),
               maxAge: Duration(hours: 24),
               strategy: CacheStrategy.cacheFirst,
-            ));
+            )) {
+    print('Testing prefs resources...');
+    StringPrefsResource('string').get().then(print);
+    BoolPrefsResource('bool').get().then(print);
+    IntPrefsResource('int').get().then(print);
+    DoublePrefsResource('double').get().then(print);
+    StringListPrefsResource('list').get().then(print);
+  }
   final String path;
 
   @override

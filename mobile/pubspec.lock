@@ -28,7 +28,7 @@ packages:
       name: async_resource
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.5+1"
+    version: "0.1.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -92,6 +92,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  display:
+    dependency: transitive
+    description:
+      name: display
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   english_words:
     dependency: transitive
     description:
@@ -340,6 +347,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.2"
+  shared_prefs_resource:
+    dependency: "direct main"
+    description:
+      name: shared_prefs_resource
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   shelf:
     dependency: transitive
     description:

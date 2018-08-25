@@ -4,8 +4,8 @@
 
 // Modified by Jacob Phillips in July 2018.
 
-import 'color.dart';
-export 'color.dart';
+import 'package:color_rgb_a/color_rgb_a.dart';
+export 'package:color_rgb_a/color_rgb_a.dart';
 
 /// [Color] and [ColorSwatch] constants which represent Material design's
 /// [color palette](http://material.google.com/style/color.html).

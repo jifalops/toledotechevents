@@ -9,7 +9,8 @@ void main() async {
 }
 
 const _materialStylesPath =
-    '/home/jacob/.pub-cache/hosted/pub.dartlang.org/angular_components-0.9.0/lib';
+    // '/home/jacob/.pub-cache/hosted/pub.dartlang.org/angular_components-0.9.0/lib';
+    'package:angular_components';
 
 Future<void> _generateThemeScss() async {
   final sb = StringBuffer();
@@ -17,8 +18,10 @@ Future<void> _generateThemeScss() async {
   sb.writeln("@import '${_materialStylesPath}/css/material/material.scss';");
   sb.writeln("@import '${_materialStylesPath}/css/mdc_web/theme/mixins.scss';");
   Theme.values.forEach((theme) {
+    final name = '${theme.name.toLowerCase()}-theme';
     sb.writeln(
-        '@mixin ${theme.name.toLowerCase()}-theme { ${theme.toScss().join(' ')} }');
+        '@mixin $name { ${theme.toScss().join(' ')} }');
+    sb.writeln('.$name { @include $name; }');
   });
   final file = File('lib/themes.scss');
   await file.writeAsString(sb.toString(), flush: true);

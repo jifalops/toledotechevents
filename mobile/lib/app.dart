@@ -37,7 +37,7 @@ class _AppState extends State<App> {
       final splash = await res.splash.get();
       setState(() {
         resources = res;
-        showSplash = splash;
+        showSplash = splash ?? false;
       });
     });
   }

@@ -22,7 +22,7 @@ class AppComponent implements OnInit {
 
   @override
   void ngOnInit() async {
-    showSplash = await res.resources.splash.get();
+    showSplash = (await res.resources.splash.get()) ?? false;
     initialized = true;
   }
 }

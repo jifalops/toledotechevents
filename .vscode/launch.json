@@ -6,21 +6,21 @@
   "configurations": [
     {
       "name": "mobile dev debug",
-      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile",
+      "cwd": "/home/jacob/code/toledotechevents/mobile",
       "program": "lib/main_dev.dart",
       "request": "launch",
       "type": "dart"
     },
     {
       "name": "mobile prod debug",
-      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile",
+      "cwd": "/home/jacob/code/toledotechevents/mobile",
       "program": "lib/main_prod.dart",
       "request": "launch",
       "type": "dart"
     },
     {
       "name": "mobile dev release",
-      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile",
+      "cwd": "/home/jacob/code/toledotechevents/mobile",
       "program": "lib/main_dev.dart",
       "flutterMode": "release",
       "request": "launch",
@@ -28,7 +28,7 @@
     },
     {
       "name": "mobile prod release",
-      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_mobile",
+      "cwd": "/home/jacob/code/toledotechevents/mobile",
       "program": "lib/main_prod.dart",
       "flutterMode": "release",
       "request": "launch",
@@ -36,14 +36,14 @@
     },
     {
       "name": "web prod debug",
-      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_web",
+      "cwd": "/home/jacob/code/toledotechevents/web",
       "program": "web/main_prod.dart",
       "type": "dart",
       "request": "launch"
     },
     {
       "name": "web dev debug",
-      "cwd": "/home/jacob/code/toledotechevents/toledotechevents_web",
+      "cwd": "/home/jacob/code/toledotechevents/web",
       "program": "web/main_dev.dart",
       "type": "dart",
       "request": "launch"

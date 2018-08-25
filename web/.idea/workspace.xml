@@ -11,7 +11,7 @@
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/theme.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/util/color.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/util/color.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/util/colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/util/colors.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/util/display.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/util/display.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/package:display/display.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/package:display/display.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../toledotechevents/lib/util/fonts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../toledotechevents/lib/util/fonts.dart" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />

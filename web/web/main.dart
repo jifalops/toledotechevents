@@ -8,6 +8,10 @@ void main() {
       flavor: BuildFlavor.production,
       baseUrl: 'http://toledotechevents.org',
       cacheName: 'toledotechevents');
+  // BuildConfig.init(
+  //     flavor: BuildFlavor.development,
+  //     baseUrl: 'http://dev.toledotechevents.org',
+  //     cacheName: 'toledotechevents_dev');
   assert(config != null);
   // Registers service worker.
   pwa.Client();
