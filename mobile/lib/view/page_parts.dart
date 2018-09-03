@@ -107,7 +107,7 @@ Widget buildBottomNav(BuildContext context, PageData pageData) {
         return Icon(Icons.event);
       case Page.createEvent:
         return Icon(Icons.add_circle_outline);
-      case Page.venuesList:
+      case Page.venueList:
         return Icon(Icons.business);
       case Page.about:
         return Icon(Icons.help);

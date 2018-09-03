@@ -1,4 +1,5 @@
 import 'package:angular/angular.dart';
+import 'package:angular_components/angular_components.dart';
 import 'package:toledotechevents/bloc/app_bloc.dart';
 import 'resources.dart' as res;
 import 'src/splash/splash.dart';
@@ -9,9 +10,19 @@ import 'src/event_list/event_list.dart';
 
 @Component(
   selector: 'my-app',
-  styleUrls: ['app_component.scss.css'],
+  styleUrls: [
+    // 'package:angular_components/app_layout/layout.scss',
+    'app_component.css'
+  ],
   templateUrl: 'app_component.html',
-  directives: [SplashComponent, EventListComponent, NgIf, NgClass],
+  directives: [
+    SplashComponent,
+    EventListComponent,
+    // MaterialButtonComponent,
+    // MaterialIconComponent,
+    NgIf,
+    NgClass
+  ],
 )
 class AppComponent implements OnInit {
   final resources = res.resources;

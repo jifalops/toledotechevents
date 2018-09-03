@@ -140,7 +140,7 @@ class _HomePageState extends BlocState<HomePage> {
         return EventListView(data);
       case Page.eventDetails:
         return EventDetailsView(data);
-      case Page.venuesList:
+      case Page.venueList:
         print('menu options: ${data.layout.menuOptions}');
         return VenueListView(data);
       case Page.venueDetails:

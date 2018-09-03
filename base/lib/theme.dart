@@ -196,28 +196,29 @@ class Theme {
   /// Global material design variables used by `angular_components` are also
   /// set. See `package:angular_components/css/material/material.scss` and
   /// `package:angular_components/css/mdc_web/theme/mixins.scss`.
-  List<String> toScss() {
+  List<String> toScss() => scssVars()..addAll(scssClasses());
+  List<String> scssVars() {
     return [
       // Color vars
-      '\$primary-color: ${primaryColor.cssValue};',
-      '\$primary-color-light: ${primaryColorLight.cssValue};',
-      '\$primary-color-dark: ${primaryColorDark.cssValue};',
-      '\$secondary-color: ${secondaryColor.cssValue};',
-      '\$secondary-color-light: ${secondaryColorLight.cssValue};',
-      '\$secondary-color-dark: ${secondaryColorDark.cssValue};',
-      '\$background-color: ${backgroundColor.cssValue};',
-      '\$surface-color: ${surfaceColor.cssValue};',
-      '\$divider-color: ${dividerColor.cssValue};',
-      '\$error-color: ${errorColor.cssValue};',
-      '\$on-primary-color: ${onPrimaryColor.cssValue};',
-      '\$on-primary-color-light: ${onPrimaryColorLight.cssValue};',
-      '\$on-primary-color-dark: ${onPrimaryColorDark.cssValue};',
-      '\$on-secondary-color: ${onSecondaryColor.cssValue};',
-      '\$on-secondary-color-light: ${onSecondaryColorLight.cssValue};',
-      '\$on-secondary-color-dark: ${onSecondaryColorDark.cssValue};',
-      '\$on-background-color: ${onBackgroundColor.cssValue};',
-      '\$on-surface-color: ${onSurfaceColor.cssValue};',
-      '\$on-error-color: ${onErrorColor.cssValue};',
+      '\$primary-color: ${primaryColor.cssValue} !global;',
+      '\$primary-color-light: ${primaryColorLight.cssValue} !global;',
+      '\$primary-color-dark: ${primaryColorDark.cssValue} !global;',
+      '\$secondary-color: ${secondaryColor.cssValue} !global;',
+      '\$secondary-color-light: ${secondaryColorLight.cssValue} !global;',
+      '\$secondary-color-dark: ${secondaryColorDark.cssValue} !global;',
+      '\$background-color: ${backgroundColor.cssValue} !global;',
+      '\$surface-color: ${surfaceColor.cssValue} !global;',
+      '\$divider-color: ${dividerColor.cssValue} !global;',
+      '\$error-color: ${errorColor.cssValue} !global;',
+      '\$on-primary-color: ${onPrimaryColor.cssValue} !global;',
+      '\$on-primary-color-light: ${onPrimaryColorLight.cssValue} !global;',
+      '\$on-primary-color-dark: ${onPrimaryColorDark.cssValue} !global;',
+      '\$on-secondary-color: ${onSecondaryColor.cssValue} !global;',
+      '\$on-secondary-color-light: ${onSecondaryColorLight.cssValue} !global;',
+      '\$on-secondary-color-dark: ${onSecondaryColorDark.cssValue} !global;',
+      '\$on-background-color: ${onBackgroundColor.cssValue} !global;',
+      '\$on-surface-color: ${onSurfaceColor.cssValue} !global;',
+      '\$on-error-color: ${onErrorColor.cssValue} !global;',
 
       // Color classes
       '.primary-color { background-color: \$primary-color; color: \$on-primary-color; }',
@@ -245,8 +246,8 @@ class Theme {
       '.button { ${button.toCss().join(' ')} }',
 
       // Other
-      '\$brightness: ${_brightnessToString(brightness)};',
-      '\$input-theme: ${_inputThemeToString(inputTheme)};',
+      '\$brightness: ${_brightnessToString(brightness)} !global;',
+      '\$input-theme: ${_inputThemeToString(inputTheme)} !global;',
 
       // `angular_components` global vars.
       '\$mdc-theme-primary: \$primary-color !global;',
@@ -257,6 +258,35 @@ class Theme {
       '\$mdc-theme-on-secondary: \$on-secondary-color !global;',
       '\$mdc-theme-on-background: \$on-background-color !global;',
       '\$mdc-theme-on-surface: \$on-surface-color !global;',
+    ];
+  }
+
+  List<String> scssClasses() {
+    return [
+      // Color classes
+      '.primary-color { background-color: \$primary-color; color: \$on-primary-color; }',
+      '.primary-color-light { background-color: \$primary-color-light; color: \$on-primary-color-light; }',
+      '.primary-color-dark { background-color: \$primary-color-dark; color: \$on-primary-color-dark; }',
+      '.secondary-color { background-color: \$secondary-color; color: \$on-secondary-color; }',
+      '.secondary-color-light { background-color: \$secondary-color-light; color: \$on-secondary-color-light; }',
+      '.secondary-color-dark { background-color: \$secondary-color-dark; color: \$on-secondary-color-dark; }',
+      '.background { background-color: \$background-color; color: \$on-background-color; }',
+      '.surface { background-color: \$surface-color; color: \$on-surface-color; }',
+      '.error { background-color: \$error-color; color: \$on-error-color; }',
+      '.divider { background-color: \$divider-color; }',
+
+      // Font classes
+      '.display4 { ${display4.toCss().join(' ')} }',
+      '.display3 { ${display3.toCss().join(' ')} }',
+      '.display2 { ${display2.toCss().join(' ')} }',
+      '.display1 { ${display1.toCss().join(' ')} }',
+      '.headline { ${headline.toCss().join(' ')} }',
+      '.title { ${title.toCss().join(' ')} }',
+      '.subhead { ${subhead.toCss().join(' ')} }',
+      '.body2 { ${body2.toCss().join(' ')} }',
+      '.body1 { ${body1.toCss().join(' ')} }',
+      '.caption { ${caption.toCss().join(' ')} }',
+      '.button { ${button.toCss().join(' ')} }',
     ];
   }
 }

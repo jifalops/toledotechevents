@@ -1,12 +1,521 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto);
-@import url(https://fonts.googleapis.com/css?family=Material+Icons);
+body.themed.light-theme .primary-color {
+  background-color: #0c4964;
+  color: white;
+}
+body.themed.light-theme .primary-color-light {
+  background-color: #437492;
+  color: white;
+}
+body.themed.light-theme .primary-color-dark {
+  background-color: #00223a;
+  color: white;
+}
+body.themed.light-theme .secondary-color {
+  background-color: #8dc641;
+  color: black;
+}
+body.themed.light-theme .secondary-color-light {
+  background-color: #c0f972;
+  color: black;
+}
+body.themed.light-theme .secondary-color-dark {
+  background-color: #5b9502;
+  color: black;
+}
+body.themed.light-theme .background {
+  background-color: #fefefe;
+  color: rgba(0, 0, 0, 0.8666666667);
+}
+body.themed.light-theme .surface {
+  background-color: #fefefe;
+  color: rgba(0, 0, 0, 0.8666666667);
+}
+body.themed.light-theme .error {
+  background-color: #b00020;
+  color: white;
+}
+body.themed.light-theme .divider {
+  background-color: rgba(0, 0, 0, 0.1215686275);
+}
+body.themed.light-theme .display4 {
+  font-size: 112px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 100;
+  text-align: start;
+}
+body.themed.light-theme .display3 {
+  font-size: 56px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .display2 {
+  font-size: 45px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .display1 {
+  font-size: 34px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .headline {
+  font-size: 24px;
+  font-family: Ubuntu;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 250%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.light-theme .title {
+  font-size: 20px;
+  font-family: Ubuntu;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 100%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.light-theme .subhead {
+  font-size: 18px;
+  font-family: Ubuntu;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 175%;
+  font-weight: 300;
+  text-align: start;
+}
+body.themed.light-theme .body2 {
+  font-size: 18px;
+  font-family: Open Sans;
+  color: #0c4964;
+  line-height: 100%;
+  font-weight: 600;
+  text-align: start;
+}
+body.themed.light-theme .body1 {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 115%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .caption {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .button {
+  font-size: 14px;
+  font-family: Open Sans;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 100%;
+  font-weight: 500;
+  text-align: start;
+}
+body.themed.light-theme .primary-color {
+  background-color: #0c4964;
+  color: white;
+}
+body.themed.light-theme .primary-color-light {
+  background-color: #437492;
+  color: white;
+}
+body.themed.light-theme .primary-color-dark {
+  background-color: #00223a;
+  color: white;
+}
+body.themed.light-theme .secondary-color {
+  background-color: #8dc641;
+  color: black;
+}
+body.themed.light-theme .secondary-color-light {
+  background-color: #c0f972;
+  color: black;
+}
+body.themed.light-theme .secondary-color-dark {
+  background-color: #5b9502;
+  color: black;
+}
+body.themed.light-theme .background {
+  background-color: #fefefe;
+  color: rgba(0, 0, 0, 0.8666666667);
+}
+body.themed.light-theme .surface {
+  background-color: #fefefe;
+  color: rgba(0, 0, 0, 0.8666666667);
+}
+body.themed.light-theme .error {
+  background-color: #b00020;
+  color: white;
+}
+body.themed.light-theme .divider {
+  background-color: rgba(0, 0, 0, 0.1215686275);
+}
+body.themed.light-theme .display4 {
+  font-size: 112px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 100;
+  text-align: start;
+}
+body.themed.light-theme .display3 {
+  font-size: 56px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .display2 {
+  font-size: 45px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .display1 {
+  font-size: 34px;
+  font-family: Roboto;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .headline {
+  font-size: 24px;
+  font-family: Ubuntu;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 250%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.light-theme .title {
+  font-size: 20px;
+  font-family: Ubuntu;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 100%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.light-theme .subhead {
+  font-size: 18px;
+  font-family: Ubuntu;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 175%;
+  font-weight: 300;
+  text-align: start;
+}
+body.themed.light-theme .body2 {
+  font-size: 18px;
+  font-family: Open Sans;
+  color: #0c4964;
+  line-height: 100%;
+  font-weight: 600;
+  text-align: start;
+}
+body.themed.light-theme .body1 {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 115%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .caption {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: rgba(0, 0, 0, 0.5411764706);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.light-theme .button {
+  font-size: 14px;
+  font-family: Open Sans;
+  color: rgba(0, 0, 0, 0.8666666667);
+  line-height: 100%;
+  font-weight: 500;
+  text-align: start;
+}
+
+body.themed.dark-theme .primary-color {
+  background-color: #0c4964;
+  color: white;
+}
+body.themed.dark-theme .primary-color-light {
+  background-color: #437492;
+  color: white;
+}
+body.themed.dark-theme .primary-color-dark {
+  background-color: #00223a;
+  color: white;
+}
+body.themed.dark-theme .secondary-color {
+  background-color: #8dc641;
+  color: black;
+}
+body.themed.dark-theme .secondary-color-light {
+  background-color: #c0f972;
+  color: black;
+}
+body.themed.dark-theme .secondary-color-dark {
+  background-color: #5b9502;
+  color: black;
+}
+body.themed.dark-theme .background {
+  background-color: #212121;
+  color: white;
+}
+body.themed.dark-theme .surface {
+  background-color: #212121;
+  color: white;
+}
+body.themed.dark-theme .error {
+  background-color: #b00020;
+  color: white;
+}
+body.themed.dark-theme .divider {
+  background-color: #333333;
+}
+body.themed.dark-theme .display4 {
+  font-size: 112px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 100;
+  text-align: start;
+}
+body.themed.dark-theme .display3 {
+  font-size: 56px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .display2 {
+  font-size: 45px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .display1 {
+  font-size: 34px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .headline {
+  font-size: 24px;
+  font-family: Ubuntu;
+  color: white;
+  line-height: 250%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.dark-theme .title {
+  font-size: 20px;
+  font-family: Ubuntu;
+  color: white;
+  line-height: 100%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.dark-theme .subhead {
+  font-size: 18px;
+  font-family: Ubuntu;
+  color: white;
+  line-height: 175%;
+  font-weight: 300;
+  text-align: start;
+}
+body.themed.dark-theme .body2 {
+  font-size: 18px;
+  font-family: Open Sans;
+  color: #0c4964;
+  line-height: 100%;
+  font-weight: 600;
+  text-align: start;
+}
+body.themed.dark-theme .body1 {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: white;
+  line-height: 115%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .caption {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .button {
+  font-size: 14px;
+  font-family: Open Sans;
+  color: white;
+  line-height: 100%;
+  font-weight: 500;
+  text-align: start;
+}
+body.themed.dark-theme .primary-color {
+  background-color: #0c4964;
+  color: white;
+}
+body.themed.dark-theme .primary-color-light {
+  background-color: #437492;
+  color: white;
+}
+body.themed.dark-theme .primary-color-dark {
+  background-color: #00223a;
+  color: white;
+}
+body.themed.dark-theme .secondary-color {
+  background-color: #8dc641;
+  color: black;
+}
+body.themed.dark-theme .secondary-color-light {
+  background-color: #c0f972;
+  color: black;
+}
+body.themed.dark-theme .secondary-color-dark {
+  background-color: #5b9502;
+  color: black;
+}
+body.themed.dark-theme .background {
+  background-color: #212121;
+  color: white;
+}
+body.themed.dark-theme .surface {
+  background-color: #212121;
+  color: white;
+}
+body.themed.dark-theme .error {
+  background-color: #b00020;
+  color: white;
+}
+body.themed.dark-theme .divider {
+  background-color: #333333;
+}
+body.themed.dark-theme .display4 {
+  font-size: 112px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 100;
+  text-align: start;
+}
+body.themed.dark-theme .display3 {
+  font-size: 56px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .display2 {
+  font-size: 45px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .display1 {
+  font-size: 34px;
+  font-family: Roboto;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .headline {
+  font-size: 24px;
+  font-family: Ubuntu;
+  color: white;
+  line-height: 250%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.dark-theme .title {
+  font-size: 20px;
+  font-family: Ubuntu;
+  color: white;
+  line-height: 100%;
+  font-weight: 700;
+  text-align: start;
+}
+body.themed.dark-theme .subhead {
+  font-size: 18px;
+  font-family: Ubuntu;
+  color: white;
+  line-height: 175%;
+  font-weight: 300;
+  text-align: start;
+}
+body.themed.dark-theme .body2 {
+  font-size: 18px;
+  font-family: Open Sans;
+  color: #0c4964;
+  line-height: 100%;
+  font-weight: 600;
+  text-align: start;
+}
+body.themed.dark-theme .body1 {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: white;
+  line-height: 115%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .caption {
+  font-size: 16px;
+  font-family: Open Sans;
+  color: rgba(255, 255, 255, 0.7019607843);
+  line-height: 100%;
+  font-weight: 400;
+  text-align: start;
+}
+body.themed.dark-theme .button {
+  font-size: 14px;
+  font-family: Open Sans;
+  color: white;
+  line-height: 100%;
+  font-weight: 500;
+  text-align: start;
+}
+
+body.themed {
+  background-color: #212121;
+  color: white;
+}
 
 body {
   max-width: 800px;
   margin: 0 auto;
   padding: 5vw;
-}
-
-* {
   font-family: Roboto, Helvetica, Arial, sans-serif;
 }

@@ -4,8 +4,7 @@ final List<String> offlineUrls = [
   r'./.build.manifest',
   r'./.packages',
   r'./favicon.png',
-  r'./main_dev.dart.js',
-  r'./main_prod.dart.js',
+  r'./main.dart.js',
   r'./manifest.json',
   r'./packages/$sdk/_internal/ddc_sdk.sum',
   r'./packages/$sdk/_internal/spec.sum',
@@ -31,6 +30,10 @@ final List<String> offlineUrls = [
   r'./packages/angular_components/material_datepicker/proto/date_range.proto',
   r'./packages/angular_components/src/material_datepicker/closedhand.cur',
   r'./packages/angular_components/src/material_datepicker/openhand.cur',
+  r'./packages/bootstrap_sass/scss/.scss-lint.yml',
+  r'./packages/bootstrap_sass/scss/bootstrap-grid.css',
+  r'./packages/bootstrap_sass/scss/bootstrap-reboot.css',
+  r'./packages/bootstrap_sass/scss/bootstrap.css',
   r'./packages/build_modules/src/analysis_options.default.yaml',
   r'./packages/build_runner/src/server/graph_viz.html',
   r'./packages/build_runner/src/server/graph_viz.js',
@@ -285,9 +288,9 @@ final List<String> offlineUrls = [
   r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Light.ttf',
   r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Regular.ttf',
   r'./packages/toledotechevents_web/assets/images/splash.jpg',
-  r'./pwa_.dart.js',
   r'./styles.css',
+  r'./styles.dart.js',
 ];
 
 /// Last modified timestamp of the files
-final String lastModified = '2018-08-24T05:41:17.496Z';
+final String lastModified = '2018-08-31T03:29:21.993Z';

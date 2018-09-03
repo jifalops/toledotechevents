@@ -7,7 +7,7 @@ import 'package:toledotechevents_web/resources.dart';
   selector: 'event-list',
   styleUrls: [
     // 'package:angular_components/app_layout/layout.scss.css',
-    'event_list.scss.css'
+    'event_list.css'
   ],
   templateUrl: 'event_list.html',
   directives: [
@@ -18,7 +18,7 @@ import 'package:toledotechevents_web/resources.dart';
   ],
 )
 class EventListComponent implements OnInit {
-  EventList events;
+  List<EventListItem> events = [];
   EventListItem selectedEvent;
 
   @override

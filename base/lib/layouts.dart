@@ -36,7 +36,7 @@ class MainNavigation {
 const _navItems = <Page, String>{
   Page.eventList: 'Events',
   Page.createEvent: 'New',
-  Page.venuesList: 'Venues',
+  Page.venueList: 'Venues',
   Page.about: 'About'
 };
 
@@ -46,7 +46,7 @@ MainNavigation _placeMainNavigation(Page page, Theme theme, Display display) {
     case DisplayType.mobile:
       switch (page) {
         case Page.eventList:
-        case Page.venuesList:
+        case Page.venueList:
         case Page.createEvent:
         case Page.about:
           return MainNavigation.bottom;
@@ -65,7 +65,7 @@ List<MenuOption> _getMenuOptions(Page page, Theme theme, Display display) {
       return _eventOptions;
     case Page.venueDetails:
       return _venueOptions;
-    case Page.venuesList:
+    case Page.venueList:
       return _venueListOptions;
     default:
       return _mainOptions;

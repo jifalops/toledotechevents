@@ -4,7 +4,7 @@ class Page {
   // See https://angular.io/guide/router#configuration.
   static const eventList = Page._(null, '/events');
   static const eventDetails = Page._('Event details', '/events/:details');
-  static const venuesList = Page._(null, '/venues');
+  static const venueList = Page._(null, '/venues');
   static const venueDetails = Page._('Venue details', '/venues/:details');
   static const createEvent = Page._(null, '/events/new');
   static const about = Page._(null, '/about');
@@ -13,7 +13,7 @@ class Page {
   static const values = [
     eventList,
     eventDetails,
-    venuesList,
+    venueList,
     venueDetails,
     createEvent,
     about,

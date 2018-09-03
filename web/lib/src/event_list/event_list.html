@@ -1,0 +1,12 @@
+<!-- Components info: https://webdev.dartlang.org/components -->
+
+
+<p *ngIf="events.isEmpty">
+  Nothing events!
+</p>
+
+<material-list *ngIf="events.isNotEmpty" class="dark-theme">
+  <material-list-item *ngFor="let event of events; let i=index">
+    <div>{{event.title}}</div>
+  </material-list-item>
+</material-list>
