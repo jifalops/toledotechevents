@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3c5fcbae-8b1b-40b6-9c9a-7ad42cb846a4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/add-event-autocomplete.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/add-event-picker.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/add-event.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/event-details.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/events.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/icon-full-old.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/icon-full.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/toledotechevents-feature.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/venue-details.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../promo-images/venues.png" beforeDir="false" />
-    </list>
+    <list default="true" id="3c5fcbae-8b1b-40b6-9c9a-7ad42cb846a4" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -82,6 +68,14 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Dart" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
+    <session id="904458221">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.opened" value="1" />
         </counts>
       </usages-collector>
     </session>
@@ -160,8 +154,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/pwa.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="105">
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -173,7 +167,7 @@
         <entry file="file://$PROJECT_DIR$/tool/styles.dart">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
-              <caret line="7" column="20" lean-forward="true" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
+              <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -218,7 +212,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -235,6 +228,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -278,11 +272,12 @@
       <workItem from="1533004834522" duration="8088000" />
       <workItem from="1536254152837" duration="39000" />
       <workItem from="1536254209310" duration="411000" />
+      <workItem from="1536255055231" duration="10000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8538000" />
+    <option name="totallyTimeSpent" value="8548000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -295,7 +290,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="0" width="1636" height="1053" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1816491" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -327,6 +321,7 @@
   <component name="VcsManagerConfiguration">
     <ignored-roots>
       <path value="$PROJECT_DIR$/.." />
+      <path value="$PROJECT_DIR$/../.." />
     </ignored-roots>
   </component>
   <component name="editorHistoryManager">
@@ -415,8 +410,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/web/pwa.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+        <state relative-caret-position="105">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
           </folding>
@@ -426,7 +421,7 @@
     <entry file="file://$PROJECT_DIR$/tool/styles.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="7" column="20" lean-forward="true" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
+          <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>

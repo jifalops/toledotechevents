@@ -220,31 +220,6 @@ class Theme {
       '\$on-surface-color: ${onSurfaceColor.cssValue} !global;',
       '\$on-error-color: ${onErrorColor.cssValue} !global;',
 
-      // Color classes
-      '.primary-color { background-color: \$primary-color; color: \$on-primary-color; }',
-      '.primary-color-light { background-color: \$primary-color-light; color: \$on-primary-color-light; }',
-      '.primary-color-dark { background-color: \$primary-color-dark; color: \$on-primary-color-dark; }',
-      '.secondary-color { background-color: \$secondary-color; color: \$on-secondary-color; }',
-      '.secondary-color-light { background-color: \$secondary-color-light; color: \$on-secondary-color-light; }',
-      '.secondary-color-dark { background-color: \$secondary-color-dark; color: \$on-secondary-color-dark; }',
-      '.background { background-color: \$background-color; color: \$on-background-color; }',
-      '.surface { background-color: \$surface-color; color: \$on-surface-color; }',
-      '.error { background-color: \$error-color; color: \$on-error-color; }',
-      '.divider { background-color: \$divider-color; }',
-
-      // Font classes
-      '.display4 { ${display4.toCss().join(' ')} }',
-      '.display3 { ${display3.toCss().join(' ')} }',
-      '.display2 { ${display2.toCss().join(' ')} }',
-      '.display1 { ${display1.toCss().join(' ')} }',
-      '.headline { ${headline.toCss().join(' ')} }',
-      '.title { ${title.toCss().join(' ')} }',
-      '.subhead { ${subhead.toCss().join(' ')} }',
-      '.body2 { ${body2.toCss().join(' ')} }',
-      '.body1 { ${body1.toCss().join(' ')} }',
-      '.caption { ${caption.toCss().join(' ')} }',
-      '.button { ${button.toCss().join(' ')} }',
-
       // Other
       '\$brightness: ${_brightnessToString(brightness)} !global;',
       '\$input-theme: ${_inputThemeToString(inputTheme)} !global;',
