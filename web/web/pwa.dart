@@ -1,5 +1,5 @@
 import 'package:pwa/worker.dart';
-import 'package:toledotechevents_web/pwa/offline_urls.g.dart' as offline;
+import 'package:toledotechevents_web/src/pwa/offline_urls.g.dart' as offline;
 
 /// The Progressive Web Application's entry point.
 void main() {

@@ -1,16 +1,20 @@
-@import '/home/jacob/code/toledotechevents/web/lib/src/theme.scss';
+@import '../lib/themes';
 body.themed.light-theme {
   @include light-theme;
+  background-color: $background-color;
+  color: $on-background-color;
 }
 
 body.themed.dark-theme {
   @include dark-theme;
-}
-
-body.themed {
   background-color: $background-color;
   color: $on-background-color;
 }
+
+//body.light-theme, body.dark-theme {
+//  background-color: $background-color;
+//  color: $on-background-color;
+//}
 
 body {
   max-width: 800px;

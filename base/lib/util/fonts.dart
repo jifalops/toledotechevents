@@ -31,7 +31,7 @@ class Font {
           {double size,
           String family,
           Color color,
-          double heightFactor,
+          double height,
           int weight,
           bool italic,
           bool underline,
@@ -40,23 +40,23 @@ class Font {
           size: size ?? this.size,
           family: family ?? this.family,
           color: color ?? this.color,
-          height: heightFactor ?? this.height,
+          height: height ?? this.height,
           weight: weight ?? this.weight,
           italic: italic ?? this.italic,
           underline: underline ?? this.underline,
           align: align ?? this.align);
 
   /// Returns a list of CSS properties.
-  List<String> toCss() => [
-        'font-size: ${size}px;',
-        'font-family: $family;',
-        'color: ${color.cssValue};',
-        'line-height: ${height * 100}%;',
-        'font-weight: $weight;',
-        '${italic ? 'font-style: italic;' : ''}',
-        '${underline ? 'text-decoration: underline;' : ''}',
-        'text-align: ${_textAlignToString(align)};',
-      ];
+  String toScssMap() => '''(
+font-size: ${size}px,
+font-family: $family,
+color: ${color.cssValue},
+line-height: $height,
+font-weight: $weight,
+${italic ? 'font-style: italic,' : ''}
+${underline ? 'text-decoration: underline,' : ''}
+text-align: ${_textAlignToString(align)},
+)''';
 }
 
 enum TextAlign {
@@ -166,4 +166,31 @@ class Fonts {
 
   /// size: 14.0, weight: 500, color: Colors.white
   static const buttonWhite = Font(size: 14.0, weight: 500, color: Colors.white);
+}
+
+class FontSet {
+  const FontSet({
+    this.display4: Fonts.display4Black,
+    this.display3: Fonts.display3Black,
+    this.display2: Fonts.display2Black,
+    this.display1: Fonts.display1Black,
+    this.headline: Fonts.headlineBlack,
+    this.title: Fonts.titleBlack,
+    this.subhead: Fonts.subheadBlack,
+    this.body2: Fonts.body2Black,
+    this.body1: Fonts.body1Black,
+    this.caption: Fonts.captionBlack,
+    this.button: Fonts.buttonBlack,
+  });
+  final Font display4;
+  final Font display3;
+  final Font display2;
+  final Font display1;
+  final Font headline;
+  final Font title;
+  final Font subhead;
+  final Font body2;
+  final Font body1;
+  final Font caption;
+  final Font button;
 }

@@ -289,4 +289,10 @@ class Colors {
   ///    but with different opacities.
   ///  * [transparent], a fully-transparent color, not far from this one.
   static const Color white10 = const Color(0x1AFFFFFF);
+
+  /// The default error color from material design.
+  static const error = Color(0xFFB00020);
+
+  /// Text on top of [error].
+  static const onError = Colors.white;
 }

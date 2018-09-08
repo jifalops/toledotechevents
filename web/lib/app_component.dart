@@ -11,7 +11,7 @@ import 'src/event_list/event_list.dart';
 @Component(
   selector: 'my-app',
   styleUrls: [
-    // 'package:angular_components/app_layout/layout.scss',
+//     'package:angular_components/app_layout/layout.scss.css',
     'app_component.css'
   ],
   templateUrl: 'app_component.html',
