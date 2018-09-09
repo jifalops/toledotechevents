@@ -55,11 +55,40 @@ final _lightFonts = FontSet(
   headline: _darkFonts.headline.copyWith(color: Fonts.headlineWhite.color),
   subhead: _darkFonts.subhead.copyWith(color: Fonts.subheadWhite.color),
   body2: _darkFonts.body2, // Uses brand color.
+  body1: _darkFonts.body1.copyWith(color: Fonts.body1White.color),
   caption: _darkFonts.caption.copyWith(color: Fonts.captionWhite.color),
   button: _darkFonts.button.copyWith(color: Fonts.buttonWhite.color),
 );
 
 class Theme {
+  /// The predefined themes.
+  static final values = [Theme.light, Theme.dark];
+  static final defaultTheme = Theme.light;
+
+  /// The business's light theme.
+  static final light = Theme._(
+      name: 'Light',
+      brightness: Brightness.light,
+      fontSet: _darkFonts,
+      // Colors.
+      backgroundColor: Color(0xFFFEFEFE),
+      onBackgroundColor: Colors.black87,
+      surfaceColor: Color(0xFFFEFEFE),
+      onSurfaceColor: Colors.black87,
+      dividerColor: Colors.black12);
+
+  /// The business's dark theme.
+  static final Theme dark = Theme._(
+      name: 'Dark',
+      brightness: Brightness.dark,
+      fontSet: _lightFonts,
+      // Colors.
+      backgroundColor: Color(0xFF333333),
+      onBackgroundColor: Colors.white,
+      surfaceColor: Color(0xFF333333),
+      onSurfaceColor: Colors.white,
+      dividerColor: Colors.white10);
+
   // Brand colors.
   final primaryColor = _primaryColor;
   final onPrimaryColor = _onPrimaryColor;
@@ -130,34 +159,6 @@ class Theme {
         caption = fontSet.caption,
         button = fontSet.button;
 
-  /// The business's light theme.
-  static final light = Theme._(
-      name: 'Light',
-      brightness: Brightness.light,
-      fontSet: _darkFonts,
-      // Colors.
-      backgroundColor: Color(0xFFFEFEFE),
-      onBackgroundColor: Colors.black87,
-      surfaceColor: Color(0xFFFEFEFE),
-      onSurfaceColor: Colors.black87,
-      dividerColor: Colors.black12);
-
-  /// The business's dark theme.
-  static final Theme dark = Theme._(
-      name: 'Dark',
-      brightness: Brightness.dark,
-      fontSet: _lightFonts,
-      // Colors.
-      backgroundColor: Color(0xFF212121),
-      onBackgroundColor: Colors.white,
-      surfaceColor: Color(0xFF212121),
-      onSurfaceColor: Colors.white,
-      dividerColor: Color(0xFF333333));
-
-  /// The statically defined themes.
-  static final values = [Theme.light, Theme.dark];
-  static final defaultTheme = Theme.light;
-
   static Theme fromName(String name) =>
       values.firstWhere((theme) => theme.name == name, orElse: () => null);
 
@@ -204,47 +205,254 @@ class Theme {
   inputTheme: ${_inputThemeToString(inputTheme)},
   buttonCornerRadius: ${buttonCornerRadius}px,
 )''';
-  // `angular_components` global vars.
-  //     mdc-theme-primary: \$primary-color,
-  //     mdc-theme-secondary: \$secondary-color,
-  //     mdc-theme-background: \$background-color,
-  //     mdc-theme-surface: \$surface-color,
-  //     mdc-theme-on-primary: \$on-primary-color,
-  //     mdc-theme-on-secondary: \$on-secondary-color,
-  //     mdc-theme-on-background: \$on-background-color,
-  //     mdc-theme-on-surface: \$on-surface-color,
-  //   ];
-  // }
 
-  // List<String> scssClasses() {
-  //   return [
-  //     // Color classes
-  //     '.primary-color { background-color: \$primary-color; color: \$on-primary-color; }',
-  //     '.primary-color-light { background-color: \$primary-color-light; color: \$on-primary-color-light; }',
-  //     '.primary-color-dark { background-color: \$primary-color-dark; color: \$on-primary-color-dark; }',
-  //     '.secondary-color { background-color: \$secondary-color; color: \$on-secondary-color; }',
-  //     '.secondary-color-light { background-color: \$secondary-color-light; color: \$on-secondary-color-light; }',
-  //     '.secondary-color-dark { background-color: \$secondary-color-dark; color: \$on-secondary-color-dark; }',
-  //     '.background { background-color: \$background-color; color: \$on-background-color; }',
-  //     '.surface { background-color: \$surface-color; color: \$on-surface-color; }',
-  //     '.error { background-color: \$error-color; color: \$on-error-color; }',
-  //     '.divider { background-color: \$divider-color; }',
+  static String combineThemestoScss() {
+    final sb = StringBuffer();
+    Theme.values.forEach((theme) {
+      sb.writeln('// ${theme.name} theme.');
+      sb.writeln('${theme.name.toLowerCase()}: ${theme.toScssMap()},');
+      sb.writeln('');
+    });
+    return '''// GENERATED CONTENT, CHANGES WILL BE LOST.
+@import 'package:angular_components/css/material/material';
+@import 'package:angular_components/css/mdc_web/theme/mixins';
 
-  //     // Font classes
-  //     '.display4 { ${display4.toCss().join(' ')} }',
-  //     '.display3 { ${display3.toCss().join(' ')} }',
-  //     '.display2 { ${display2.toCss().join(' ')} }',
-  //     '.display1 { ${display1.toCss().join(' ')} }',
-  //     '.headline { ${headline.toCss().join(' ')} }',
-  //     '.title { ${title.toCss().join(' ')} }',
-  //     '.subhead { ${subhead.toCss().join(' ')} }',
-  //     '.body2 { ${body2.toCss().join(' ')} }',
-  //     '.body1 { ${body1.toCss().join(' ')} }',
-  //     '.caption { ${caption.toCss().join(' ')} }',
-  //     '.button { ${button.toCss().join(' ')} }',
-  //   ];
-  // }
+//
+// Theme maps.
+//
+\$themes: (
+  ${sb.toString()}
+);
+
+//
+// Themify utility
+//
+$_themifyScss
+
+//
+// Styles
+//
+body {
+  @include themify {
+    // `angular_components` global vars.
+    \$mdc-theme-primary: themed('primaryColor') !global;
+    \$mdc-theme-secondary: themed('secondaryColor') !global;
+    \$mdc-theme-background: themed('backgroundColor') !global;
+    \$mdc-theme-surface: themed('surfaceColor') !global;
+    \$mdc-theme-on-primary: themed('onPrimaryColor') !global;
+    \$mdc-theme-on-secondary: themed('onSecondaryColor') !global;
+    \$mdc-theme-on-background: themed('onBackgroundColor') !global;
+    \$mdc-theme-on-surface: themed('onSurfaceColor') !global;
+  }
 }
+
+// Colors.
+
+.primary-color {
+  @include themify {
+    background-color: themed('primaryColor');
+    color: themed('onPrimaryColor');
+  }
+}
+.primary-color-light {
+  @include themify {
+    background-color: themed('primaryColorLight');
+    color: themed('onPrimaryColorLight');
+  }
+}
+.primary-color-dark {
+  @include themify {
+    background-color: themed('primaryColorDark');
+    color: themed('onPrimaryColorDark');
+  }
+}
+.secondary-color {
+  @include themify {
+    background-color: themed('secondaryColor');
+    color: themed('onSecondaryColor');
+  }
+}
+.secondary-color-light {
+  @include themify {
+    background-color: themed('secondaryColorLight');
+    color: themed('onSecondaryColorLight');
+  }
+}
+.secondary-color-dark {
+  @include themify {
+    background-color: themed('secondaryColorDark');
+    color: themed('onSecondaryColorDark');
+  }
+}
+.background-color {
+  @include themify {
+    background-color: themed('backgroundColor');
+    color: themed('onBackgroundColor');
+  }
+}
+.surface-color {
+  @include themify {
+    background-color: themed('surfaceColor');
+    color: themed('onSurfaceColor');
+  }
+}
+.error {
+  @include themify {
+    background-color: themed('errorColor');
+    color: themed('onErrorColor');
+  }
+}
+.divider {
+  @include themify {
+    background-color: themed('dividerColor');
+  }
+}
+
+// Fonts.
+
+.display4 {
+  @include themify {
+    font: themed2('display4', 'font');
+    text-decoration: themed2('display4', 'text-decoration');
+    color: themed2('display4', 'color');
+  }
+}
+
+.display3 {
+  @include themify {
+    font: themed2('display3', 'font');
+    text-decoration: themed2('display3', 'text-decoration');
+    color: themed2('display3', 'color');
+  }
+}
+
+.display2 {
+  @include themify {
+    font: themed2('display2', 'font');
+    text-decoration: themed2('display2', 'text-decoration');
+    color: themed2('display2', 'color');
+  }
+}
+
+.display1 {
+  @include themify {
+    font: themed2('display1', 'font');
+    text-decoration: themed2('display1', 'text-decoration');
+    color: themed2('display1', 'color');
+  }
+}
+
+.headline {
+  @include themify {
+    font: themed2('headline', 'font');
+    text-decoration: themed2('headline', 'text-decoration');
+    color: themed2('headline', 'color');
+  }
+}
+
+.title {
+  @include themify {
+    font: themed2('title', 'font');
+    text-decoration: themed2('title', 'text-decoration');
+    color: themed2('title', 'color');
+  }
+}
+
+.subhead {
+  @include themify {
+    font: themed2('subhead', 'font');
+    text-decoration: themed2('subhead', 'text-decoration');
+    color: themed2('subhead', 'color');
+  }
+}
+
+.body2 {
+  @include themify {
+    font: themed2('body2', 'font');
+    text-decoration: themed2('body2', 'text-decoration');
+    color: themed2('body2', 'color');
+  }
+}
+
+.body1 {
+  @include themify {
+    font: themed2('body1', 'font');
+    text-decoration: themed2('body1', 'text-decoration');
+    color: themed2('body1', 'color');
+  }
+}
+
+.caption {
+  @include themify {
+    font: themed2('caption', 'font');
+    text-decoration: themed2('caption', 'text-decoration');
+    color: themed2('caption', 'color');
+  }
+}
+
+.button {
+  @include themify {
+    font: themed2('button', 'font');
+    text-decoration: themed2('button', 'text-decoration');
+    color: themed2('button', 'color');
+    border-radius: themed('buttonCornerRadius');
+  }
+}
+
+// Other
+
+.primary-button {
+  @include themify {
+    font: themed2('button', 'font');
+    text-decoration: themed2('button', 'text-decoration');
+    background-color: themed('primaryButtonColor');
+    color: themed('onPrimaryButtonColor');
+    border-radius: themed('buttonCornerRadius');
+  }
+}
+
+.secondary-button {
+  @include themify {
+    font: themed2('button', 'font');
+    text-decoration: themed2('button', 'text-decoration');
+    background-color: themed('secondaryButtonColor');
+    color: themed('onSecondaryButtonColor');
+    border-radius: themed('buttonCornerRadius');
+  }
+}
+''';
+  }
+}
+
+const _themifyScss = r'''
+// See https://medium.com/@dmitriy.borodiy/easy-color-theming-with-scss-bc38fd5734d1
+
+@mixin themify {
+  @each $theme, $map in $themes {
+
+    .theme-#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($themes, $theme), '#{$key}');
+        $theme-map: map-merge($theme-map, ($key: $value)) !global;
+      }
+
+      @content;
+      $theme-map: null !global;
+    }
+
+  }
+}
+
+@function themed($key) {
+  @return map-get($theme-map, $key);
+}
+
+@function themed2($key1, $key2) {
+  @return map-get(themed($key1), $key2);
+}
+''';
+
 
 enum Brightness { light, dark }
 enum InputTheme { fill, outline }

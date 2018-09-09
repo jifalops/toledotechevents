@@ -1,218 +1,409 @@
-// GENERATED FILE, CHANGES WILL BE LOST.
+// GENERATED CONTENT, CHANGES WILL BE LOST.
 @import 'package:angular_components/css/material/material';
 @import 'package:angular_components/css/mdc_web/theme/mixins';
-$themes: (light: ( // Colors.
-primaryColor: rgba(12, 73, 100, 1.0),
-primaryColorLight: rgba(67, 116, 146, 1.0),
-primaryColorDark: rgba(0, 34, 58, 1.0),
-secondaryColor: rgba(141, 198, 65, 1.0),
-secondaryColorLight: rgba(192, 249, 114, 1.0),
-secondaryColorDark: rgba(91, 149, 2, 1.0),
-backgroundColor: rgba(254, 254, 254, 1.0),
-surfaceColor: rgba(254, 254, 254, 1.0),
-dividerColor: rgba(0, 0, 0, 0.12156862745098039),
-errorColor: rgba(176, 0, 32, 1.0),
-onPrimaryColor: rgba(255, 255, 255, 1.0),
-onPrimaryColorLight: rgba(255, 255, 255, 1.0),
-onPrimaryColorDark: rgba(255, 255, 255, 1.0),
-onSecondaryColor: rgba(0, 0, 0, 1.0),
-onSecondaryColorLight: rgba(0, 0, 0, 1.0),
-onSecondaryColorDark: rgba(0, 0, 0, 1.0),
-onBackgroundColor: rgba(0, 0, 0, 0.8666666666666667),
-onSurfaceColor: rgba(0, 0, 0, 0.8666666666666667),
-onErrorColor: rgba(255, 255, 255, 1.0),
-primaryButtonColor: rgba(91, 149, 2, 1.0),
-secondaryButtonColor: rgba(12, 73, 100, 1.0),
-onPrimaryButtonColor: rgba(0, 0, 0, 1.0),
-onSecondaryButtonColor: rgba(255, 255, 255, 1.0),
-// Fonts.
-display4: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(0, 0, 0, 0.5411764705882353),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+
+//
+// Theme maps.
+//
+$themes: (
+  // Light theme.
+light: (
+  // Colors.
+  primaryColor: rgba(12, 73, 100, 1.0),
+  primaryColorLight: rgba(67, 116, 146, 1.0),
+  primaryColorDark: rgba(0, 34, 58, 1.0),
+  secondaryColor: rgba(141, 198, 65, 1.0),
+  secondaryColorLight: rgba(192, 249, 114, 1.0),
+  secondaryColorDark: rgba(91, 149, 2, 1.0),
+  backgroundColor: rgba(254, 254, 254, 1.0),
+  surfaceColor: rgba(254, 254, 254, 1.0),
+  dividerColor: rgba(0, 0, 0, 0.12156862745098039),
+  errorColor: rgba(176, 0, 32, 1.0),
+  onPrimaryColor: rgba(255, 255, 255, 1.0),
+  onPrimaryColorLight: rgba(255, 255, 255, 1.0),
+  onPrimaryColorDark: rgba(255, 255, 255, 1.0),
+  onSecondaryColor: rgba(0, 0, 0, 1.0),
+  onSecondaryColorLight: rgba(0, 0, 0, 1.0),
+  onSecondaryColorDark: rgba(0, 0, 0, 1.0),
+  onBackgroundColor: rgba(0, 0, 0, 0.8666666666666667),
+  onSurfaceColor: rgba(0, 0, 0, 0.8666666666666667),
+  onErrorColor: rgba(255, 255, 255, 1.0),
+  primaryButtonColor: rgba(91, 149, 2, 1.0),
+  secondaryButtonColor: rgba(12, 73, 100, 1.0),
+  onPrimaryButtonColor: rgba(0, 0, 0, 1.0),
+  onSecondaryButtonColor: rgba(255, 255, 255, 1.0),
+  // Fonts.
+  display4: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.5411764705882353)
 ),
-display3: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(0, 0, 0, 0.5411764705882353),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+  display3: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.5411764705882353)
 ),
-display2: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(0, 0, 0, 0.5411764705882353),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+  display2: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.5411764705882353)
 ),
-display1: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(0, 0, 0, 0.5411764705882353),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+  display1: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.5411764705882353)
 ),
-headline: (font-size: 24.0px,
-font-family: Ubuntu,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 2.5,
-font-weight: 700,
-text-align: start,
+  headline: (
+  font:  700 24.0px/2.5 Ubuntu,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.8666666666666667)
 ),
-title: (font-size: 20.0px,
-font-family: Ubuntu,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 1.0,
-font-weight: 700,
-text-align: start,
+  title: (
+  font:  700 20.0px/1.0 Ubuntu,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.8666666666666667)
 ),
-subhead: (font-size: 18.0px,
-font-family: Ubuntu,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 1.75,
-font-weight: 300,
-text-align: start,
+  subhead: (
+  font:  300 18.0px/1.75 Ubuntu,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.8666666666666667)
 ),
-body2: (font-size: 18.0px,
-font-family: Open Sans,
-color: rgba(12, 73, 100, 1.0),
-line-height: 1.0,
-font-weight: 600,
-text-align: start,
+  body2: (
+  font:  600 18.0px/1.0 Open Sans,
+  text-decoration: inherit,
+  color: rgba(12, 73, 100, 1.0)
 ),
-body1: (font-size: 16.0px,
-font-family: Open Sans,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 1.15,
-font-weight: 400,
-text-align: start,
+  body1: (
+  font:  400 16.0px/1.15 Open Sans,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.8666666666666667)
 ),
-caption: (font-size: 16.0px,
-font-family: Open Sans,
-color: rgba(0, 0, 0, 0.5411764705882353),
-line-height: 1.0,
-font-weight: 400,
-text-align: start,
+  caption: (
+  font:  400 16.0px/1.0 Open Sans,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.5411764705882353)
 ),
-button: (font-size: 14.0px,
-font-family: Open Sans,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 1.0,
-font-weight: 500,
-text-align: start,
+  button: (
+  font:  500 14.0px/1.0 Open Sans,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.8666666666666667)
 ),
-// Other.
-brightness: light,
-inputTheme: outline,
-buttonCornerRadius: 4.0px,
+  // Other.
+  brightness: light,
+  inputTheme: outline,
+  buttonCornerRadius: 4.0px,
 ),
-dark: ( // Colors.
-primaryColor: rgba(12, 73, 100, 1.0),
-primaryColorLight: rgba(67, 116, 146, 1.0),
-primaryColorDark: rgba(0, 34, 58, 1.0),
-secondaryColor: rgba(141, 198, 65, 1.0),
-secondaryColorLight: rgba(192, 249, 114, 1.0),
-secondaryColorDark: rgba(91, 149, 2, 1.0),
-backgroundColor: rgba(33, 33, 33, 1.0),
-surfaceColor: rgba(33, 33, 33, 1.0),
-dividerColor: rgba(51, 51, 51, 1.0),
-errorColor: rgba(176, 0, 32, 1.0),
-onPrimaryColor: rgba(255, 255, 255, 1.0),
-onPrimaryColorLight: rgba(255, 255, 255, 1.0),
-onPrimaryColorDark: rgba(255, 255, 255, 1.0),
-onSecondaryColor: rgba(0, 0, 0, 1.0),
-onSecondaryColorLight: rgba(0, 0, 0, 1.0),
-onSecondaryColorDark: rgba(0, 0, 0, 1.0),
-onBackgroundColor: rgba(255, 255, 255, 1.0),
-onSurfaceColor: rgba(255, 255, 255, 1.0),
-onErrorColor: rgba(255, 255, 255, 1.0),
-primaryButtonColor: rgba(91, 149, 2, 1.0),
-secondaryButtonColor: rgba(12, 73, 100, 1.0),
-onPrimaryButtonColor: rgba(0, 0, 0, 1.0),
-onSecondaryButtonColor: rgba(255, 255, 255, 1.0),
-// Fonts.
-display4: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(255, 255, 255, 0.7019607843137254),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+
+// Dark theme.
+dark: (
+  // Colors.
+  primaryColor: rgba(12, 73, 100, 1.0),
+  primaryColorLight: rgba(67, 116, 146, 1.0),
+  primaryColorDark: rgba(0, 34, 58, 1.0),
+  secondaryColor: rgba(141, 198, 65, 1.0),
+  secondaryColorLight: rgba(192, 249, 114, 1.0),
+  secondaryColorDark: rgba(91, 149, 2, 1.0),
+  backgroundColor: rgba(51, 51, 51, 1.0),
+  surfaceColor: rgba(51, 51, 51, 1.0),
+  dividerColor: rgba(255, 255, 255, 0.10196078431372549),
+  errorColor: rgba(176, 0, 32, 1.0),
+  onPrimaryColor: rgba(255, 255, 255, 1.0),
+  onPrimaryColorLight: rgba(255, 255, 255, 1.0),
+  onPrimaryColorDark: rgba(255, 255, 255, 1.0),
+  onSecondaryColor: rgba(0, 0, 0, 1.0),
+  onSecondaryColorLight: rgba(0, 0, 0, 1.0),
+  onSecondaryColorDark: rgba(0, 0, 0, 1.0),
+  onBackgroundColor: rgba(255, 255, 255, 1.0),
+  onSurfaceColor: rgba(255, 255, 255, 1.0),
+  onErrorColor: rgba(255, 255, 255, 1.0),
+  primaryButtonColor: rgba(91, 149, 2, 1.0),
+  secondaryButtonColor: rgba(12, 73, 100, 1.0),
+  onPrimaryButtonColor: rgba(0, 0, 0, 1.0),
+  onSecondaryButtonColor: rgba(255, 255, 255, 1.0),
+  // Fonts.
+  display4: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 0.7019607843137254)
 ),
-display3: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(255, 255, 255, 0.7019607843137254),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+  display3: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 0.7019607843137254)
 ),
-display2: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(255, 255, 255, 0.7019607843137254),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+  display2: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 0.7019607843137254)
 ),
-display1: (font-size: 112.0px,
-font-family: Roboto,
-color: rgba(255, 255, 255, 0.7019607843137254),
-line-height: 1.0,
-font-weight: 100,
-text-align: start,
+  display1: (
+  font:  100 112.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 0.7019607843137254)
 ),
-headline: (font-size: 24.0px,
-font-family: Ubuntu,
-color: rgba(255, 255, 255, 1.0),
-line-height: 2.5,
-font-weight: 700,
-text-align: start,
+  headline: (
+  font:  700 24.0px/2.5 Ubuntu,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 1.0)
 ),
-title: (font-size: 20.0px,
-font-family: Roboto,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 1.0,
-font-weight: 500,
-text-align: start,
+  title: (
+  font:  500 20.0px/1.0 Roboto,
+  text-decoration: inherit,
+  color: rgba(0, 0, 0, 0.8666666666666667)
 ),
-subhead: (font-size: 18.0px,
-font-family: Ubuntu,
-color: rgba(255, 255, 255, 1.0),
-line-height: 1.75,
-font-weight: 300,
-text-align: start,
+  subhead: (
+  font:  300 18.0px/1.75 Ubuntu,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 1.0)
 ),
-body2: (font-size: 18.0px,
-font-family: Open Sans,
-color: rgba(12, 73, 100, 1.0),
-line-height: 1.0,
-font-weight: 600,
-text-align: start,
+  body2: (
+  font:  600 18.0px/1.0 Open Sans,
+  text-decoration: inherit,
+  color: rgba(12, 73, 100, 1.0)
 ),
-body1: (font-size: 14.0px,
-font-family: Roboto,
-color: rgba(0, 0, 0, 0.8666666666666667),
-line-height: 1.0,
-font-weight: 400,
-text-align: start,
+  body1: (
+  font:  400 16.0px/1.15 Open Sans,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 1.0)
 ),
-caption: (font-size: 16.0px,
-font-family: Open Sans,
-color: rgba(255, 255, 255, 0.7019607843137254),
-line-height: 1.0,
-font-weight: 400,
-text-align: start,
+  caption: (
+  font:  400 16.0px/1.0 Open Sans,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 0.7019607843137254)
 ),
-button: (font-size: 14.0px,
-font-family: Open Sans,
-color: rgba(255, 255, 255, 1.0),
-line-height: 1.0,
-font-weight: 500,
-text-align: start,
+  button: (
+  font:  500 14.0px/1.0 Open Sans,
+  text-decoration: inherit,
+  color: rgba(255, 255, 255, 1.0)
 ),
-// Other.
-brightness: dark,
-inputTheme: outline,
-buttonCornerRadius: 4.0px,
+  // Other.
+  brightness: dark,
+  inputTheme: outline,
+  buttonCornerRadius: 4.0px,
 ),
+
+
 );
+
+//
+// Themify utility
+//
+// See https://medium.com/@dmitriy.borodiy/easy-color-theming-with-scss-bc38fd5734d1
+
+@mixin themify {
+  @each $theme, $map in $themes {
+
+    .theme-#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($themes, $theme), '#{$key}');
+        $theme-map: map-merge($theme-map, ($key: $value)) !global;
+      }
+
+      @content;
+      $theme-map: null !global;
+    }
+
+  }
+}
+
+@function themed($key) {
+  @return map-get($theme-map, $key);
+}
+
+@function themed2($key1, $key2) {
+  @return map-get(themed($key1), $key2);
+}
+
+
+//
+// Styles
+//
+body {
+  @include themify {
+    // `angular_components` global vars.
+    $mdc-theme-primary: themed('primaryColor') !global;
+    $mdc-theme-secondary: themed('secondaryColor') !global;
+    $mdc-theme-background: themed('backgroundColor') !global;
+    $mdc-theme-surface: themed('surfaceColor') !global;
+    $mdc-theme-on-primary: themed('onPrimaryColor') !global;
+    $mdc-theme-on-secondary: themed('onSecondaryColor') !global;
+    $mdc-theme-on-background: themed('onBackgroundColor') !global;
+    $mdc-theme-on-surface: themed('onSurfaceColor') !global;
+  }
+}
+
+// Colors.
+
+.primary-color {
+  @include themify {
+    background-color: themed('primaryColor');
+    color: themed('onPrimaryColor');
+  }
+}
+.primary-color-light {
+  @include themify {
+    background-color: themed('primaryColorLight');
+    color: themed('onPrimaryColorLight');
+  }
+}
+.primary-color-dark {
+  @include themify {
+    background-color: themed('primaryColorDark');
+    color: themed('onPrimaryColorDark');
+  }
+}
+.secondary-color {
+  @include themify {
+    background-color: themed('secondaryColor');
+    color: themed('onSecondaryColor');
+  }
+}
+.secondary-color-light {
+  @include themify {
+    background-color: themed('secondaryColorLight');
+    color: themed('onSecondaryColorLight');
+  }
+}
+.secondary-color-dark {
+  @include themify {
+    background-color: themed('secondaryColorDark');
+    color: themed('onSecondaryColorDark');
+  }
+}
+.background-color {
+  @include themify {
+    background-color: themed('backgroundColor');
+    color: themed('onBackgroundColor');
+  }
+}
+.surface-color {
+  @include themify {
+    background-color: themed('surfaceColor');
+    color: themed('onSurfaceColor');
+  }
+}
+.error {
+  @include themify {
+    background-color: themed('errorColor');
+    color: themed('onErrorColor');
+  }
+}
+.divider {
+  @include themify {
+    background-color: themed('dividerColor');
+  }
+}
+
+// Fonts.
+
+.display4 {
+  @include themify {
+    font: themed2('display4', 'font');
+    text-decoration: themed2('display4', 'text-decoration');
+    color: themed2('display4', 'color');
+  }
+}
+
+.display3 {
+  @include themify {
+    font: themed2('display3', 'font');
+    text-decoration: themed2('display3', 'text-decoration');
+    color: themed2('display3', 'color');
+  }
+}
+
+.display2 {
+  @include themify {
+    font: themed2('display2', 'font');
+    text-decoration: themed2('display2', 'text-decoration');
+    color: themed2('display2', 'color');
+  }
+}
+
+.display1 {
+  @include themify {
+    font: themed2('display1', 'font');
+    text-decoration: themed2('display1', 'text-decoration');
+    color: themed2('display1', 'color');
+  }
+}
+
+.headline {
+  @include themify {
+    font: themed2('headline', 'font');
+    text-decoration: themed2('headline', 'text-decoration');
+    color: themed2('headline', 'color');
+  }
+}
+
+.title {
+  @include themify {
+    font: themed2('title', 'font');
+    text-decoration: themed2('title', 'text-decoration');
+    color: themed2('title', 'color');
+  }
+}
+
+.subhead {
+  @include themify {
+    font: themed2('subhead', 'font');
+    text-decoration: themed2('subhead', 'text-decoration');
+    color: themed2('subhead', 'color');
+  }
+}
+
+.body2 {
+  @include themify {
+    font: themed2('body2', 'font');
+    text-decoration: themed2('body2', 'text-decoration');
+    color: themed2('body2', 'color');
+  }
+}
+
+.body1 {
+  @include themify {
+    font: themed2('body1', 'font');
+    text-decoration: themed2('body1', 'text-decoration');
+    color: themed2('body1', 'color');
+  }
+}
+
+.caption {
+  @include themify {
+    font: themed2('caption', 'font');
+    text-decoration: themed2('caption', 'text-decoration');
+    color: themed2('caption', 'color');
+  }
+}
+
+.button {
+  @include themify {
+    font: themed2('button', 'font');
+    text-decoration: themed2('button', 'text-decoration');
+    color: themed2('button', 'color');
+    border-radius: themed('buttonCornerRadius');
+  }
+}
+
+// Other
+
+.primary-button {
+  @include themify {
+    font: themed2('button', 'font');
+    text-decoration: themed2('button', 'text-decoration');
+    background-color: themed('primaryButtonColor');
+    color: themed('onPrimaryButtonColor');
+    border-radius: themed('buttonCornerRadius');
+  }
+}
+
+.secondary-button {
+  @include themify {
+    font: themed2('button', 'font');
+    text-decoration: themed2('button', 'text-decoration');
+    background-color: themed('secondaryButtonColor');
+    color: themed('onSecondaryButtonColor');
+    border-radius: themed('buttonCornerRadius');
+  }
+}

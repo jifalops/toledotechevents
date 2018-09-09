@@ -1,24 +1,16 @@
 @import '../lib/themes';
-body.themed.light-theme {
-  @include light-theme;
-  background-color: $background-color;
-  color: $on-background-color;
-}
 
-body.themed.dark-theme {
-  @include dark-theme;
-  background-color: $background-color;
-  color: $on-background-color;
+* {
+  @include themify {
+    background-color: themed('backgroundColor');
+    color: themed('onBackgroundColor');
+    font: themed2('body1', 'font');
+  }
 }
-
-//body.light-theme, body.dark-theme {
-//  background-color: $background-color;
-//  color: $on-background-color;
-//}
 
 body {
   max-width: 800px;
   margin: 0 auto;
   padding: 5vw;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  //font-family: Roboto, Helvetica, Arial, sans-serif;
 }

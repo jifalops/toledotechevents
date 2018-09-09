@@ -5,7 +5,7 @@
   Nothing events!
 </p>
 
-<material-list *ngIf="events.isNotEmpty" class="dark-theme">
+<material-list *ngIf="events.isNotEmpty">
   <material-list-item *ngFor="let event of events; let i=index">
     <div>{{event.title}}</div>
   </material-list-item>

@@ -9,20 +9,8 @@ void main() async {
 }
 
 Future<void> _generateThemeScss() async {
-  final sb = StringBuffer();
-  sb.writeln('// GENERATED FILE, CHANGES WILL BE LOST.');
-  sb.writeln("@import 'package:angular_components/css/material/material';");
-//  sb.writeln("@import 'package:angular_components/css/mdc_web/theme/mixins';");
-  sb.writeln(r'$themes: (');
-  Theme.values.forEach((theme) {
-    final name = theme.name.toLowerCase();
-    sb.writeln('// $name theme.');
-    sb.writeln('$name: ${theme.toScssMap()},');
-    sb.writeln('');
-  });
-  sb.writeln(');');
   final file = File('lib/_themes.scss');
-  await file.writeAsString(sb.toString(), flush: true);
+  await file.writeAsString(Theme.combineThemestoScss(), flush: true);
   await Future.delayed(Duration(seconds: 3));
 }
 

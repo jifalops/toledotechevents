@@ -12,8 +12,7 @@ class Font {
       this.height: 1.0,
       this.weight: 400,
       this.italic: false,
-      this.underline: false,
-      this.align: TextAlign.start});
+      this.underline: false});
 
   final double size;
   final String family;
@@ -24,7 +23,7 @@ class Font {
 
   /// The line-height factor where 1.0 is the default line height.
   final double height;
-  final TextAlign align;
+  // final TextAlign align;
 
   /// Returns a new [Font] with the desired changes to this [Font].
   Font copyWith(
@@ -34,8 +33,7 @@ class Font {
           double height,
           int weight,
           bool italic,
-          bool underline,
-          TextAlign align}) =>
+          bool underline}) =>
       Font(
           size: size ?? this.size,
           family: family ?? this.family,
@@ -43,54 +41,14 @@ class Font {
           height: height ?? this.height,
           weight: weight ?? this.weight,
           italic: italic ?? this.italic,
-          underline: underline ?? this.underline,
-          align: align ?? this.align);
+          underline: underline ?? this.underline);
 
   /// Returns a list of CSS properties.
   String toScssMap() => '''(
-font-size: ${size}px,
-font-family: $family,
-color: ${color.cssValue},
-line-height: $height,
-font-weight: $weight,
-${italic ? 'font-style: italic,' : ''}
-${underline ? 'text-decoration: underline,' : ''}
-text-align: ${_textAlignToString(align)},
+  font: ${italic ? 'italic' : ''} $weight ${size}px/$height $family,
+  text-decoration: ${underline ? 'underline' : 'inherit'},
+  color: ${color.cssValue}
 )''';
-}
-
-enum TextAlign {
-  left,
-  right,
-  center,
-  justify,
-
-  /// Left when the text direction is LTR (left to right) or
-  /// right when the text direction is RTL (right to left).
-  start,
-
-  /// Right when the text direction is LTR (left to right) or
-  /// left when the text direction is RTL (right to left).
-  end,
-}
-
-String _textAlignToString(TextAlign align) {
-  switch (align) {
-    case TextAlign.left:
-      return 'left';
-    case TextAlign.right:
-      return 'right';
-    case TextAlign.center:
-      return 'center';
-    case TextAlign.justify:
-      return 'justify';
-    case TextAlign.start:
-      return 'start';
-    case TextAlign.end:
-      return 'end';
-    default:
-      return '';
-  }
 }
 
 /// Default fonts from material design.
