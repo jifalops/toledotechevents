@@ -21,7 +21,7 @@ const _onSecondaryColor = Colors.black;
 const _secondaryColorLight = Color(0xFFC0F972);
 const _onSecondaryColorLight = _onSecondaryColor;
 const _secondaryColorDark = Color(0xFF5B9502);
-const _onSecondaryColorDark = _onSecondaryColor;
+const _onSecondaryColorDark = Colors.white;
 
 // Other theme-independent properties.
 const _errorColor = Colors.error;
@@ -75,7 +75,7 @@ class Theme {
       onBackgroundColor: Colors.black87,
       surfaceColor: Color(0xFFFEFEFE),
       onSurfaceColor: Colors.black87,
-      dividerColor: Colors.black12);
+      dividerColor: Color(0xFFEEEEEE));
 
   /// The business's dark theme.
   static final Theme dark = Theme._(
@@ -87,7 +87,7 @@ class Theme {
       onBackgroundColor: Colors.white,
       surfaceColor: Color(0xFF333333),
       onSurfaceColor: Colors.white,
-      dividerColor: Colors.white10);
+      dividerColor: Color(0xFF484848));
 
   // Brand colors.
   final primaryColor = _primaryColor;
