@@ -232,6 +232,24 @@ $_themifyScss
 //
 // Styles
 //
+
+// Fonts
+@font-face {
+  font-family: 'Open Sans';
+  src: url('packages/toledotechevents/assets/fonts/OpenSans-Regular.ttf') format('truetype'),
+    url('packages/toledotechevents/assets/fonts/OpenSans-SemiBold.ttf') format('truetype'),
+    url('packages/toledotechevents/assets/fonts/OpenSans-Light.ttf') format('truetype'),
+    url('packages/toledotechevents/assets/fonts/OpenSans-Bold.ttf') format('truetype'),
+    url('packages/toledotechevents/assets/fonts/OpenSans-Italic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('packages/toledotechevents/assets/fonts/Ubuntu-Regular.ttf') format('truetype'),
+    url('packages/toledotechevents/assets/fonts/Ubuntu-Bold.ttf') format('truetype'),
+    url('packages/toledotechevents/assets/fonts/Ubuntu-Light.ttf') format('truetype');
+}
+
+// Material design Sass globals.
 body {
   @include themify {
     // `angular_components` global vars.
@@ -452,7 +470,6 @@ const _themifyScss = r'''
   @return map-get(themed($key1), $key2);
 }
 ''';
-
 
 enum Brightness { light, dark }
 enum InputTheme { fill, outline }
