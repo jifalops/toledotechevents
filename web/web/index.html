@@ -15,7 +15,7 @@
 <body>
   <my-app>
     <style>
-      .container {
+      .splash {
         background-color: #0C4964;
         position: absolute;
         top: 0;
@@ -28,14 +28,20 @@
         justify-content: center;
         align-items: center;
       }
-      .splash {
+      img {
         height: 125px;
         width: 256px;
       }
+      .loading {
+        background-color: #0C4964;
+        font: 16px 'Ubuntu';
+        position: absolute;
+        bottom: 100px;
+      }
     </style>
-    <div class="container">
-      <img class="splash" src="packages/toledotechevents/assets/images/splash.jpg" alt="Splash"/>
-      Loading...
+    <div class="splash">
+      <img src="packages/toledotechevents/assets/images/splash.jpg" alt="Splash"/>
+      <div class="loading">Loading...</div>
     </div>
   </my-app>
 </body>

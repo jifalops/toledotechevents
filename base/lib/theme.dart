@@ -1,11 +1,10 @@
 // See the theme at material.io: https://goo.gl/qC57Cd
-
 import 'package:meta/meta.dart';
-import 'util/colors.dart';
-import 'util/fonts.dart';
+import 'package:toledotechevents/util/colors.dart';
+import 'package:toledotechevents/util/fonts.dart';
 
-export 'util/colors.dart';
-export 'util/fonts.dart';
+export 'package:toledotechevents/util/colors.dart';
+export 'package:toledotechevents/util/fonts.dart';
 
 // Set theme defaults here.
 
@@ -236,17 +235,41 @@ $_themifyScss
 // Fonts
 @font-face {
   font-family: 'Open Sans';
-  src: url('packages/toledotechevents/assets/fonts/OpenSans-Regular.ttf') format('truetype'),
-    url('packages/toledotechevents/assets/fonts/OpenSans-SemiBold.ttf') format('truetype'),
-    url('packages/toledotechevents/assets/fonts/OpenSans-Light.ttf') format('truetype'),
-    url('packages/toledotechevents/assets/fonts/OpenSans-Bold.ttf') format('truetype'),
-    url('packages/toledotechevents/assets/fonts/OpenSans-Italic.ttf') format('truetype');
+  src: url('packages/toledotechevents/assets/fonts/OpenSans-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-weight: 500;
+  src: url('packages/toledotechevents/assets/fonts/OpenSans-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-weight: 300;
+  src: url('packages/toledotechevents/assets/fonts/OpenSans-Light.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-weight: 700;
+  src: url('packages/toledotechevents/assets/fonts/OpenSans-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  src: url('packages/toledotechevents/assets/fonts/OpenSans-Italic.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Ubuntu';
-  src: url('packages/toledotechevents/assets/fonts/Ubuntu-Regular.ttf') format('truetype'),
-    url('packages/toledotechevents/assets/fonts/Ubuntu-Bold.ttf') format('truetype'),
-    url('packages/toledotechevents/assets/fonts/Ubuntu-Light.ttf') format('truetype');
+  src: url('packages/toledotechevents/assets/fonts/Ubuntu-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Ubuntu';
+  font-weight: 300;
+  src: url('packages/toledotechevents/assets/fonts/Ubuntu-Light.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Ubuntu';
+  font-weight: 700;
+  src: url('packages/toledotechevents/assets/fonts/Ubuntu-Bold.ttf') format('truetype');
 }
 
 // Material design Sass globals.
