@@ -16,7 +16,7 @@
     </nav>
   </div>
 </header> -->
-<span class="primary-button">Click</span>
-<span class="secondary-button">Click</span>
+<span class="primary-button" (click)="setTheme('Light')">Light theme</span>
+<span class="primary-button" (click)="setTheme('Dark')">Dark Theme</span>
+<span class="secondary-button" (click)="toggleSplash()">Toggle Splash</span>
 <event-list></event-list>
-<splash-screen></splash-screen>

@@ -9,6 +9,7 @@ import 'package:toledotechevents_web/resources.dart';
 const DEBUG = true;
 
 void main() {
+  print('Main started');
   BuildConfig.init(
       flavor: BuildFlavor.production,
       baseUrl: 'http://toledotechevents.org',
@@ -27,8 +28,19 @@ void main() {
 }
 
 void handleLoadingScreen() async {
-  final bloc = SplashBloc(resources, forceReload: !DEBUG);
-  final div = querySelector('#loading');
-  bloc.percent.listen((percent) => div.text = '$percent%');
-  bloc.loaded.listen((_) => runApp(ng.AppComponentNgFactory));
+  resources.splash.get().then((showSplash) {
+    print('showsplash: $showSplash');
+    if (showSplash) {
+      final bloc = SplashBloc(resources, forceReload: !DEBUG);
+      final divs = querySelectorAll('.loading');
+      bloc.percent.listen((percent) => divs.forEach((div) => div.text = '$percent%'));
+      bloc.loaded.listen((_) {
+        runApp(ng.AppComponentNgFactory);
+      });
+    } else {
+      runApp(ng.AppComponentNgFactory);
+    }
+  });
+
+
 }

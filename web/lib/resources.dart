@@ -12,7 +12,7 @@ class WebResources extends Resources {
   WebResources._()
       : super(
             splash: StorageEntry<bool>('splash',
-                parser: (contents) => contents == 'true'),
+                parser: (contents) => contents == null ? true : contents == 'true'),
             theme: StorageEntry<String>('theme'),
             eventList: ServiceWorkerResource<EventList>(
               strategy: CacheStrategy.cacheFirst,

@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:toledotechevents/bloc/app_bloc.dart';
@@ -26,12 +27,22 @@ class AppComponent implements OnInit {
   final resources = res.resources;
   final appBloc = AppBloc(res.resources);
 
-  bool initialized = false;
-  bool showSplash;
+
 
   @override
   void ngOnInit() async {
-    showSplash = (await res.resources.splash.get()) ?? false;
-    initialized = true;
+//    showSplash = (await res.resources.splash.get()) ?? false;
+//    initialized = true;
+  }
+
+  void setTheme(String theme) async {
+    if (theme == await resources.theme.get()) return;
+    document.documentElement.className = 'theme-${theme.toLowerCase()}';
+    resources.theme.write(theme);
+  }
+
+  void toggleSplash() async {
+    final value = !(await resources.splash.get());
+    resources.splash.write(value.toString());
   }
 }
