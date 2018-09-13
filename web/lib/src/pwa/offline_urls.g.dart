@@ -279,18 +279,18 @@ final List<String> offlineUrls = [
   r'./packages/kernel/text/readme.md',
   r'./packages/node_preamble/preamble.js',
   r'./packages/node_preamble/preamble.min.js',
-  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Bold.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Italic.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Light.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/OpenSans-Regular.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/OpenSans-SemiBold.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Bold.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Light.ttf',
-  r'./packages/toledotechevents_web/assets/fonts/Ubuntu-Regular.ttf',
-  r'./packages/toledotechevents_web/assets/images/splash.jpg',
+  r'./packages/pedantic/analysis_options.yaml',
+  r'./packages/toledotechevents/assets/fonts/OpenSans-Bold.ttf',
+  r'./packages/toledotechevents/assets/fonts/OpenSans-Italic.ttf',
+  r'./packages/toledotechevents/assets/fonts/OpenSans-Light.ttf',
+  r'./packages/toledotechevents/assets/fonts/OpenSans-Regular.ttf',
+  r'./packages/toledotechevents/assets/fonts/OpenSans-SemiBold.ttf',
+  r'./packages/toledotechevents/assets/fonts/Ubuntu-Bold.ttf',
+  r'./packages/toledotechevents/assets/fonts/Ubuntu-Light.ttf',
+  r'./packages/toledotechevents/assets/fonts/Ubuntu-Regular.ttf',
+  r'./packages/toledotechevents/assets/images/splash.jpg',
   r'./styles.css',
-  r'./styles.dart.js',
 ];
 
 /// Last modified timestamp of the files
-final String lastModified = '2018-08-31T03:29:21.993Z';
+final String lastModified = '2018-09-11T21:14:00.148Z';

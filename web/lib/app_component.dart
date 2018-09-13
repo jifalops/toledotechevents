@@ -2,7 +2,6 @@ import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:toledotechevents/bloc/app_bloc.dart';
 import 'resources.dart' as res;
-import 'src/splash/splash.dart';
 import 'src/event_list/event_list.dart';
 
 // AngularDart info: https://webdev.dartlang.org/angular
@@ -11,14 +10,13 @@ import 'src/event_list/event_list.dart';
 @Component(
   selector: 'my-app',
   styleUrls: [
-//     'package:angular_components/app_layout/layout.scss.css',
+    'package:angular_components/app_layout/layout.scss.css',
     'app_component.css'
   ],
   templateUrl: 'app_component.html',
   directives: [
-    SplashComponent,
     EventListComponent,
-    // MaterialButtonComponent,
+     MaterialButtonComponent,
     // MaterialIconComponent,
     NgIf,
     NgClass

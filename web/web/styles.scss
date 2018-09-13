@@ -1,4 +1,6 @@
 @import '../lib/themes';
+@import 'package:angular_components/css/material/shadow';
+@import 'package:angular_components/material_button/mixins';
 
 * {
   @include themify {
@@ -6,6 +8,16 @@
     color: themed('onBackgroundColor');
     font: themed2('body1', 'font');
   }
+}
+
+button, .button, .primary-button, .secondary-button {
+  @include material-button;
+}
+.primary-button {
+  @include shadow-elevation(8);
+}
+.secondary-button {
+  //@include shadow-elevation(2);
 }
 
 body {

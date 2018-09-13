@@ -445,21 +445,25 @@ body {
 .primary-button {
   @include themify {
     font: themed2('button', 'font');
+    font-size: 16px;
     text-decoration: themed2('button', 'text-decoration');
     background-color: themed('primaryButtonColor');
     color: themed('onPrimaryButtonColor');
     border-radius: themed('buttonCornerRadius');
   }
+  padding: 4px 8px;
 }
 
 .secondary-button {
   @include themify {
     font: themed2('button', 'font');
+    font-size: 16px;
     text-decoration: themed2('button', 'text-decoration');
     background-color: themed('secondaryButtonColor');
     color: themed('onSecondaryButtonColor');
     border-radius: themed('buttonCornerRadius');
   }
+  padding: 4px 8px;
 }
 ''';
   }

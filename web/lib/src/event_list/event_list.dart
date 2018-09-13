@@ -24,6 +24,6 @@ class EventListComponent implements OnInit {
   @override
   void ngOnInit() async {
     events = await resources.eventList.get();
-    print('Events: ${events?.length}');
+    // print('Events: ${events?.length}');
   }
 }
