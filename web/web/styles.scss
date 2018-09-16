@@ -2,27 +2,46 @@
 @import 'package:angular_components/css/material/shadow';
 @import 'package:angular_components/material_button/mixins';
 
-* {
+*:not(material-ripple):not([class*="material-"]) {
   @include themify {
     background-color: themed('backgroundColor');
     color: themed('onBackgroundColor');
-    font: themed2('body1', 'font');
+    font: themed('body1', 'font');
   }
 }
+material-ripple *, [class*="material-"] * {
+  background-color: transparent !important;
+  color: inherit !important;
+}
 
-button, .button, .primary-button, .secondary-button {
-  @include material-button;
-}
-.primary-button {
+material-button.primary .content {
+  @include primary-button;
   @include shadow-elevation(8);
+  font-weight: 400;
+  text-transform: none;
 }
-.secondary-button {
-  //@include shadow-elevation(2);
+material-button.secondary .content {
+  @include secondary-button;
+  font-weight: 400;
+  text-transform: none;
+  //@include themify {
+  //  background-color: themed('primaryColorLight');
+  //}
 }
+
+//material-button.primary-button:not([disabled]) .content {
+//  @include themify() {
+//    background-color: themed('primaryButtonColor');
+//    color: themed('onPrimaryButtonColor');
+//  }
+//}
+
 
 body {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 5vw;
+  //max-width: 800px;
+  //margin: 0 auto;
+  margin: 0;
+  padding: 0;
+  //padding: 0 5vw;
   //font-family: Roboto, Helvetica, Arial, sans-serif;
 }

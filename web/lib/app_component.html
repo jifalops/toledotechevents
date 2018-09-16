@@ -1,8 +1,5 @@
-<!-- <header class="material-header">
+<header class="material-header shadow">
   <div class="material-header-row">
-    <material-button icon class="material-drawer-button" (trigger)="drawer.toggle()">
-      <material-icon icon="menu"></material-icon>
-    </material-button>
     <span class="material-header-title">Simple Layout</span>
     <div class="material-spacer"></div>
     <nav class="material-navigation">
@@ -15,8 +12,9 @@
       <a>Link 3</a>
     </nav>
   </div>
-</header> -->
-<span class="primary-button" (click)="setTheme('Light')">Light theme</span>
-<span class="primary-button" (click)="setTheme('Dark')">Dark Theme</span>
-<span class="secondary-button" (click)="toggleSplash()">Toggle Splash</span>
+</header>
+<p></p>
+<material-button class="primary" (trigger)="setTheme('Light')">Light theme</material-button>
+<material-button class="primary" (trigger)="setTheme('Dark')">Dark theme</material-button>
+<material-button class="secondary" (trigger)="toggleSplash()">Toggle Splash</material-button>
 <event-list></event-list>

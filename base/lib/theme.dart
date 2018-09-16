@@ -214,7 +214,6 @@ class Theme {
     });
     return '''// GENERATED CONTENT, CHANGES WILL BE LOST.
 @import 'package:angular_components/css/material/material';
-@import 'package:angular_components/css/mdc_web/theme/mixins';
 
 //
 // Theme maps.
@@ -229,10 +228,9 @@ class Theme {
 $_themifyScss
 
 //
-// Styles
+// Font faces
 //
 
-// Fonts
 @font-face {
   font-family: 'Open Sans';
   src: url('packages/toledotechevents/assets/fonts/OpenSans-Regular.ttf') format('truetype');
@@ -272,181 +270,170 @@ $_themifyScss
   src: url('packages/toledotechevents/assets/fonts/Ubuntu-Bold.ttf') format('truetype');
 }
 
-// Material design Sass globals.
-body {
-  @include themify {
-    // `angular_components` global vars.
-    \$mdc-theme-primary: themed('primaryColor') !global;
-    \$mdc-theme-secondary: themed('secondaryColor') !global;
-    \$mdc-theme-background: themed('backgroundColor') !global;
-    \$mdc-theme-surface: themed('surfaceColor') !global;
-    \$mdc-theme-on-primary: themed('onPrimaryColor') !global;
-    \$mdc-theme-on-secondary: themed('onSecondaryColor') !global;
-    \$mdc-theme-on-background: themed('onBackgroundColor') !global;
-    \$mdc-theme-on-surface: themed('onSurfaceColor') !global;
-  }
-}
+//
+// Color mixins.
+//
 
-// Colors.
-
-.primary-color {
+@mixin primary-color {
   @include themify {
     background-color: themed('primaryColor');
     color: themed('onPrimaryColor');
   }
 }
-.primary-color-light {
+@mixin primary-color-light {
   @include themify {
     background-color: themed('primaryColorLight');
     color: themed('onPrimaryColorLight');
   }
 }
-.primary-color-dark {
+@mixin primary-color-dark {
   @include themify {
     background-color: themed('primaryColorDark');
     color: themed('onPrimaryColorDark');
   }
 }
-.secondary-color {
+@mixin secondary-color {
   @include themify {
     background-color: themed('secondaryColor');
     color: themed('onSecondaryColor');
   }
 }
-.secondary-color-light {
+@mixin secondary-color-light {
   @include themify {
     background-color: themed('secondaryColorLight');
     color: themed('onSecondaryColorLight');
   }
 }
-.secondary-color-dark {
+@mixin secondary-color-dark {
   @include themify {
     background-color: themed('secondaryColorDark');
     color: themed('onSecondaryColorDark');
   }
 }
-.background-color {
+@mixin background-color {
   @include themify {
     background-color: themed('backgroundColor');
     color: themed('onBackgroundColor');
   }
 }
-.surface-color {
+@mixin surface-color {
   @include themify {
     background-color: themed('surfaceColor');
     color: themed('onSurfaceColor');
   }
 }
-.error {
+@mixin error {
   @include themify {
     background-color: themed('errorColor');
     color: themed('onErrorColor');
   }
 }
-.divider {
+@mixin divider {
   @include themify {
     background-color: themed('dividerColor');
   }
 }
 
-// Fonts.
+//
+// Font mixins
+//
 
-.display4 {
+@mixin font-display4 {
   @include themify {
-    font: themed2('display4', 'font');
-    text-decoration: themed2('display4', 'text-decoration');
-    color: themed2('display4', 'color');
+    font: themed('display4', 'font');
+    text-decoration: themed('display4', 'text-decoration');
+    color: themed('display4', 'color');
   }
 }
 
-.display3 {
+@mixin font-display3 {
   @include themify {
-    font: themed2('display3', 'font');
-    text-decoration: themed2('display3', 'text-decoration');
-    color: themed2('display3', 'color');
+    font: themed('display3', 'font');
+    text-decoration: themed('display3', 'text-decoration');
+    color: themed('display3', 'color');
   }
 }
 
-.display2 {
+@mixin font-display2 {
   @include themify {
-    font: themed2('display2', 'font');
-    text-decoration: themed2('display2', 'text-decoration');
-    color: themed2('display2', 'color');
+    font: themed('display2', 'font');
+    text-decoration: themed('display2', 'text-decoration');
+    color: themed('display2', 'color');
   }
 }
 
-.display1 {
+@mixin font-display1 {
   @include themify {
-    font: themed2('display1', 'font');
-    text-decoration: themed2('display1', 'text-decoration');
-    color: themed2('display1', 'color');
+    font: themed('display1', 'font');
+    text-decoration: themed('display1', 'text-decoration');
+    color: themed('display1', 'color');
   }
 }
 
-.headline {
+@mixin font-headline {
   @include themify {
-    font: themed2('headline', 'font');
-    text-decoration: themed2('headline', 'text-decoration');
-    color: themed2('headline', 'color');
+    font: themed('headline', 'font');
+    text-decoration: themed('headline', 'text-decoration');
+    color: themed('headline', 'color');
   }
 }
 
-.title {
+@mixin font-title {
   @include themify {
-    font: themed2('title', 'font');
-    text-decoration: themed2('title', 'text-decoration');
-    color: themed2('title', 'color');
+    font: themed('title', 'font');
+    text-decoration: themed('title', 'text-decoration');
+    color: themed('title', 'color');
   }
 }
 
-.subhead {
+@mixin font-subhead {
   @include themify {
-    font: themed2('subhead', 'font');
-    text-decoration: themed2('subhead', 'text-decoration');
-    color: themed2('subhead', 'color');
+    font: themed('subhead', 'font');
+    text-decoration: themed('subhead', 'text-decoration');
+    color: themed('subhead', 'color');
   }
 }
 
-.body2 {
+@mixin font-body2 {
   @include themify {
-    font: themed2('body2', 'font');
-    text-decoration: themed2('body2', 'text-decoration');
-    color: themed2('body2', 'color');
+    font: themed('body2', 'font');
+    text-decoration: themed('body2', 'text-decoration');
+    color: themed('body2', 'color');
   }
 }
 
-.body1 {
+@mixin font-body1 {
   @include themify {
-    font: themed2('body1', 'font');
-    text-decoration: themed2('body1', 'text-decoration');
-    color: themed2('body1', 'color');
+    font: themed('body1', 'font');
+    text-decoration: themed('body1', 'text-decoration');
+    color: themed('body1', 'color');
   }
 }
 
-.caption {
+@mixin font-caption {
   @include themify {
-    font: themed2('caption', 'font');
-    text-decoration: themed2('caption', 'text-decoration');
-    color: themed2('caption', 'color');
+    font: themed('caption', 'font');
+    text-decoration: themed('caption', 'text-decoration');
+    color: themed('caption', 'color');
   }
 }
 
-.button {
+@mixin font-button {
   @include themify {
-    font: themed2('button', 'font');
-    text-decoration: themed2('button', 'text-decoration');
-    color: themed2('button', 'color');
+    font: themed('button', 'font');
+    text-decoration: themed('button', 'text-decoration');
+    color: themed('button', 'color');
     border-radius: themed('buttonCornerRadius');
   }
 }
 
 // Other
 
-.primary-button {
+@mixin primary-button {
   @include themify {
-    font: themed2('button', 'font');
+    font: themed('button', 'font');
     font-size: 16px;
-    text-decoration: themed2('button', 'text-decoration');
+    text-decoration: themed('button', 'text-decoration');
     background-color: themed('primaryButtonColor');
     color: themed('onPrimaryButtonColor');
     border-radius: themed('buttonCornerRadius');
@@ -454,11 +441,11 @@ body {
   padding: 4px 8px;
 }
 
-.secondary-button {
+@mixin secondary-button {
   @include themify {
-    font: themed2('button', 'font');
+    font: themed('button', 'font');
     font-size: 16px;
-    text-decoration: themed2('button', 'text-decoration');
+    text-decoration: themed('button', 'text-decoration');
     background-color: themed('secondaryButtonColor');
     color: themed('onSecondaryButtonColor');
     border-radius: themed('buttonCornerRadius');
@@ -489,12 +476,18 @@ const _themifyScss = r'''
   }
 }
 
-@function themed($key) {
-  @return map-get($theme-map, $key);
-}
-
-@function themed2($key1, $key2) {
-  @return map-get(themed($key1), $key2);
+@function themed($key1, $key2: null, $key3: null) {
+  $v1: map-get($theme-map, $key1);
+  @if $key2 != null {
+    $v2: map-get($v1, $key2);
+    @if $key3 != null {
+      @return map-get($v2, $key3);
+    } @else {
+      @return $v2;
+    }
+  } @else {
+    @return $v1;
+  }
 }
 ''';
 

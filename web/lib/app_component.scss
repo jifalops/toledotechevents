@@ -1,4 +1,12 @@
-:host {
-  /* This is equivalent of the 'body' selector of a page. */
+@import 'themes';
 
+:host {
+  height: 100vh;
+  width: 100vw;
+
+  .material-header {
+    @include primary-color;
+    //width: 100vw;
+    //margin: 0;
+  }
 }

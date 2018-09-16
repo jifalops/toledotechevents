@@ -18,7 +18,7 @@ import 'src/event_list/event_list.dart';
   directives: [
     EventListComponent,
      MaterialButtonComponent,
-    // MaterialIconComponent,
+     MaterialIconComponent,
     NgIf,
     NgClass
   ],
