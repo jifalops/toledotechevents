@@ -1,12 +1,12 @@
 // See the theme at material.io: https://goo.gl/qC57Cd
 import 'package:meta/meta.dart';
-import 'package:toledotechevents/util/colors.dart';
-import 'package:toledotechevents/util/fonts.dart';
+import 'package:abstract_theme/abstract_theme.dart';
 
-export 'package:toledotechevents/util/colors.dart';
-export 'package:toledotechevents/util/fonts.dart';
+export 'package:abstract_theme/abstract_theme.dart';
 
 // Set theme defaults here.
+
+
 
 // Brand colors.
 const _primaryColor = Color(0xFF0C4964);
@@ -476,18 +476,14 @@ const _themifyScss = r'''
   }
 }
 
-@function themed($key1, $key2: null, $key3: null) {
-  $v1: map-get($theme-map, $key1);
-  @if $key2 != null {
-    $v2: map-get($v1, $key2);
-    @if $key3 != null {
-      @return map-get($v2, $key3);
-    } @else {
-      @return $v2;
-    }
-  } @else {
-    @return $v1;
+// Get a theme variable arbitrarily deep in the $theme-map.
+// <key1>, [key2, key3, ...]
+@function themed($keys...) {
+  $map: $theme-map;
+  @each $key in $keys {
+    $map: map-get($map, $key);
   }
+  @return $map;
 }
 ''';
 

@@ -2,6 +2,13 @@
   <library name="Dart Packages" type="DartPackagesLibraryType">
     <properties>
       <option name="packageNameToDirsMap">
+        <entry key="abstract_theme">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../abstract_theme/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="analyzer">
           <value>
             <list>
@@ -804,6 +811,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.0.9/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/xml-3.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/yaml-2.1.15/lib" />
+      <root url="file://$PROJECT_DIR$/../../abstract_theme/lib" />
       <root url="file://$PROJECT_DIR$/../base/lib" />
     </CLASSES>
     <SOURCES />

@@ -19,7 +19,9 @@ dependencies:
   meta: any
   async_resource: ^0.1.2
   display: ^0.0.2
-  color_rgb_a: ^0.0.1
+  abstract_theme:
+    path: ../../abstract_theme
+
 
 
 
